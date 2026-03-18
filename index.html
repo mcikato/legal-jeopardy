@@ -593,7 +593,6 @@ function switchTab(tab, btn) {
   document.getElementById('tab-rules').style.display     = tab==='rules'    ?'block':'none';
   if (tab==='analytics') renderAnalytics();
   if (tab==='notes') renderNotes();
-  if (tab==='rules') renderRulesTab();
 }
 
 
@@ -1061,12 +1060,19 @@ function renderModalActions() {
       </div>`;
   } else {
     const pts = POINTS[state.currentCell.row];
+    const half = Math.floor(pts / 2);
     el.innerHTML = `
       <div class="award-section">
-        <p class="award-label">Award ${pts} pts to:</p>
+        <p class="award-label">Correct answer — award ${pts} pts to:</p>
         <div class="award-btns">
           ${state.teams.map((t,i)=>`
-            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800" onclick="awardPoints(${i})">${esc(t.name)} +${pts}</button>`).join('')}
+            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800" onclick="awardPoints(${i},${pts})">${esc(t.name)} +${pts}</button>`).join('')}
+        </div>
+        <div style="border-top:1px solid #eee;margin:12px 0 10px"></div>
+        <p class="award-label" style="color:#B45309">⚡ Steal — award ${half} pts to:</p>
+        <div class="award-btns">
+          ${state.teams.map((t,i)=>`
+            <button class="btn" style="border:2px solid #F59E0B;color:#B45309;font-weight:700" onclick="awardPoints(${i},${half})">${esc(t.name)} +${half}</button>`).join('')}
         </div>
         <button class="btn-muted" onclick="closeModal()">No points — close</button>
       </div>`;
@@ -1079,8 +1085,9 @@ function revealAnswer() {
   renderModalActions();
 }
 
-function awardPoints(teamIdx) {
-  state.sessionScores[teamIdx] += POINTS[state.currentCell.row];
+function awardPoints(teamIdx, pts) {
+  if (pts === undefined) pts = POINTS[state.currentCell.row];
+  state.sessionScores[teamIdx] += pts;
   state.lastAnswerCorrect = true;
   markUsed();
 }
