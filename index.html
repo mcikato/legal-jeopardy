@@ -205,6 +205,7 @@ input,textarea{font-family:inherit}
       <button class="tab active" onclick="switchTab('standings',this)">📊 Standings</button>
       <button class="tab" onclick="switchTab('history',this)">📜 History</button>
       <button class="tab" onclick="switchTab('analytics',this)">📈 Analytics</button>
+      <button class="tab" onclick="showRules()">📋 Rules</button>
     </div>
 
     <!-- STANDINGS TAB -->
@@ -274,6 +275,120 @@ input,textarea{font-family:inherit}
     </div>
     <div class="saving-indicator" id="saving-indicator"></div>
     <button class="btn btn-dark btn-full" id="save-btn" onclick="saveAndReturn()">Save &amp; return to dashboard →</button>
+  </div>
+</div>
+
+<!-- RULES SCREEN -->
+<div id="rules-screen" class="screen">
+  <div style="max-width:860px;margin:0 auto;padding:1.5rem 1rem">
+
+    <div style="background:#0D1424;border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="color:#fff;font-size:22px;font-weight:900;letter-spacing:1.5px">⚖ HOW TO PLAY</div>
+        <div style="color:#7A9BB8;font-size:12px;margin-top:2px">Legal Jeopardy — Introduction to Law</div>
+      </div>
+      <button class="btn-ghost" onclick="showScreen('dash')">← Back to dashboard</button>
+    </div>
+
+    <!-- SEMESTER SETUP -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #eee;margin-bottom:12px;overflow:hidden">
+      <div style="background:#1E2F50;padding:12px 18px;font-size:13px;font-weight:800;color:#CADCFC;letter-spacing:.5px;text-transform:uppercase">🗓 Semester Setup</div>
+      <div style="padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:#F8F9FF;border-radius:10px;padding:14px;border-left:4px solid #2563AB">
+          <div style="font-size:13px;font-weight:800;color:#0D1424;margin-bottom:4px">5 fixed teams</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Divide the class into 5 teams of ~7 students at the start of the semester. Same teams all semester — they build identity and strategy over time.</div>
+        </div>
+        <div style="background:#F8F9FF;border-radius:10px;padding:14px;border-left:4px solid #7048B8">
+          <div style="font-size:13px;font-weight:800;color:#0D1424;margin-bottom:4px">Once per module</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Play at the end of each module (~every 2–3 weeks). Each game takes about 30–40 minutes. Points accumulate across the whole semester.</div>
+        </div>
+        <div style="background:#F8F9FF;border-radius:10px;padding:14px;border-left:4px solid #0F766E">
+          <div style="font-size:13px;font-weight:800;color:#0D1424;margin-bottom:4px">Rotate the spokesperson</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">A different person must answer each round. No one can speak twice in a row. This ensures every student engages with every question.</div>
+        </div>
+        <div style="background:#F8F9FF;border-radius:10px;padding:14px;border-left:4px solid #B45309">
+          <div style="font-size:13px;font-weight:800;color:#0D1424;margin-bottom:4px">Semester winner</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">The team with the most cumulative points at the end of the semester wins. Standings are always visible on the dashboard.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EACH TURN -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #eee;margin-bottom:12px;overflow:hidden">
+      <div style="background:#1E2F50;padding:12px 18px;font-size:13px;font-weight:800;color:#CADCFC;letter-spacing:.5px;text-transform:uppercase">🎮 Each Turn — 4 Steps</div>
+      <div style="padding:16px 18px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          <div style="text-align:center;padding:14px 8px;background:#F8F9FF;border-radius:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#2563AB;color:#fff;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">1</div>
+            <div style="font-size:12px;font-weight:800;color:#0D1424;margin-bottom:4px">Pick</div>
+            <div style="font-size:11px;color:#666;line-height:1.4">The active team picks a category and point value</div>
+          </div>
+          <div style="text-align:center;padding:14px 8px;background:#F8F9FF;border-radius:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#7048B8;color:#fff;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">2</div>
+            <div style="font-size:12px;font-weight:800;color:#0D1424;margin-bottom:4px">Huddle</div>
+            <div style="font-size:11px;color:#666;line-height:1.4">All 7 members discuss quietly and agree on an answer (30 sec)</div>
+          </div>
+          <div style="text-align:center;padding:14px 8px;background:#F8F9FF;border-radius:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#0F766E;color:#fff;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">3</div>
+            <div style="font-size:12px;font-weight:800;color:#0D1424;margin-bottom:4px">Answer</div>
+            <div style="font-size:11px;color:#666;line-height:1.4">The spokesperson announces the team's answer (A, B, C or D)</div>
+          </div>
+          <div style="text-align:center;padding:14px 8px;background:#F8F9FF;border-radius:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#B45309;color:#fff;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">4</div>
+            <div style="font-size:12px;font-weight:800;color:#0D1424;margin-bottom:4px">Reveal</div>
+            <div style="font-size:11px;color:#666;line-height:1.4">Professor reveals the correct answer and awards points</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#888;text-align:center">Teams rotate clockwise — you keep picking even if you got the last one wrong</div>
+      </div>
+    </div>
+
+    <!-- STEAL RULE -->
+    <div style="background:#FFFBEB;border-radius:14px;border:2px solid #F59E0B;margin-bottom:12px;overflow:hidden">
+      <div style="background:#F59E0B;padding:12px 18px;font-size:13px;font-weight:800;color:#fff;letter-spacing:.5px;text-transform:uppercase">⚡ The Steal Rule — keeps everyone alert</div>
+      <div style="padding:16px 18px">
+        <div style="font-size:14px;color:#78350F;line-height:1.7">
+          If the active team answers <strong>wrong</strong>, the professor opens a steal opportunity.<br>
+          <strong>First team to raise their hand</strong> gets to answer.<br>
+          ✅ Correct steal → earns <strong>half the points</strong><br>
+          ❌ Wrong steal → no one scores. Only one steal attempt per question.
+        </div>
+        <div style="margin-top:10px;background:#FEF3C7;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E">
+          💡 Tip: Assign one "team captain" who raises their hand to signal a steal. Avoids chaos with 37 students shouting at once.
+        </div>
+      </div>
+    </div>
+
+    <!-- POINTS TABLE -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #eee;margin-bottom:12px;overflow:hidden">
+      <div style="background:#1E2F50;padding:12px 18px;font-size:13px;font-weight:800;color:#CADCFC;letter-spacing:.5px;text-transform:uppercase">🏆 Point Values</div>
+      <div style="padding:16px 18px">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+          <div style="text-align:center;padding:12px 6px;background:#DDEEFF;border-radius:10px">
+            <div style="font-size:22px;font-weight:900;color:#0C447C">100</div>
+            <div style="font-size:10px;color:#185FA5;font-weight:700;margin-top:2px">EASY</div>
+          </div>
+          <div style="text-align:center;padding:12px 6px;background:#EDE8F8;border-radius:10px">
+            <div style="font-size:22px;font-weight:900;color:#3C3489">200</div>
+            <div style="font-size:10px;color:#534AB7;font-weight:700;margin-top:2px">&nbsp;</div>
+          </div>
+          <div style="text-align:center;padding:12px 6px;background:#E1F5EE;border-radius:10px">
+            <div style="font-size:22px;font-weight:900;color:#085041">300</div>
+            <div style="font-size:10px;color:#0F6E56;font-weight:700;margin-top:2px">&nbsp;</div>
+          </div>
+          <div style="text-align:center;padding:12px 6px;background:#FFF0CC;border-radius:10px">
+            <div style="font-size:22px;font-weight:900;color:#633806">400</div>
+            <div style="font-size:10px;color:#854F0B;font-weight:700;margin-top:2px">&nbsp;</div>
+          </div>
+          <div style="text-align:center;padding:12px 6px;background:#FFDDD9;border-radius:10px">
+            <div style="font-size:22px;font-weight:900;color:#712B13">500</div>
+            <div style="font-size:10px;color:#993C1D;font-weight:700;margin-top:2px">HARD</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#888;text-align:center">Points accumulate across all modules throughout the semester · Semester winner announced in the last class</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -488,6 +603,11 @@ function renderDashboard() {
   renderModules();
   renderHistory();
   renderAnalytics();
+}
+
+function showRules() {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  showScreen('rules-screen');
 }
 
 function switchTab(tab, btn) {
