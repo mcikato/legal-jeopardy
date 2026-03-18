@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Jeopardy — Introduction to Law</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+
+/* ── SCREENS ─────────────────────────────────── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ── DASHBOARD ───────────────────────────────── */
+#dash{padding:1.5rem 1rem;max-width:900px;margin:0 auto}
+.dash-header{background:#0D1424;border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.dash-title{color:#fff;font-size:22px;font-weight:900;letter-spacing:1.5px}
+.dash-sub{color:#7A9BB8;font-size:12px;margin-top:2px}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.tab{padding:8px 20px;border-radius:8px;border:none;font-weight:700;font-size:13px;background:#fff;color:#888;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab.active{background:#0D1424;color:#fff;box-shadow:none}
+.section-label{font-size:12px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.standings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem}
+.standing-card{background:#fff;border-radius:14px;padding:16px 14px;border:2px solid #eee;position:relative}
+.standing-card.leader{border-color:rgba(0,0,0,.2)}
+.crown{position:absolute;top:8px;right:10px;font-size:18px}
+.team-name-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;min-height:26px}
+.team-name{font-weight:800;font-size:14px}
+.edit-btn{font-size:10px;background:transparent;border:1px solid #e0e0e0;border-radius:4px;padding:1px 6px;color:#bbb}
+.edit-input{font-size:12px;border:1px solid #ccc;border-radius:6px;padding:3px 8px;width:80px;outline:none}
+.confirm-sm-btn{font-size:11px;border-radius:4px;padding:2px 7px;border:none}
+.standing-pts{font-size:30px;font-weight:900}
+.standing-meta{font-size:11px;color:#bbb;margin-top:4px}
+.modules-list{display:flex;flex-direction:column;gap:8px}
+.module-row{background:#fff;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border:1px solid #eee}
+.module-name{font-weight:800;font-size:15px;color:#0D1424}
+.module-cats{font-size:11px;color:#aaa;margin-top:3px}
+.module-placeholder{background:#F8F8F8;border-radius:12px;padding:14px 18px;border:2px dashed #ddd;text-align:center;color:#bbb;font-size:13px}
+.history-list{display:flex;flex-direction:column;gap:10px}
+.history-card{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid #eee}
+.history-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.history-module{font-weight:800;font-size:14px;color:#0D1424}
+.history-meta{font-size:12px;color:#bbb;margin-top:2px}
+.history-badge{font-size:11px;color:#ddd;background:#f5f5f5;border-radius:6px;padding:3px 8px}
+.history-scores{display:flex;gap:8px;flex-wrap:wrap}
+.history-score{border-radius:8px;padding:6px 14px;font-size:13px;border:1.5px solid #eee;background:#F5F5F5}
+.history-score.winner{background:#FFFBEB;border-color:#F59E0B}
+.empty-state{background:#fff;border-radius:12px;padding:40px;text-align:center;color:#bbb;font-size:14px}
+.inline-confirm{display:flex;gap:8px;align-items:center}
+.inline-confirm span{font-size:11px;color:#998}
+
+/* ── GAME SCREEN ─────────────────────────────── */
+#game{background:#0D1424;min-height:100vh;padding:1rem}
+.game-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.game-title{color:#fff;font-size:16px;font-weight:800;letter-spacing:1px}
+.game-sub{color:#7A9BB8;font-size:11px}
+.game-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.scores-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.score-card{background:#1a2540;border-radius:10px;padding:10px;text-align:center}
+.score-team{font-size:11px;color:#7A9BB8;margin-bottom:2px}
+.score-pts{font-size:22px;font-weight:800}
+.score-adj{display:flex;gap:4px;margin-top:5px;justify-content:center}
+.adj-btn{font-size:10px;background:transparent;border:1px solid #334;color:#aaa;border-radius:4px;padding:1px 7px}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.cat-header{background:#1E2F50;border-radius:8px;padding:10px 4px;text-align:center;font-size:10px;font-weight:800;color:#CADCFC;min-height:54px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;letter-spacing:.4px}
+.cell{border-radius:8px;min-height:56px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s;user-select:none}
+.cell:hover{transform:scale(1.05)}
+.cell.used{opacity:.2;cursor:default;pointer-events:none}
+
+/* ── MODAL ───────────────────────────────────── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;padding:2rem;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-cat{font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.modal-pts{font-size:32px;font-weight:900;margin-bottom:16px}
+.modal-q{font-size:18px;color:#1a1a1a;line-height:1.6;margin-bottom:24px;border-left:4px solid #ccc;padding-left:16px}
+.modal-ans-box{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:12px;padding:1rem 1.2rem;margin-bottom:18px;display:none}
+.modal-ans-label{font-size:10px;font-weight:800;color:#185FA5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.modal-ans-text{font-size:15px;color:#1a1a1a;line-height:1.65}
+.modal-btns{display:flex;gap:10px;flex-wrap:wrap}
+.award-label{font-size:12px;color:#888;font-weight:700;margin-bottom:10px;margin-top:0}
+.award-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+/* ── GAME OVER ───────────────────────────────── */
+#gameover{background:#0D1424;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.gameover-card{background:#fff;border-radius:20px;padding:2.5rem;max-width:520px;width:100%;text-align:center}
+.gameover-trophy{font-size:52px;margin-bottom:12px}
+.gameover-title{font-size:26px;font-weight:800;color:#0D1424;margin-bottom:6px}
+.gameover-sub{color:#888;font-size:13px;margin-bottom:28px}
+.gameover-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px}
+.gameover-team{border-radius:12px;padding:14px;border:2px solid #eee;background:#F5F5F5}
+.gameover-team.winner{background:#FFFBEB;border-color:#F59E0B}
+.gameover-teamname{font-size:12px;color:#888;margin-bottom:4px}
+.gameover-teamscore{font-size:26px;font-weight:800}
+.gameover-winner-label{font-size:11px;color:#F59E0B;font-weight:700;margin-top:4px}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.btn{padding:9px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;font-size:14px;font-weight:700;color:#1a1a1a}
+.btn-dark{background:#0D1424;color:#fff;border-color:#0D1424}
+.btn-blue{background:#1E2F50;color:#CADCFC;border:none}
+.btn-ghost{background:transparent;border:1px solid #334;color:#888;font-size:12px;padding:7px 14px}
+.btn-danger{background:#B83220;color:#fff;border:none;font-size:11px;padding:5px 12px;border-radius:6px;font-weight:700}
+.btn-muted{background:transparent;border:1px solid #ddd;color:#888;font-size:12px;padding:8px 18px;border-radius:10px}
+.btn-full{width:100%;padding:14px 0;font-size:15px;font-weight:700}
+.play-btn{background:#0D1424;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  DASHBOARD                                  -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="dash" class="screen active">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">⚖ LEGAL JEOPARDY</div>
+      <div class="dash-sub">Semester Tracker — Introduction to Law</div>
+    </div>
+    <div id="reset-ui">
+      <button class="btn-ghost" onclick="showResetConfirm()">Reset semester</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('standings')">📊 Standings</button>
+    <button class="tab" onclick="switchTab('history')">📜 History</button>
+  </div>
+
+  <!-- STANDINGS TAB -->
+  <div id="tab-standings">
+    <div class="section-label">Semester Standings</div>
+    <div class="standings-grid" id="standings-grid"></div>
+
+    <div class="section-label">Play a Module</div>
+    <div class="modules-list" id="modules-list"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" style="display:none">
+    <div class="section-label">Game History</div>
+    <div id="history-list"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  GAME                                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="game" class="screen">
+
+  <div class="game-topbar">
+    <div>
+      <div class="game-title" id="game-title"></div>
+      <div class="game-sub">Legal Jeopardy</div>
+    </div>
+    <div class="game-actions">
+      <button class="btn btn-blue" onclick="endGame()">End game</button>
+      <div id="exit-ui">
+        <button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scores-grid" id="scores-grid"></div>
+  <div class="board" id="board"></div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  GAME OVER                                  -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="gameover" class="screen">
+  <div class="gameover-card">
+    <div class="gameover-trophy">🏆</div>
+    <div class="gameover-title" id="go-title"></div>
+    <div class="gameover-sub" id="go-sub"></div>
+    <div class="gameover-grid" id="go-grid"></div>
+    <button class="btn btn-dark btn-full" onclick="saveAndReturn()">Save &amp; return to dashboard →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  QUESTION MODAL                             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-cat" id="m-cat"></div>
+    <div class="modal-pts" id="m-pts"></div>
+    <div class="modal-q" id="m-q"></div>
+    <div class="modal-ans-box" id="m-ans-box">
+      <div class="modal-ans-label">Answer</div>
+      <div class="modal-ans-text" id="m-ans-text"></div>
+    </div>
+    <div id="m-actions"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+
+const TEAM_COLORS = ['#2563AB','#B83220','#7048B8','#0A6B3E'];
+const ROW_COLORS  = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
+const POINTS      = [100, 200, 300, 400, 500];
+
+const MODULES = [
+  {
+    id: 'mod1',
+    name: 'Module 1 — What is Law?',
+    categories: ['What is Law?','Law or Not Law?','Sources of Law','Rule of Law','Areas of Law'],
+    questions: [
+      [
+        { q:"Name the six elements that transform a rule into a law.", a:"Human authority · General & abstract · Bilateral · Obligatory · State-backed coercion · Formally enacted." },
+        { q:"A statute says: 'Employers must pay a minimum wage.' Identify the duty and the right created.", a:"Duty: employer must pay. Right: employee can demand payment. That is bilaterality — one duty, one corresponding right." },
+        { q:"True or False: A rule can be morally right but legally invalid. Explain.", a:"TRUE. A rule needs all six formal elements to be law. Moral value alone is not enough." },
+        { q:"What are the four core principles of the Rule of Law?", a:"Supremacy of Law · Equality Before the Law · Accountability to the Law · Legal Certainty." },
+        { q:"A president signs a decree exempting his family from taxes. Which Rule of Law principle does this violate?", a:"Equality Before the Law. The law must apply to everyone equally, regardless of status or power." }
+      ],
+      [
+        { q:"A sports federation bans a player for doping. Is the federation's rule a law? Which element does it fail?", a:"Not a law. Fails Element 1: Human Authority. A sports federation is not a state-recognized law-making body." },
+        { q:"A parliament passes a statute targeting only one named company: 'AcmeCorp must be dissolved.' Which element does this fail?", a:"Fails Element 2: General & Abstract. A law must apply to categories of people, not a single named target." },
+        { q:"A government poster reads: 'We suggest you wear a seatbelt for your safety.' Is this a law? Which element does it fail?", a:"Not a law. Fails Element 4: Obligatory. A suggestion has no legal duty, no penalty, and no enforceable right." },
+        { q:"A religious court orders a member to pay a fine. Can the state enforce it? Which element of law is relevant?", a:"No. Fails Element 5: State-Backed Coercion. A religious court has no state enforcement power." },
+        { q:"A regulation is issued by a minister without following the required approval procedure. Is it valid law? Which element does it fail?", a:"Not valid. Fails Element 6: Formal Validity. A rule must be produced through a recognized legal procedure." }
+      ],
+      [
+        { q:"A new statute allows police to search homes without a warrant. A citizen challenges it in court. What source of law could invalidate it, and how?", a:"Constitutional Law. Through judicial review, a court can strike down any statute that violates constitutional rights." },
+        { q:"What is the difference between common law and statutory law in terms of who creates them?", a:"Statutory law: created by a legislature. Common law: created by judges through court decisions and precedent (stare decisis)." },
+        { q:"A judge faces a case with no applicable statute. What source of law does she use, and what principle guides her?", a:"Common law / case law. She applies stare decisis — following prior court rulings on similar cases." },
+        { q:"A country signs an international trade treaty, then passes a domestic law that contradicts it. According to the Kelsen Pyramid, which prevails?", a:"The treaty prevails. International treaties rank above statutes. The higher norm always wins." },
+        { q:"List the Kelsen Pyramid from highest to lowest authority (6 levels).", a:"1. Constitution · 2. International Treaties · 3. Statutes · 4. Regulations · 5. Court Decisions · 6. Contracts & Private Acts." }
+      ],
+      [
+        { q:"Country X has laws, but the president can modify them overnight and judges are appointed by the ruling party. Is this the Rule of Law? What principle is violated?", a:"No. Violates Legal Certainty and Accountability. Having laws is not the same as having the Rule of Law." },
+        { q:"What is the difference between 'rule of law' and 'rule by law'?", a:"Rule of Law: rulers are bound by law like everyone else. Rule by law: rulers use law to control others but exempt themselves." },
+        { q:"A company wants to invest where taxes are low, but contracts are rarely enforced and courts are corrupt. Should they invest? Justify using Rule of Law.", a:"No. Without Rule of Law there is no legal certainty, no enforceable contracts, no impartial courts. Low taxes don't compensate." },
+        { q:"Name the three problems that existed before the Rule of Law that it was designed to prevent.", a:"1. Unpredictability. 2. Unequal application of rules. 3. No accountability for rulers." },
+        { q:"Why is legal certainty essential for a functioning economy? Give two specific reasons.", a:"1. Investors need to trust contracts will be honored. 2. Businesses need stable, predictable rules to plan operations." }
+      ],
+      [
+        { q:"A company dumps toxic waste illegally. The state prosecutes. What area of law applies and what is the goal of the sanction?", a:"Criminal Law. Goal: punish behavior harmful to society and deter future violations." },
+        { q:"Two companies sign a contract. One fails to deliver. The other sues for the value of the goods. What area of law applies and what is the typical remedy?", a:"Civil Law (contract law). Remedy: monetary compensation or specific performance. No prison." },
+        { q:"A startup creates a new software algorithm. What area of law protects it, and what instrument do they need?", a:"Intellectual Property Law. They need a patent or copyright giving them exclusive rights for a defined period." },
+        { q:"What is the key difference between criminal and civil law in terms of WHO brings the case and WHAT the outcome can be?", a:"Criminal: STATE prosecutes → punishment (prison/fine). Civil: PRIVATE PARTY sues → compensation or injunction." },
+        { q:"Name the five functions of law in society.", a:"1. Social Organization · 2. Conflict Prevention · 3. Conflict Resolution · 4. Rights Protection · 5. Economic Facilitation." }
+      ]
+    ]
+  }
+  // ── PASTE NEW MODULES HERE AS THE SEMESTER PROGRESSES ──────────────────────
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+
+const DEFAULT_TEAMS = [
+  { name:'Team A', total:0, wins:0, games:0 },
+  { name:'Team B', total:0, wins:0, games:0 },
+  { name:'Team C', total:0, wins:0, games:0 },
+  { name:'Team D', total:0, wins:0, games:0 },
+];
+
+let state = {
+  teams: DEFAULT_TEAMS.map(t=>({...t})),
+  history: [],
+  activeModule: null,
+  used: [],              // [col][row] = true/false
+  sessionScores: [0,0,0,0],
+  currentCell: null,     // {col, row}
+  revealed: false,
+};
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+
+function save() {
+  try {
+    localStorage.setItem('lj_teams',   JSON.stringify(state.teams));
+    localStorage.setItem('lj_history', JSON.stringify(state.history));
+  } catch(e){}
+}
+
+function load() {
+  try {
+    const t = localStorage.getItem('lj_teams');
+    const h = localStorage.getItem('lj_history');
+    if (t) state.teams   = JSON.parse(t);
+    if (h) state.history = JSON.parse(h);
+  } catch(e){}
+}
+
+// ─── SCREEN ROUTER ────────────────────────────────────────────────────────────
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+
+function renderDashboard() {
+  renderStandings();
+  renderModules();
+  renderHistory();
+  showScreen('dash');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-standings').style.display = tab === 'standings' ? 'block' : 'none';
+  document.getElementById('tab-history').style.display   = tab === 'history'   ? 'block' : 'none';
+}
+
+function renderStandings() {
+  const sorted = [...state.teams].map((t,i)=>({...t,_i:i})).sort((a,b)=>b.total-a.total);
+  const grid = document.getElementById('standings-grid');
+  grid.innerHTML = sorted.map((t, rank) => `
+    <div class="standing-card ${rank===0 && t.total>0 ? 'leader' : ''}" style="border-color:${rank===0 && t.total>0 ? TEAM_COLORS[t._i]+'55' : '#eee'}">
+      ${rank===0 && t.total>0 ? '<div class="crown">👑</div>' : ''}
+      <div class="team-name-row" id="name-row-${t._i}">
+        <span class="team-name" style="color:${TEAM_COLORS[t._i]}">${esc(t.name)}</span>
+        <button class="edit-btn" onclick="startEditName(${t._i})">✎</button>
+      </div>
+      <div class="standing-pts" style="color:${TEAM_COLORS[t._i]}">${t.total.toLocaleString()} pts</div>
+      <div class="standing-meta">${t.wins} win${t.wins!==1?'s':''} · ${t.games} game${t.games!==1?'s':''}</div>
+    </div>
+  `).join('');
+}
+
+function startEditName(i) {
+  const row = document.getElementById('name-row-'+i);
+  row.innerHTML = `
+    <input class="edit-input" id="edit-input-${i}" value="${esc(state.teams[i].name)}" onkeydown="if(event.key==='Enter')saveEditName(${i})">
+    <button class="confirm-sm-btn btn-dark" onclick="saveEditName(${i})" style="background:#0D1424;color:#fff">✓</button>
+    <button class="confirm-sm-btn" onclick="renderStandings()" style="background:transparent;border:1px solid #ddd;color:#aaa">✕</button>
+  `;
+  document.getElementById('edit-input-'+i).focus();
+}
+
+function saveEditName(i) {
+  const val = document.getElementById('edit-input-'+i).value.trim();
+  if (val) state.teams[i].name = val;
+  save();
+  renderStandings();
+}
+
+function renderModules() {
+  const list = document.getElementById('modules-list');
+  list.innerHTML = MODULES.map(mod => `
+    <div class="module-row">
+      <div>
+        <div class="module-name">${esc(mod.name)}</div>
+        <div class="module-cats">${mod.categories.join(' · ')}</div>
+      </div>
+      <button class="play-btn" onclick="startGame('${mod.id}')">▶ Play</button>
+    </div>
+  `).join('') + `<div class="module-placeholder">+ More modules will be added as the semester progresses</div>`;
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (!state.history.length) {
+    el.innerHTML = '<div class="empty-state">No games played yet. Start your first module! 🎯</div>';
+    return;
+  }
+  el.innerHTML = state.history.map((game, idx) => {
+    const maxS = Math.max(...game.scores.map(s=>s.score));
+    const scoresHtml = game.scores.map((s,i) => `
+      <div class="history-score ${s.score===maxS?'winner':''}" >
+        <span style="font-weight:700;color:${TEAM_COLORS[i]}">${esc(s.name)}</span>
+        <span style="color:#666;margin-left:6px;font-weight:700">${s.score} pts</span>
+      </div>`).join('');
+    return `
+      <div class="history-card">
+        <div class="history-top">
+          <div>
+            <div class="history-module">${esc(game.module)}</div>
+            <div class="history-meta">${game.date} · 🏆 <strong style="color:#0D1424">${game.winners.join(' & ')}</strong></div>
+          </div>
+          <div class="history-badge">Game #${state.history.length - idx}</div>
+        </div>
+        <div class="history-scores">${scoresHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── RESET SEMESTER ───────────────────────────────────────────────────────────
+
+function showResetConfirm() {
+  document.getElementById('reset-ui').innerHTML = `
+    <div class="inline-confirm">
+      <span>Reset everything?</span>
+      <button class="btn-danger" onclick="doReset()">Yes, reset</button>
+      <button class="btn-ghost" onclick="cancelReset()">Cancel</button>
+    </div>`;
+}
+function cancelReset() {
+  document.getElementById('reset-ui').innerHTML = `<button class="btn-ghost" onclick="showResetConfirm()">Reset semester</button>`;
+}
+function doReset() {
+  state.teams   = DEFAULT_TEAMS.map(t=>({...t}));
+  state.history = [];
+  save();
+  cancelReset();
+  renderDashboard();
+}
+
+// ─── GAME ─────────────────────────────────────────────────────────────────────
+
+function startGame(modId) {
+  const mod = MODULES.find(m=>m.id===modId);
+  if (!mod) return;
+  state.activeModule  = mod;
+  state.used          = Array.from({length:5},()=>Array(5).fill(false));
+  state.sessionScores = [0,0,0,0];
+  state.currentCell   = null;
+  state.revealed      = false;
+  renderGame();
+  showScreen('game');
+}
+
+function renderGame() {
+  const mod = state.activeModule;
+  document.getElementById('game-title').textContent = mod.name;
+
+  // Scores
+  const sg = document.getElementById('scores-grid');
+  sg.innerHTML = state.teams.map((t,i) => `
+    <div class="score-card" style="border:2px solid ${TEAM_COLORS[i]}44">
+      <div class="score-team">${esc(t.name)}</div>
+      <div class="score-pts" style="color:${TEAM_COLORS[i]}">${state.sessionScores[i]} pts</div>
+      <div class="score-adj">
+        <button class="adj-btn" onclick="adjustScore(${i},100)">+</button>
+        <button class="adj-btn" onclick="adjustScore(${i},-100)">−</button>
+      </div>
+    </div>`).join('');
+
+  // Board
+  const board = document.getElementById('board');
+  let html = mod.categories.map(cat =>
+    `<div class="cat-header">${esc(cat)}</div>`).join('');
+  POINTS.forEach((pts, row) => {
+    mod.categories.forEach((_, col) => {
+      const done = state.used[col][row];
+      html += `<div class="cell ${done?'used':''}"
+        style="background:${done?'#0a1020':ROW_COLORS[row]}"
+        onclick="openCell(${col},${row})">
+        ${done ? '' : pts}
+      </div>`;
+    });
+  });
+  board.innerHTML = html;
+
+  // Reset exit UI
+  document.getElementById('exit-ui').innerHTML = `<button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
+}
+
+function adjustScore(i, delta) {
+  state.sessionScores[i] = Math.max(0, state.sessionScores[i] + delta);
+  renderGame();
+}
+
+function openCell(col, row) {
+  if (state.used[col][row]) return;
+  state.currentCell = {col, row};
+  state.revealed = false;
+  const mod = state.activeModule;
+  const q   = mod.questions[col][row];
+  document.getElementById('m-cat').textContent  = mod.categories[col];
+  document.getElementById('m-pts').textContent  = POINTS[row] + ' pts';
+  document.getElementById('m-pts').style.color  = ROW_COLORS[row];
+  document.getElementById('m-q').textContent    = q.q;
+  document.getElementById('m-q').style.borderLeftColor = ROW_COLORS[row];
+  document.getElementById('m-ans-text').textContent = q.a;
+  document.getElementById('m-ans-box').style.display = 'none';
+  renderModalActions();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function renderModalActions() {
+  const el = document.getElementById('m-actions');
+  if (!state.revealed) {
+    el.innerHTML = `
+      <div class="modal-btns">
+        <button class="btn btn-dark" onclick="revealAnswer()">▶ Reveal Answer</button>
+        <button class="btn" onclick="closeModal()">Close (no points)</button>
+      </div>`;
+  } else {
+    const pts = POINTS[state.currentCell.row];
+    const awardBtns = state.teams.map((t,i) =>
+      `<button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800"
+        onclick="awardPoints(${i})">${esc(t.name)} +${pts} pts</button>`).join('');
+    el.innerHTML = `
+      <p class="award-label">Award ${pts} pts to:</p>
+      <div class="award-btns">${awardBtns}</div>
+      <button class="btn-muted" onclick="closeModal()">No points — close</button>`;
+  }
+}
+
+function revealAnswer() {
+  state.revealed = true;
+  document.getElementById('m-ans-box').style.display = 'block';
+  renderModalActions();
+}
+
+function awardPoints(teamIdx) {
+  state.sessionScores[teamIdx] += POINTS[state.currentCell.row];
+  markUsed();
+}
+
+function closeModal() {
+  markUsed();
+}
+
+function markUsed() {
+  if (state.currentCell) {
+    state.used[state.currentCell.col][state.currentCell.row] = true;
+  }
+  document.getElementById('overlay').classList.remove('open');
+  state.currentCell = null;
+  const allDone = state.used.every(col => col.every(v => v));
+  renderGame();
+  if (allDone) setTimeout(endGame, 300);
+}
+
+function overlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+// ─── EXIT WITHOUT SAVING ──────────────────────────────────────────────────────
+
+function showExitConfirm() {
+  document.getElementById('exit-ui').innerHTML = `
+    <div class="inline-confirm">
+      <span>Exit without saving?</span>
+      <button class="btn-danger" onclick="exitWithoutSaving()">Yes, exit</button>
+      <button class="btn-ghost" onclick="cancelExit()">Cancel</button>
+    </div>`;
+}
+function cancelExit() {
+  document.getElementById('exit-ui').innerHTML = `<button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
+}
+function exitWithoutSaving() {
+  renderDashboard();
+}
+
+// ─── GAME OVER ────────────────────────────────────────────────────────────────
+
+function endGame() {
+  const scores = state.sessionScores;
+  const maxS   = Math.max(...scores);
+  const winners = state.teams.filter((_,i) => scores[i] === maxS);
+  document.getElementById('go-title').textContent = winners.length===1 ? `${winners[0].name} wins!` : "It's a tie!";
+  document.getElementById('go-sub').textContent   = state.activeModule.name;
+
+  const sorted = scores.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s);
+  document.getElementById('go-grid').innerHTML = sorted.map(({s,i}) => `
+    <div class="gameover-team ${s===maxS?'winner':''}">
+      <div class="gameover-teamname">${esc(state.teams[i].name)}</div>
+      <div class="gameover-teamscore" style="color:${TEAM_COLORS[i]}">+${s} pts</div>
+      ${s===maxS ? '<div class="gameover-winner-label">WINNER</div>' : ''}
+    </div>`).join('');
+
+  showScreen('gameover');
+}
+
+function saveAndReturn() {
+  const scores  = state.sessionScores;
+  const maxS    = Math.max(...scores);
+  const winIdxs = scores.reduce((acc,s,i) => s===maxS ? [...acc,i] : acc, []);
+  state.teams = state.teams.map((t,i) => ({
+    ...t,
+    total: t.total + scores[i],
+    wins:  t.wins  + (winIdxs.includes(i) ? 1 : 0),
+    games: t.games + 1
+  }));
+  const record = {
+    id:      Date.now(),
+    date:    new Date().toLocaleDateString('en-GB'),
+    module:  state.activeModule.name,
+    scores:  state.teams.map((t,i) => ({name: t.name, score: scores[i]})),
+    winners: winIdxs.map(i => state.teams[i].name)
+  };
+  state.history.unshift(record);
+  save();
+  renderDashboard();
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+load();
+renderDashboard();
+</script>
+</body>
+</html>
