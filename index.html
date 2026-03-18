@@ -177,7 +177,7 @@ input,textarea{font-family:inherit}
 <body>
 
 <!-- LOADING -->
-<div id="loading-screen" class="screen active">
+<div id="loading-screen" class="screen">
   <div class="loading-title">⚖ LEGAL JEOPARDY</div>
   <div class="spinner"></div>
   <div class="loading-sub" id="loading-sub">Loading semester data…</div>
@@ -189,7 +189,7 @@ input,textarea{font-family:inherit}
 </div>
 
 <!-- DASHBOARD -->
-<div id="dash" class="screen">
+<div id="dash" class="screen active">
   <div style="max-width:960px;margin:0 auto;padding:1.5rem 1rem">
     <div class="dash-header">
       <div>
@@ -454,12 +454,8 @@ function showScreen(id) {
 }
 
 function initApp() {
-  // Show dashboard FIRST — no loading screen
-  showScreen('dash');
-  setSyncStatus('saving', 'Loading...');
-  loadFromLocal();
-  renderDashboard();
-  // Then sync with Sheets in background
+  try { loadFromLocal(); } catch(e) { console.error('loadFromLocal error:', e); }
+  try { renderDashboard(); } catch(e) { console.error('renderDashboard error:', e); }
   if (SCRIPT_URL && SCRIPT_URL !== 'PASTE_YOUR_SCRIPT_URL_HERE') {
     syncSheets();
   } else {
