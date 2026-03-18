@@ -421,41 +421,7 @@ function fetchJSONP(url) {
   });
 }
 
-async function loadFromSheets() {
-  // 1. Show dashboard immediately — never get stuck on loading screen
-  showScreen('dash');
-  setSyncStatus('saving', 'Loading...');
 
-  // 2. Load whatever is in localStorage right now
-  try { loadFromLocal(); } catch(e) {}
-
-  // 3. Render with whatever data we have
-  try { renderDashboard(); } catch(e) { console.error('renderDashboard error:', e); }
-
-  // 4. If no Sheets URL, stop here
-  if (!SCRIPT_URL || SCRIPT_URL === 'PASTE_YOUR_SCRIPT_URL_HERE') {
-    setSyncStatus('err', 'No Google Sheets URL set');
-    return;
-  }
-
-  // 5. Try to sync with Sheets in background
-  setSyncStatus('saving', 'Syncing with Sheets...');
-  try {
-    const data = await fetchJSONP(SCRIPT_URL);
-    if (data.error) throw new Error(data.error);
-    if (data.teams && data.teams.length) {
-      while (data.teams.length < 5) data.teams.push({...DEFAULT_TEAMS[data.teams.length]});
-      state.teams = data.teams.slice(0,5);
-    }
-    if (data.history) state.history = data.history;
-    saveToLocal();
-    setSyncStatus('ok', 'Synced ✓');
-    try { renderDashboard(); } catch(e) { console.error('renderDashboard error:', e); }
-  } catch(e) {
-    console.error('Sheets sync error:', e);
-    setSyncStatus('err', 'Sheets offline — local data loaded');
-  }
-}
 
 async function saveToSheets() {
   // Always save locally first (instant backup)
@@ -488,11 +454,36 @@ function showScreen(id) {
 }
 
 function initApp() {
-  document.getElementById('loading-error').style.display='none';
-  document.getElementById('loading-sub').textContent='Loading semester data…';
-  document.querySelector('.spinner').style.display='block';
-  showScreen('loading-screen');
-  loadFromSheets();
+  // Show dashboard FIRST — no loading screen
+  showScreen('dash');
+  setSyncStatus('saving', 'Loading...');
+  loadFromLocal();
+  renderDashboard();
+  // Then sync with Sheets in background
+  if (SCRIPT_URL && SCRIPT_URL !== 'PASTE_YOUR_SCRIPT_URL_HERE') {
+    syncSheets();
+  } else {
+    setSyncStatus('err', 'No Sheets URL');
+  }
+}
+
+async function syncSheets() {
+  setSyncStatus('saving', 'Syncing...');
+  try {
+    const data = await fetchJSONP(SCRIPT_URL);
+    if (data.error) throw new Error(data.error);
+    if (data.teams && data.teams.length) {
+      while (data.teams.length < 5) data.teams.push({...DEFAULT_TEAMS[data.teams.length]});
+      state.teams = data.teams.slice(0,5);
+    }
+    if (data.history) state.history = data.history;
+    saveToLocal();
+    setSyncStatus('ok', 'Synced ✓');
+    renderDashboard();
+  } catch(e) {
+    console.error('Sheets sync error:', e);
+    setSyncStatus('err', 'Sheets offline');
+  }
 }
 
 // ─── DASHBOARD ────────────────────────────────────────────────────────────────
