@@ -145,7 +145,7 @@ input,textarea{font-family:inherit}
 .award-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 
 /* GAME OVER */
-#gameover{background:#0D1424;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+#gameover{background:#0D1424;min-height:100vh;align-items:center;justify-content:center;padding:2rem}
 .gameover-card{background:#fff;border-radius:20px;padding:2rem;max-width:600px;width:100%;text-align:center}
 .gameover-trophy{font-size:48px;margin-bottom:10px}
 .gameover-title{font-size:24px;font-weight:800;color:#0D1424;margin-bottom:6px}
@@ -579,8 +579,14 @@ async function saveToSheets() {
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  // Screens that need flex layout when shown
+  if (id === 'gameover') el.style.display = 'flex';
 }
 
 function initApp() {
