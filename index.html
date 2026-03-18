@@ -525,7 +525,8 @@ function switchTab(tab, btn) {
 
 function renderRulesTab() {
   const el = document.getElementById('tab-rules');
-  if (el.innerHTML.trim()) return; // already rendered
+  if (el.dataset.rendered) return; // already rendered
+  el.dataset.rendered = "1";
   el.innerHTML = `
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
