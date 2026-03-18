@@ -8,385 +8,739 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#F0F2F5;color:#1a1a1a;min-height:100vh}
 button{font-family:inherit;cursor:pointer}
-input{font-family:inherit}
+input,textarea{font-family:inherit}
+.screen{display:none}.screen.active{display:block}
 
-/* ── SCREENS ─────────────────────────────────── */
-.screen{display:none}
-.screen.active{display:block}
+/* LOADING */
+#loading-screen{background:#0D1424;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid #1E2F50;border-top-color:#7A9BB8;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{color:#fff;font-size:20px;font-weight:800;letter-spacing:2px}
+.loading-sub{color:#7A9BB8;font-size:13px}
+.loading-error{background:#B83220;color:#fff;border-radius:12px;padding:14px 20px;max-width:400px;text-align:center;font-size:13px;line-height:1.6;display:none}
+.loading-error button{margin-top:10px;background:#fff;color:#B83220;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:13px}
 
-/* ── DASHBOARD ───────────────────────────────── */
-#dash{padding:1.5rem 1rem;max-width:900px;margin:0 auto}
+/* DASHBOARD */
+#dash{padding:1.5rem 1rem;max-width:960px;margin:0 auto}
 .dash-header{background:#0D1424;border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .dash-title{color:#fff;font-size:22px;font-weight:900;letter-spacing:1.5px}
 .dash-sub{color:#7A9BB8;font-size:12px;margin-top:2px}
-.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
-.tab{padding:8px 20px;border-radius:8px;border:none;font-weight:700;font-size:13px;background:#fff;color:#888;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dash-header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sync-badge{display:flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+.sync-badge.ok{background:#0F2A1A;color:#4ADE80}
+.sync-badge.err{background:#2A0F0F;color:#F87171}
+.sync-badge.saving{background:#1E2F50;color:#7A9BB8}
+.sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sync-badge.ok .sync-dot{background:#4ADE80}
+.sync-badge.err .sync-dot{background:#F87171}
+.sync-badge.saving .sync-dot{background:#7A9BB8;animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:8px 18px;border-radius:8px;border:none;font-weight:700;font-size:13px;background:#fff;color:#888;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .tab.active{background:#0D1424;color:#fff;box-shadow:none}
 .section-label{font-size:12px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+
+/* STANDINGS */
 .standings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem}
 .standing-card{background:#fff;border-radius:14px;padding:16px 14px;border:2px solid #eee;position:relative}
-.standing-card.leader{border-color:rgba(0,0,0,.2)}
 .crown{position:absolute;top:8px;right:10px;font-size:18px}
-.team-name-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;min-height:26px}
+.streak-badge{display:inline-flex;align-items:center;gap:3px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;color:#C2410C;margin-top:5px}
+.team-name-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;min-height:26px;flex-wrap:wrap}
 .team-name{font-weight:800;font-size:14px}
 .edit-btn{font-size:10px;background:transparent;border:1px solid #e0e0e0;border-radius:4px;padding:1px 6px;color:#bbb}
 .edit-input{font-size:12px;border:1px solid #ccc;border-radius:6px;padding:3px 8px;width:80px;outline:none}
 .confirm-sm-btn{font-size:11px;border-radius:4px;padding:2px 7px;border:none}
-.standing-pts{font-size:30px;font-weight:900}
+.standing-pts{font-size:26px;font-weight:900}
 .standing-meta{font-size:11px;color:#bbb;margin-top:4px}
+
+/* MODULES */
 .modules-list{display:flex;flex-direction:column;gap:8px}
 .module-row{background:#fff;border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border:1px solid #eee}
 .module-name{font-weight:800;font-size:15px;color:#0D1424}
 .module-cats{font-size:11px;color:#aaa;margin-top:3px}
 .module-placeholder{background:#F8F8F8;border-radius:12px;padding:14px 18px;border:2px dashed #ddd;text-align:center;color:#bbb;font-size:13px}
-.history-list{display:flex;flex-direction:column;gap:10px}
-.history-card{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid #eee}
+
+/* HISTORY */
+.history-card{background:#fff;border-radius:12px;padding:16px 18px;border:1px solid #eee;margin-bottom:10px}
 .history-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px}
 .history-module{font-weight:800;font-size:14px;color:#0D1424}
 .history-meta{font-size:12px;color:#bbb;margin-top:2px}
 .history-badge{font-size:11px;color:#ddd;background:#f5f5f5;border-radius:6px;padding:3px 8px}
-.history-scores{display:flex;gap:8px;flex-wrap:wrap}
+.history-scores{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .history-score{border-radius:8px;padding:6px 14px;font-size:13px;border:1.5px solid #eee;background:#F5F5F5}
 .history-score.winner{background:#FFFBEB;border-color:#F59E0B}
+.note-area{margin-top:8px}
+.note-display{font-size:12px;color:#666;background:#F8F8F8;border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-height:34px}
+.note-text{flex:1;line-height:1.5;white-space:pre-wrap}
+.note-edit-btn{font-size:10px;color:#aaa;background:transparent;border:none;flex-shrink:0;padding:0}
+.note-input{width:100%;border:1px solid #ccc;border-radius:8px;padding:8px 12px;font-size:12px;resize:vertical;min-height:60px;outline:none}
+.note-save-row{display:flex;gap:6px;margin-top:6px}
 .empty-state{background:#fff;border-radius:12px;padding:40px;text-align:center;color:#bbb;font-size:14px}
-.inline-confirm{display:flex;gap:8px;align-items:center}
+.inline-confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .inline-confirm span{font-size:11px;color:#998}
 
-/* ── GAME SCREEN ─────────────────────────────── */
+/* ANALYTICS */
+.analytics-section{background:#fff;border-radius:14px;border:1px solid #eee;margin-bottom:14px;overflow:hidden}
+.analytics-header{padding:14px 18px;border-bottom:1px solid #eee;font-weight:800;font-size:14px;color:#0D1424;display:flex;align-items:center;gap:8px}
+.analytics-body{padding:16px 18px}
+.chart-wrap{position:relative;width:100%;height:220px}
+.chart-wrap canvas{width:100%!important}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#555}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.empty-analytics{color:#bbb;font-size:13px;text-align:center;padding:20px 0}
+
+/* QUESTION DIFFICULTY */
+.q-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.q-row:last-child{border-bottom:none}
+.q-cat{font-size:10px;font-weight:700;color:#fff;border-radius:4px;padding:2px 6px;flex-shrink:0;white-space:nowrap}
+.q-pts{font-size:10px;color:#bbb;flex-shrink:0;width:34px;text-align:right}
+.q-text{flex:1;font-size:12px;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-bar-wrap{width:80px;height:8px;background:#F0F0F0;border-radius:4px;flex-shrink:0}
+.q-bar{height:8px;border-radius:4px}
+.q-pct{font-size:11px;font-weight:700;width:32px;text-align:right;flex-shrink:0}
+.q-flag{font-size:12px;flex-shrink:0}
+.no-data-msg{font-size:12px;color:#bbb;text-align:center;padding:16px 0}
+.module-group{margin-bottom:12px}
+.module-group-title{font-size:11px;font-weight:800;color:#0D1424;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:4px 8px;background:#F5F5F5;border-radius:6px}
+
+/* GAME */
 #game{background:#0D1424;min-height:100vh;padding:1rem}
-.game-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.game-title{color:#fff;font-size:16px;font-weight:800;letter-spacing:1px}
-.game-sub{color:#7A9BB8;font-size:11px}
+.game-inner{max-width:960px;margin:0 auto}
+.game-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.game-title-text{color:#fff;font-size:15px;font-weight:800;letter-spacing:1px}
+.game-sub-text{color:#7A9BB8;font-size:11px}
 .game-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.scores-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.score-card{background:#1a2540;border-radius:10px;padding:10px;text-align:center}
-.score-team{font-size:11px;color:#7A9BB8;margin-bottom:2px}
-.score-pts{font-size:22px;font-weight:800}
-.score-adj{display:flex;gap:4px;margin-top:5px;justify-content:center}
-.adj-btn{font-size:10px;background:transparent;border:1px solid #334;color:#aaa;border-radius:4px;padding:1px 7px}
-.board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.cat-header{background:#1E2F50;border-radius:8px;padding:10px 4px;text-align:center;font-size:10px;font-weight:800;color:#CADCFC;min-height:54px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;letter-spacing:.4px}
-.cell{border-radius:8px;min-height:56px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s;user-select:none}
+.scores-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.score-card{background:#1a2540;border-radius:10px;padding:8px 6px;text-align:center}
+.score-team{font-size:10px;color:#7A9BB8;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score-pts{font-size:18px;font-weight:800}
+.score-adj{display:flex;gap:3px;margin-top:4px;justify-content:center}
+.adj-btn{font-size:10px;background:transparent;border:1px solid #334;color:#aaa;border-radius:4px;padding:1px 6px}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.cat-header{background:#1E2F50;border-radius:8px;padding:8px 4px;text-align:center;font-size:9px;font-weight:800;color:#CADCFC;min-height:50px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;letter-spacing:.3px}
+.cell{border-radius:8px;min-height:52px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s;user-select:none}
 .cell:hover{transform:scale(1.05)}
 .cell.used{opacity:.2;cursor:default;pointer-events:none}
 
-/* ── MODAL ───────────────────────────────────── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center;padding:1rem}
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;padding:1rem}
 .overlay.open{display:flex}
-.modal{background:#fff;border-radius:18px;padding:2rem;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal{background:#fff;border-radius:18px;padding:1.75rem;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .modal-cat{font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
-.modal-pts{font-size:32px;font-weight:900;margin-bottom:16px}
-.modal-q{font-size:18px;color:#1a1a1a;line-height:1.6;margin-bottom:24px;border-left:4px solid #ccc;padding-left:16px}
-.modal-ans-box{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:12px;padding:1rem 1.2rem;margin-bottom:18px;display:none}
-.modal-ans-label{font-size:10px;font-weight:800;color:#185FA5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.modal-ans-text{font-size:15px;color:#1a1a1a;line-height:1.65}
+.modal-pts{font-size:28px;font-weight:900;margin-bottom:14px}
+.modal-q{font-size:17px;color:#1a1a1a;line-height:1.6;margin-bottom:20px;border-left:4px solid #ccc;padding-left:14px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.option-btn{padding:10px 12px;border-radius:10px;border:2px solid #E5E7EB;background:#F9FAFB;font-size:12.5px;font-weight:500;color:#374151;text-align:left;line-height:1.4;display:flex;align-items:flex-start;gap:8px;transition:border-color .12s,background .12s}
+.option-btn:hover:not([disabled]){border-color:#9CA3AF;background:#F3F4F6;cursor:pointer}
+.option-btn[disabled]{cursor:default}
+.opt-label{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:5px;background:#E5E7EB;color:#6B7280;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.option-btn.correct{border-color:#16A34A;background:#F0FDF4;color:#15803D}
+.option-btn.correct .opt-label{background:#16A34A;color:#fff}
+.option-btn.wrong{border-color:#e5e7eb;background:#F9FAFB;color:#9CA3AF;opacity:.6}
+.option-btn.wrong .opt-label{background:#d1d5db;color:#9CA3AF}
 .modal-btns{display:flex;gap:10px;flex-wrap:wrap}
-.award-label{font-size:12px;color:#888;font-weight:700;margin-bottom:10px;margin-top:0}
+.award-section{margin-top:4px}
+.award-label{font-size:12px;color:#888;font-weight:700;margin-bottom:10px}
 .award-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 
-/* ── GAME OVER ───────────────────────────────── */
+/* GAME OVER */
 #gameover{background:#0D1424;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
-.gameover-card{background:#fff;border-radius:20px;padding:2.5rem;max-width:520px;width:100%;text-align:center}
-.gameover-trophy{font-size:52px;margin-bottom:12px}
-.gameover-title{font-size:26px;font-weight:800;color:#0D1424;margin-bottom:6px}
-.gameover-sub{color:#888;font-size:13px;margin-bottom:28px}
-.gameover-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px}
-.gameover-team{border-radius:12px;padding:14px;border:2px solid #eee;background:#F5F5F5}
+.gameover-card{background:#fff;border-radius:20px;padding:2rem;max-width:600px;width:100%;text-align:center}
+.gameover-trophy{font-size:48px;margin-bottom:10px}
+.gameover-title{font-size:24px;font-weight:800;color:#0D1424;margin-bottom:6px}
+.gameover-sub{color:#888;font-size:13px;margin-bottom:20px}
+.gameover-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:18px}
+.gameover-team{border-radius:12px;padding:12px;border:2px solid #eee;background:#F5F5F5}
 .gameover-team.winner{background:#FFFBEB;border-color:#F59E0B}
 .gameover-teamname{font-size:12px;color:#888;margin-bottom:4px}
-.gameover-teamscore{font-size:26px;font-weight:800}
+.gameover-teamscore{font-size:22px;font-weight:800}
 .gameover-winner-label{font-size:11px;color:#F59E0B;font-weight:700;margin-top:4px}
+.note-section{text-align:left;margin-bottom:18px;background:#F8F8F8;border-radius:12px;padding:14px}
+.note-section label{font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:6px}
+.note-section textarea{width:100%;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;resize:vertical;min-height:70px;outline:none;background:#fff}
+.saving-indicator{font-size:12px;color:#888;margin-bottom:12px;min-height:18px}
 
-/* ── BUTTONS ─────────────────────────────────── */
+/* BUTTONS */
 .btn{padding:9px 18px;border-radius:10px;border:1.5px solid #ddd;background:#fff;font-size:14px;font-weight:700;color:#1a1a1a}
 .btn-dark{background:#0D1424;color:#fff;border-color:#0D1424}
-.btn-blue{background:#1E2F50;color:#CADCFC;border:none}
-.btn-ghost{background:transparent;border:1px solid #334;color:#888;font-size:12px;padding:7px 14px}
+.btn-blue{background:#1E2F50;color:#CADCFC;border:none;font-size:12px;padding:7px 14px;border-radius:8px}
+.btn-ghost{background:transparent;border:1px solid #334;color:#888;font-size:12px;padding:7px 14px;border-radius:8px}
 .btn-danger{background:#B83220;color:#fff;border:none;font-size:11px;padding:5px 12px;border-radius:6px;font-weight:700}
 .btn-muted{background:transparent;border:1px solid #ddd;color:#888;font-size:12px;padding:8px 18px;border-radius:10px}
-.btn-full{width:100%;padding:14px 0;font-size:15px;font-weight:700}
+.btn-sm{padding:5px 12px;border-radius:7px;border:1px solid #ddd;background:#fff;font-size:12px;font-weight:600;color:#555}
+.btn-sm-dark{padding:5px 12px;border-radius:7px;border:none;background:#0D1424;font-size:12px;font-weight:600;color:#fff}
+.btn-full{width:100%;padding:13px 0;font-size:15px;font-weight:700;border-radius:12px}
 .play-btn{background:#0D1424;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  DASHBOARD                                  -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="dash" class="screen active">
-
-  <div class="dash-header">
-    <div>
-      <div class="dash-title">⚖ LEGAL JEOPARDY</div>
-      <div class="dash-sub">Semester Tracker — Introduction to Law</div>
-    </div>
-    <div id="reset-ui">
-      <button class="btn-ghost" onclick="showResetConfirm()">Reset semester</button>
-    </div>
+<!-- LOADING -->
+<div id="loading-screen" class="screen active">
+  <div class="loading-title">⚖ LEGAL JEOPARDY</div>
+  <div class="spinner"></div>
+  <div class="loading-sub" id="loading-sub">Loading semester data…</div>
+  <div class="loading-error" id="loading-error">
+    <strong>Could not connect to Google Sheets.</strong><br>
+    Check that your SCRIPT_URL is set correctly in the file.<br>
+    <button onclick="initApp()">Retry</button>
   </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('standings')">📊 Standings</button>
-    <button class="tab" onclick="switchTab('history')">📜 History</button>
-  </div>
-
-  <!-- STANDINGS TAB -->
-  <div id="tab-standings">
-    <div class="section-label">Semester Standings</div>
-    <div class="standings-grid" id="standings-grid"></div>
-
-    <div class="section-label">Play a Module</div>
-    <div class="modules-list" id="modules-list"></div>
-  </div>
-
-  <!-- HISTORY TAB -->
-  <div id="tab-history" style="display:none">
-    <div class="section-label">Game History</div>
-    <div id="history-list"></div>
-  </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  GAME                                       -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="game" class="screen">
-
-  <div class="game-topbar">
-    <div>
-      <div class="game-title" id="game-title"></div>
-      <div class="game-sub">Legal Jeopardy</div>
-    </div>
-    <div class="game-actions">
-      <button class="btn btn-blue" onclick="endGame()">End game</button>
-      <div id="exit-ui">
-        <button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>
+<!-- DASHBOARD -->
+<div id="dash" class="screen">
+  <div style="max-width:960px;margin:0 auto;padding:1.5rem 1rem">
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">⚖ LEGAL JEOPARDY</div>
+        <div class="dash-sub">Semester Tracker — Introduction to Law</div>
+      </div>
+      <div class="dash-header-right">
+        <div class="sync-badge ok" id="sync-badge"><div class="sync-dot"></div><span id="sync-text">Synced</span></div>
+        <div id="reset-ui"><button class="btn-ghost" onclick="showResetConfirm()">Reset semester</button></div>
       </div>
     </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('standings',this)">📊 Standings</button>
+      <button class="tab" onclick="switchTab('history',this)">📜 History</button>
+      <button class="tab" onclick="switchTab('analytics',this)">📈 Analytics</button>
+    </div>
+
+    <!-- STANDINGS TAB -->
+    <div id="tab-standings">
+      <div class="section-label">Semester Standings</div>
+      <div class="standings-grid" id="standings-grid"></div>
+      <div class="section-label">Play a Module</div>
+      <div class="modules-list" id="modules-list"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" style="display:none">
+      <div class="section-label">Game History</div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics" style="display:none">
+
+      <!-- Progress chart -->
+      <div class="analytics-section">
+        <div class="analytics-header">📈 Semester Progress</div>
+        <div class="analytics-body">
+          <div class="chart-wrap"><canvas id="progress-chart"></canvas></div>
+          <div class="chart-legend" id="chart-legend"></div>
+        </div>
+      </div>
+
+      <!-- Question difficulty -->
+      <div class="analytics-section">
+        <div class="analytics-header">🎯 Question Difficulty</div>
+        <div class="analytics-body" id="q-analysis"></div>
+      </div>
+
+    </div>
   </div>
-
-  <div class="scores-grid" id="scores-grid"></div>
-  <div class="board" id="board"></div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  GAME OVER                                  -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="game-inner">
+    <div class="game-topbar">
+      <div>
+        <div class="game-title-text" id="game-title"></div>
+        <div class="game-sub-text">Legal Jeopardy</div>
+      </div>
+      <div class="game-actions">
+        <button class="btn-blue" onclick="endGame()">End game</button>
+        <div id="exit-ui"><button class="btn-ghost" onclick="showExitConfirm()">← Exit</button></div>
+      </div>
+    </div>
+    <div class="scores-grid" id="scores-grid"></div>
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
 <div id="gameover" class="screen">
   <div class="gameover-card">
     <div class="gameover-trophy">🏆</div>
     <div class="gameover-title" id="go-title"></div>
     <div class="gameover-sub" id="go-sub"></div>
     <div class="gameover-grid" id="go-grid"></div>
-    <button class="btn btn-dark btn-full" onclick="saveAndReturn()">Save &amp; return to dashboard →</button>
+    <div class="note-section">
+      <label>📝 Professor's note for this module (saved to Google Sheets)</label>
+      <textarea id="game-note" placeholder="e.g. Students struggled with the Kelsen Pyramid. Review before next class."></textarea>
+    </div>
+    <div class="saving-indicator" id="saving-indicator"></div>
+    <button class="btn btn-dark btn-full" id="save-btn" onclick="saveAndReturn()">Save &amp; return to dashboard →</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  QUESTION MODAL                             -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
     <div class="modal-cat" id="m-cat"></div>
     <div class="modal-pts" id="m-pts"></div>
     <div class="modal-q" id="m-q"></div>
-    <div class="modal-ans-box" id="m-ans-box">
-      <div class="modal-ans-label">Answer</div>
-      <div class="modal-ans-text" id="m-ans-text"></div>
-    </div>
+    <div class="options-grid" id="m-options"></div>
     <div id="m-actions"></div>
   </div>
 </div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+// ─────────────────────────────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqbfDNgZ5VuhQCfK82CKlnIUCtGGZjMe_d3L3SaxY_YBiOJ7PP-xGyTkoMkht0HBPh/exec';
 
-const TEAM_COLORS = ['#2563AB','#B83220','#7048B8','#0A6B3E'];
-const ROW_COLORS  = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
-const POINTS      = [100, 200, 300, 400, 500];
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
+const TEAM_COLORS  = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
+const CAT_COLORS   = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
+const ROW_COLORS   = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
+const POINTS       = [100,200,300,400,500];
+const OPT_LABELS   = ['A','B','C','D'];
 
+// ─── MODULES ─────────────────────────────────────────────────────────────────
 const MODULES = [
   {
-    id: 'mod1',
-    name: 'Module 1 — What is Law?',
-    categories: ['What is Law?','Law or Not Law?','Sources of Law','Rule of Law','Areas of Law'],
-    questions: [
+    id:'mod1',
+    name:'Module 1 — What is Law?',
+    categories:['What is Law?','Law or Not Law?','Sources of Law','Rule of Law','Areas of Law'],
+    questions:[
       [
-        { q:"Name the six elements that transform a rule into a law.", a:"Human authority · General & abstract · Bilateral · Obligatory · State-backed coercion · Formally enacted." },
-        { q:"A statute says: 'Employers must pay a minimum wage.' Identify the duty and the right created.", a:"Duty: employer must pay. Right: employee can demand payment. That is bilaterality — one duty, one corresponding right." },
-        { q:"True or False: A rule can be morally right but legally invalid. Explain.", a:"TRUE. A rule needs all six formal elements to be law. Moral value alone is not enough." },
-        { q:"What are the four core principles of the Rule of Law?", a:"Supremacy of Law · Equality Before the Law · Accountability to the Law · Legal Certainty." },
-        { q:"A president signs a decree exempting his family from taxes. Which Rule of Law principle does this violate?", a:"Equality Before the Law. The law must apply to everyone equally, regardless of status or power." }
+        {q:"How many elements must a rule satisfy to be considered a law?",options:["Two — state authority and a written text","Four — authority, generality, obligation, and sanction","Six — authority, generality, bilaterality, obligatory, coercion, and formal validity","Three — authority, coercion, and bilaterality"],correct:2},
+        {q:"A statute reads: 'Employers must pay a minimum wage.' What does the bilateral element mean here?",options:["The law applies to both the public and private sector","It creates a duty for employers AND a corresponding right for employees to receive payment","Both chambers of parliament approved the law","The law was negotiated between workers and employers"],correct:1},
+        {q:"Which of the following is an example of something legally valid but morally wrong?",options:["A speed limit of 50 km/h in a school zone","A law requiring all citizens to carry an ID card","A historical law forcing certain groups to wear identifying symbols","A regulation requiring food safety inspections"],correct:2},
+        {q:"What are the four core principles of the Rule of Law?",options:["Justice, Democracy, Sovereignty, Transparency","Separation of Powers, Judicial Review, Federalism, Due Process","Supremacy of Law, Equality Before the Law, Accountability, Legal Certainty","Authority, Legitimacy, Enforcement, Proportionality"],correct:2},
+        {q:"A president issues a decree exempting his family from paying taxes. Which Rule of Law principle is violated?",options:["Legal Certainty — the decree was not announced in advance","Supremacy of Law — the president is bypassing parliament","Equality Before the Law — the law does not apply equally to everyone","Accountability — the decree was not reviewed by a court"],correct:2}
       ],
       [
-        { q:"A sports federation bans a player for doping. Is the federation's rule a law? Which element does it fail?", a:"Not a law. Fails Element 1: Human Authority. A sports federation is not a state-recognized law-making body." },
-        { q:"A parliament passes a statute targeting only one named company: 'AcmeCorp must be dissolved.' Which element does this fail?", a:"Fails Element 2: General & Abstract. A law must apply to categories of people, not a single named target." },
-        { q:"A government poster reads: 'We suggest you wear a seatbelt for your safety.' Is this a law? Which element does it fail?", a:"Not a law. Fails Element 4: Obligatory. A suggestion has no legal duty, no penalty, and no enforceable right." },
-        { q:"A religious court orders a member to pay a fine. Can the state enforce it? Which element of law is relevant?", a:"No. Fails Element 5: State-Backed Coercion. A religious court has no state enforcement power." },
-        { q:"A regulation is issued by a minister without following the required approval procedure. Is it valid law? Which element does it fail?", a:"Not valid. Fails Element 6: Formal Validity. A rule must be produced through a recognized legal procedure." }
+        {q:"A sports federation bans a player for doping. Which element of law does this rule fail?",options:["Element 2: General & Abstract — the rule targets one person","Element 1: Human Authority — the federation is not a state-recognized law-making body","Element 6: Formal Validity — the ban was not published","Element 4: Obligatory — the player can choose to ignore it"],correct:1},
+        {q:"Parliament passes a law: 'AcmeCorp only must be dissolved immediately.' Which element does this fail?",options:["Element 5: State-Backed Coercion — the state cannot dissolve companies","Element 4: Obligatory — the language is not mandatory enough","Element 2: General & Abstract — it targets one named entity, not a category","Element 3: Bilaterality — there is no corresponding right created"],correct:2},
+        {q:"The government publishes a poster: 'We encourage all citizens to recycle.' Which element does this fail?",options:["Element 1: Human Authority — the government has no power over recycling","Element 3: Bilaterality — no identifiable right-holder","Element 6: Formal Validity — the poster was not passed by parliament","Element 4: Obligatory — it encourages, not commands. No duty, no penalty."],correct:3},
+        {q:"A religious court sentences a member to pay a fine. Can the state enforce this ruling?",options:["Yes — religious courts have authority over their members by agreement","Yes — if the member voluntarily joined the community","No — it fails Element 5: State-Backed Coercion. Only the state can legally compel compliance","No — it fails Element 2: General & Abstract. It applies to one person only"],correct:2},
+        {q:"A minister issues a regulation but skips the required parliamentary approval step. What is its legal status?",options:["Valid — a minister has executive authority to act alone","Provisionally valid until a court reviews it","Not valid — it fails Element 6: Formal Validity. The required legal procedure was not followed","Valid — as long as the content is reasonable and proportionate"],correct:2}
       ],
       [
-        { q:"A new statute allows police to search homes without a warrant. A citizen challenges it in court. What source of law could invalidate it, and how?", a:"Constitutional Law. Through judicial review, a court can strike down any statute that violates constitutional rights." },
-        { q:"What is the difference between common law and statutory law in terms of who creates them?", a:"Statutory law: created by a legislature. Common law: created by judges through court decisions and precedent (stare decisis)." },
-        { q:"A judge faces a case with no applicable statute. What source of law does she use, and what principle guides her?", a:"Common law / case law. She applies stare decisis — following prior court rulings on similar cases." },
-        { q:"A country signs an international trade treaty, then passes a domestic law that contradicts it. According to the Kelsen Pyramid, which prevails?", a:"The treaty prevails. International treaties rank above statutes. The higher norm always wins." },
-        { q:"List the Kelsen Pyramid from highest to lowest authority (6 levels).", a:"1. Constitution · 2. International Treaties · 3. Statutes · 4. Regulations · 5. Court Decisions · 6. Contracts & Private Acts." }
+        {q:"A new statute allows warrantless home searches. A citizen claims it violates a constitutional right. What happens?",options:["The statute prevails — parliament has unlimited power to limit rights","The citizen must comply — statutes are always binding","A court can strike it down through judicial review. The Constitution is supreme over statutes","The statute is suspended until the next election"],correct:2},
+        {q:"What is stare decisis?",options:["The rule that statutes always override court decisions","The principle that courts must follow prior rulings on similar cases to ensure consistency","A Latin term meaning the separation of powers","The requirement that all laws be written in plain language"],correct:1},
+        {q:"A judge has a case with no applicable statute. What source of law does she rely on?",options:["Her personal sense of justice","Regulations issued by the relevant government agency","Common law — past court decisions on similar cases under stare decisis","International treaties ratified by the country"],correct:2},
+        {q:"Country X signs an international trade treaty. Later its parliament passes a contradicting law. What does the Kelsen Pyramid tell us?",options:["The domestic law prevails — national sovereignty is absolute","The treaty prevails — international treaties rank above statutes in the hierarchy","Both apply simultaneously and judges decide case by case","The executive branch chooses which one to enforce"],correct:1},
+        {q:"Which correctly orders the Kelsen Pyramid from highest to lowest?",options:["Statutes → Constitution → Treaties → Regulations → Contracts","Contracts → Court Decisions → Statutes → Treaties → Constitution","Constitution → Treaties → Statutes → Regulations → Court Decisions → Contracts","Court Decisions → Statutes → Constitution → Regulations → Treaties → Contracts"],correct:2}
       ],
       [
-        { q:"Country X has laws, but the president can modify them overnight and judges are appointed by the ruling party. Is this the Rule of Law? What principle is violated?", a:"No. Violates Legal Certainty and Accountability. Having laws is not the same as having the Rule of Law." },
-        { q:"What is the difference between 'rule of law' and 'rule by law'?", a:"Rule of Law: rulers are bound by law like everyone else. Rule by law: rulers use law to control others but exempt themselves." },
-        { q:"A company wants to invest where taxes are low, but contracts are rarely enforced and courts are corrupt. Should they invest? Justify using Rule of Law.", a:"No. Without Rule of Law there is no legal certainty, no enforceable contracts, no impartial courts. Low taxes don't compensate." },
-        { q:"Name the three problems that existed before the Rule of Law that it was designed to prevent.", a:"1. Unpredictability. 2. Unequal application of rules. 3. No accountability for rulers." },
-        { q:"Why is legal certainty essential for a functioning economy? Give two specific reasons.", a:"1. Investors need to trust contracts will be honored. 2. Businesses need stable, predictable rules to plan operations." }
+        {q:"Country X has written laws, but the president changes them overnight and appoints all judges. Does Country X have the Rule of Law?",options:["Yes — having written laws is the definition of the Rule of Law","Yes — as long as the president is democratically elected","No — the Rule of Law requires laws to be stable, predictable, and enforced by an independent judiciary","No — but only because judges are not elected by the people"],correct:2},
+        {q:"What is the key difference between 'rule of law' and 'rule by law'?",options:["Rule of law only exists in democracies; rule by law can exist in any system","Rule of law means everyone including rulers is bound by law; rule by law means rulers use law to control others while exempting themselves","Rule of law requires a written constitution; rule by law does not","There is no meaningful difference between the two concepts"],correct:1},
+        {q:"A country offers 0% corporate tax but has corrupt courts and unenforceable contracts. Should a company invest there?",options:["Yes — low taxes guarantee high returns regardless of legal risks","Yes — the company can protect itself with strong internal contracts","No — without the Rule of Law, contracts are worthless and property can be seized arbitrarily","Yes — but only if they negotiate a bilateral investment treaty"],correct:2},
+        {q:"Which of the following is a problem the Rule of Law was specifically designed to prevent?",options:["Laws being interpreted differently by different courts","Democratic elections producing unpopular results","Rulers changing rules at will to benefit themselves with no accountability","Parliaments passing too many laws in a short period"],correct:2},
+        {q:"Why is legal certainty essential for a functioning economy?",options:["Because it requires governments to keep taxes low for investors","Because businesses need stable and predictable rules to plan, and investors need to trust that contracts will be honored","Because legal certainty reduces the total number of laws in force","Because it prevents governments from regulating private companies"],correct:1}
       ],
       [
-        { q:"A company dumps toxic waste illegally. The state prosecutes. What area of law applies and what is the goal of the sanction?", a:"Criminal Law. Goal: punish behavior harmful to society and deter future violations." },
-        { q:"Two companies sign a contract. One fails to deliver. The other sues for the value of the goods. What area of law applies and what is the typical remedy?", a:"Civil Law (contract law). Remedy: monetary compensation or specific performance. No prison." },
-        { q:"A startup creates a new software algorithm. What area of law protects it, and what instrument do they need?", a:"Intellectual Property Law. They need a patent or copyright giving them exclusive rights for a defined period." },
-        { q:"What is the key difference between criminal and civil law in terms of WHO brings the case and WHAT the outcome can be?", a:"Criminal: STATE prosecutes → punishment (prison/fine). Civil: PRIVATE PARTY sues → compensation or injunction." },
-        { q:"Name the five functions of law in society.", a:"1. Social Organization · 2. Conflict Prevention · 3. Conflict Resolution · 4. Rights Protection · 5. Economic Facilitation." }
+        {q:"A factory illegally dumps toxic waste. The state decides to prosecute. What area of law applies?",options:["Civil Law — the affected neighbors can claim compensation","Administrative Law — the environmental agency revokes its license","Criminal Law — the state punishes behavior harmful to society and deters future violations","Contract Law — the factory breached its environmental permit"],correct:2},
+        {q:"Company A fails to deliver goods to Company B. Company B sues. What is the most likely legal outcome?",options:["Company A's directors go to prison for fraud","Company B receives monetary compensation or an order to perform — this is civil/contract law","The state intervenes and forces both companies to renegotiate","The case is dismissed because no criminal act occurred"],correct:1},
+        {q:"A startup develops a new AI model. What area of law protects it and what tool do they use?",options:["Corporate Law — they register the model as a company asset","Labor Law — all employees sign NDAs","Intellectual Property Law — they file for a patent or copyright giving exclusive rights","Contract Law — they license access to other companies"],correct:2},
+        {q:"In criminal vs. civil law, who brings the case and what can the outcome be?",options:["Both brought by private parties — criminal results in prison, civil in fines","Criminal: the State prosecutes → punishment (prison or fines). Civil: a private party sues → compensation or injunction","Criminal: a victim sues → compensation. Civil: the state prosecutes → fine","Both brought by the state — criminal for serious crimes, civil for minor ones"],correct:1},
+        {q:"Which of the following is NOT one of the five functions of law in society?",options:["Conflict Resolution","Economic Facilitation","Political Representation","Rights Protection"],correct:2}
       ]
     ]
   }
-  // ── PASTE NEW MODULES HERE AS THE SEMESTER PROGRESSES ──────────────────────
+  // ADD NEW MODULES HERE AS THE SEMESTER PROGRESSES
 ];
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-
 const DEFAULT_TEAMS = [
-  { name:'Team A', total:0, wins:0, games:0 },
-  { name:'Team B', total:0, wins:0, games:0 },
-  { name:'Team C', total:0, wins:0, games:0 },
-  { name:'Team D', total:0, wins:0, games:0 },
+  {name:'Team A',total:0,wins:0,games:0},
+  {name:'Team B',total:0,wins:0,games:0},
+  {name:'Team C',total:0,wins:0,games:0},
+  {name:'Team D',total:0,wins:0,games:0},
+  {name:'Team E',total:0,wins:0,games:0},
 ];
 
 let state = {
   teams: DEFAULT_TEAMS.map(t=>({...t})),
   history: [],
   activeModule: null,
-  used: [],              // [col][row] = true/false
-  sessionScores: [0,0,0,0],
-  currentCell: null,     // {col, row}
+  used: [],
+  sessionScores: [0,0,0,0,0],
+  questionLog: [],       // tracks correct/incorrect per question this game
+  lastAnswerCorrect: false,
+  currentCell: null,
   revealed: false,
 };
 
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-
-function save() {
-  try {
-    localStorage.setItem('lj_teams',   JSON.stringify(state.teams));
-    localStorage.setItem('lj_history', JSON.stringify(state.history));
-  } catch(e){}
+// ─── GOOGLE SHEETS ────────────────────────────────────────────────────────────
+function setSyncStatus(status, text) {
+  const b = document.getElementById('sync-badge');
+  const t = document.getElementById('sync-text');
+  if (!b) return;
+  b.className = 'sync-badge ' + status;
+  t.textContent = text;
 }
 
-function load() {
+async function loadFromSheets() {
+  if (!SCRIPT_URL || SCRIPT_URL === 'PASTE_YOUR_SCRIPT_URL_HERE') {
+    setSyncStatus('err','No URL set');
+    renderDashboard();
+    showScreen('dash');
+    return;
+  }
   try {
-    const t = localStorage.getItem('lj_teams');
-    const h = localStorage.getItem('lj_history');
-    if (t) state.teams   = JSON.parse(t);
-    if (h) state.history = JSON.parse(h);
-  } catch(e){}
+    const res  = await fetch(SCRIPT_URL);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (data.teams && data.teams.length) {
+      while (data.teams.length < 5) data.teams.push({...DEFAULT_TEAMS[data.teams.length]});
+      state.teams = data.teams.slice(0,5);
+    }
+    if (data.history) state.history = data.history;
+    setSyncStatus('ok','Synced');
+    renderDashboard();
+    showScreen('dash');
+  } catch(e) {
+    document.getElementById('loading-error').style.display = 'block';
+    document.getElementById('loading-sub').textContent = 'Connection failed.';
+    document.querySelector('.spinner').style.display = 'none';
+    setSyncStatus('err','Offline');
+  }
 }
 
-// ─── SCREEN ROUTER ────────────────────────────────────────────────────────────
+async function saveToSheets() {
+  if (!SCRIPT_URL || SCRIPT_URL === 'PASTE_YOUR_SCRIPT_URL_HERE') { setSyncStatus('err','No URL'); return false; }
+  setSyncStatus('saving','Saving…');
+  try {
+    await fetch(SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ teams: state.teams, history: state.history })
+    });
+    await new Promise(r=>setTimeout(r,1200));
+    setSyncStatus('ok','Saved ✓');
+    return true;
+  } catch(e) {
+    setSyncStatus('err','Save failed');
+    return false;
+  }
+}
 
+// ─── ROUTER ───────────────────────────────────────────────────────────────────
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function initApp() {
+  document.getElementById('loading-error').style.display='none';
+  document.getElementById('loading-sub').textContent='Loading semester data…';
+  document.querySelector('.spinner').style.display='block';
+  showScreen('loading-screen');
+  loadFromSheets();
+}
 
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
 function renderDashboard() {
   renderStandings();
   renderModules();
   renderHistory();
-  showScreen('dash');
+  renderAnalytics();
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('tab-standings').style.display = tab === 'standings' ? 'block' : 'none';
-  document.getElementById('tab-history').style.display   = tab === 'history'   ? 'block' : 'none';
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-standings').style.display = tab==='standings'?'block':'none';
+  document.getElementById('tab-history').style.display   = tab==='history'  ?'block':'none';
+  document.getElementById('tab-analytics').style.display = tab==='analytics'?'block':'none';
+  if (tab==='analytics') renderAnalytics();
+}
+
+// ─── STANDINGS ────────────────────────────────────────────────────────────────
+function getStreak(teamName) {
+  let s = 0;
+  for (const g of state.history) {
+    if (g.winners && g.winners.includes(teamName)) s++;
+    else break;
+  }
+  return s;
 }
 
 function renderStandings() {
   const sorted = [...state.teams].map((t,i)=>({...t,_i:i})).sort((a,b)=>b.total-a.total);
-  const grid = document.getElementById('standings-grid');
-  grid.innerHTML = sorted.map((t, rank) => `
-    <div class="standing-card ${rank===0 && t.total>0 ? 'leader' : ''}" style="border-color:${rank===0 && t.total>0 ? TEAM_COLORS[t._i]+'55' : '#eee'}">
-      ${rank===0 && t.total>0 ? '<div class="crown">👑</div>' : ''}
+  document.getElementById('standings-grid').innerHTML = sorted.map((t,rank)=>{
+    const streak = getStreak(t.name);
+    return `
+    <div class="standing-card" style="border-color:${rank===0&&t.total>0?TEAM_COLORS[t._i]+'66':'#eee'}">
+      ${rank===0&&t.total>0?'<div class="crown">👑</div>':''}
       <div class="team-name-row" id="name-row-${t._i}">
         <span class="team-name" style="color:${TEAM_COLORS[t._i]}">${esc(t.name)}</span>
         <button class="edit-btn" onclick="startEditName(${t._i})">✎</button>
       </div>
       <div class="standing-pts" style="color:${TEAM_COLORS[t._i]}">${t.total.toLocaleString()} pts</div>
       <div class="standing-meta">${t.wins} win${t.wins!==1?'s':''} · ${t.games} game${t.games!==1?'s':''}</div>
-    </div>
-  `).join('');
+      ${streak>=2?`<div class="streak-badge">🔥 ${streak} in a row</div>`:''}
+    </div>`;
+  }).join('');
 }
 
 function startEditName(i) {
-  const row = document.getElementById('name-row-'+i);
-  row.innerHTML = `
-    <input class="edit-input" id="edit-input-${i}" value="${esc(state.teams[i].name)}" onkeydown="if(event.key==='Enter')saveEditName(${i})">
-    <button class="confirm-sm-btn btn-dark" onclick="saveEditName(${i})" style="background:#0D1424;color:#fff">✓</button>
-    <button class="confirm-sm-btn" onclick="renderStandings()" style="background:transparent;border:1px solid #ddd;color:#aaa">✕</button>
-  `;
-  document.getElementById('edit-input-'+i).focus();
+  document.getElementById('name-row-'+i).innerHTML = `
+    <input class="edit-input" id="ei-${i}" value="${esc(state.teams[i].name)}" onkeydown="if(event.key==='Enter')saveEditName(${i})">
+    <button class="confirm-sm-btn" style="background:#0D1424;color:#fff" onclick="saveEditName(${i})">✓</button>
+    <button class="confirm-sm-btn" style="background:transparent;border:1px solid #ddd;color:#aaa" onclick="renderStandings()">✕</button>`;
+  document.getElementById('ei-'+i).focus();
 }
 
-function saveEditName(i) {
-  const val = document.getElementById('edit-input-'+i).value.trim();
+async function saveEditName(i) {
+  const val = document.getElementById('ei-'+i).value.trim();
   if (val) state.teams[i].name = val;
-  save();
   renderStandings();
+  await saveToSheets();
 }
 
 function renderModules() {
-  const list = document.getElementById('modules-list');
-  list.innerHTML = MODULES.map(mod => `
-    <div class="module-row">
-      <div>
-        <div class="module-name">${esc(mod.name)}</div>
-        <div class="module-cats">${mod.categories.join(' · ')}</div>
-      </div>
-      <button class="play-btn" onclick="startGame('${mod.id}')">▶ Play</button>
-    </div>
-  `).join('') + `<div class="module-placeholder">+ More modules will be added as the semester progresses</div>`;
+  document.getElementById('modules-list').innerHTML =
+    MODULES.map(m=>`
+      <div class="module-row">
+        <div>
+          <div class="module-name">${esc(m.name)}</div>
+          <div class="module-cats">${m.categories.join(' · ')}</div>
+        </div>
+        <button class="play-btn" onclick="startGame('${m.id}')">▶ Play</button>
+      </div>`).join('')
+    +`<div class="module-placeholder">+ More modules will be added as the semester progresses</div>`;
 }
 
+// ─── HISTORY ─────────────────────────────────────────────────────────────────
 function renderHistory() {
   const el = document.getElementById('history-list');
   if (!state.history.length) {
     el.innerHTML = '<div class="empty-state">No games played yet. Start your first module! 🎯</div>';
     return;
   }
-  el.innerHTML = state.history.map((game, idx) => {
-    const maxS = Math.max(...game.scores.map(s=>s.score));
-    const scoresHtml = game.scores.map((s,i) => `
-      <div class="history-score ${s.score===maxS?'winner':''}" >
-        <span style="font-weight:700;color:${TEAM_COLORS[i]}">${esc(s.name)}</span>
-        <span style="color:#666;margin-left:6px;font-weight:700">${s.score} pts</span>
-      </div>`).join('');
+  el.innerHTML = state.history.map((g,idx)=>{
+    const maxS  = Math.max(...g.scores.map(s=>s.score));
+    const note  = g.note||'';
+    const gameId = g.id;
     return `
       <div class="history-card">
         <div class="history-top">
           <div>
-            <div class="history-module">${esc(game.module)}</div>
-            <div class="history-meta">${game.date} · 🏆 <strong style="color:#0D1424">${game.winners.join(' & ')}</strong></div>
+            <div class="history-module">${esc(g.module)}</div>
+            <div class="history-meta">${g.date} · 🏆 <strong style="color:#0D1424">${g.winners.join(' & ')}</strong></div>
           </div>
-          <div class="history-badge">Game #${state.history.length - idx}</div>
+          <div class="history-badge">Game #${state.history.length-idx}</div>
         </div>
-        <div class="history-scores">${scoresHtml}</div>
+        <div class="history-scores">
+          ${g.scores.map((s,i)=>`
+            <div class="history-score ${s.score===maxS?'winner':''}">
+              <span style="font-weight:700;color:${TEAM_COLORS[i]}">${esc(s.name)}</span>
+              <span style="color:#666;margin-left:6px;font-weight:700">${s.score} pts</span>
+            </div>`).join('')}
+        </div>
+        <div class="note-area" id="note-area-${gameId}">
+          ${noteDisplay(gameId, note)}
+        </div>
       </div>`;
   }).join('');
 }
 
-// ─── RESET SEMESTER ───────────────────────────────────────────────────────────
+function noteDisplay(gameId, note) {
+  if (!note) {
+    return `<button class="note-edit-btn" style="font-size:12px;color:#aaa;background:none;border:none;cursor:pointer" onclick="editNote('${gameId}')">+ Add professor note</button>`;
+  }
+  return `<div class="note-display"><span class="note-text">📝 ${esc(note)}</span><button class="note-edit-btn" onclick="editNote('${gameId}')">✎</button></div>`;
+}
 
+function editNote(gameId) {
+  const game = state.history.find(g=>String(g.id)===String(gameId));
+  if (!game) return;
+  document.getElementById('note-area-'+gameId).innerHTML = `
+    <textarea class="note-input" id="note-input-${gameId}" placeholder="Add your note here…">${esc(game.note||'')}</textarea>
+    <div class="note-save-row">
+      <button class="btn-sm-dark" onclick="saveNote('${gameId}')">Save note</button>
+      <button class="btn-sm" onclick="renderHistory()">Cancel</button>
+    </div>`;
+  document.getElementById('note-input-'+gameId).focus();
+}
+
+async function saveNote(gameId) {
+  const game = state.history.find(g=>String(g.id)===String(gameId));
+  if (!game) return;
+  const val = document.getElementById('note-input-'+gameId).value.trim();
+  game.note = val;
+  renderHistory();
+  await saveToSheets();
+}
+
+// ─── ANALYTICS ───────────────────────────────────────────────────────────────
+function renderAnalytics() {
+  renderProgressChart();
+  renderQuestionAnalysis();
+}
+
+function renderProgressChart() {
+  const canvas = document.getElementById('progress-chart');
+  if (!canvas) return;
+  const legend = document.getElementById('chart-legend');
+
+  if (!state.history.length) {
+    canvas.style.display = 'none';
+    legend.innerHTML = '<div class="empty-analytics">No games played yet.</div>';
+    return;
+  }
+  canvas.style.display = 'block';
+
+  const chronoHistory = [...state.history].reverse(); // oldest first
+  const gameCount = chronoHistory.length;
+
+  // Build cumulative data per team
+  const teamData = state.teams.map((t,i) => ({
+    name: t.name, color: TEAM_COLORS[i], points: []
+  }));
+  let running = [0,0,0,0,0];
+  chronoHistory.forEach(game => {
+    game.scores.forEach((s,i) => {
+      if (i < 5) { running[i] += s.score; teamData[i].points.push(running[i]); }
+    });
+  });
+
+  // Draw
+  const dpr  = window.devicePixelRatio || 1;
+  const W    = canvas.parentElement.clientWidth || 600;
+  const H    = 200;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const PAD_L = 52, PAD_R = 20, PAD_T = 16, PAD_B = 32;
+  const gW = W - PAD_L - PAD_R;
+  const gH = H - PAD_T - PAD_B;
+
+  const maxVal = Math.max(...teamData.map(t => Math.max(...t.points, 0)), 100);
+  const xStep  = gameCount > 1 ? gW / (gameCount - 1) : gW;
+
+  // Grid lines
+  const gridLines = 4;
+  ctx.strokeStyle = '#E5E7EB';
+  ctx.lineWidth   = 0.5;
+  for (let i = 0; i <= gridLines; i++) {
+    const y = PAD_T + (gH * i / gridLines);
+    ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(PAD_L+gW, y); ctx.stroke();
+    const val = Math.round(maxVal * (1 - i/gridLines));
+    ctx.fillStyle = '#9CA3AF'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(val, PAD_L-6, y+4);
+  }
+
+  // X axis labels
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  chronoHistory.forEach((g, i) => {
+    const x = PAD_L + (gameCount > 1 ? i * xStep : gW/2);
+    ctx.fillText('G' + (i+1), x, H - PAD_B + 14);
+  });
+
+  // Lines per team
+  teamData.forEach(team => {
+    if (!team.points.length) return;
+    ctx.strokeStyle = team.color;
+    ctx.lineWidth   = 2.5;
+    ctx.lineJoin    = 'round';
+    ctx.beginPath();
+    team.points.forEach((val, i) => {
+      const x = PAD_L + (gameCount > 1 ? i * xStep : gW/2);
+      const y = PAD_T + gH * (1 - val / maxVal);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Dots
+    team.points.forEach((val, i) => {
+      const x = PAD_L + (gameCount > 1 ? i * xStep : gW/2);
+      const y = PAD_T + gH * (1 - val / maxVal);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = team.color; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.stroke();
+    });
+  });
+
+  // Legend
+  legend.innerHTML = teamData.map(t => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${t.color}"></div>
+      <span>${esc(t.name)}</span>
+    </div>`).join('');
+}
+
+function renderQuestionAnalysis() {
+  const el = document.getElementById('q-analysis');
+
+  // Aggregate questionLog from all history records
+  const stats = {};
+  for (const game of state.history) {
+    if (!game.questionLog) continue;
+    const mod = MODULES.find(m => m.id === game.questionLog[0]?.moduleId);
+    for (const q of game.questionLog) {
+      const key = `${q.moduleId}|${q.col}|${q.row}`;
+      if (!stats[key]) stats[key] = { moduleId:q.moduleId, col:q.col, row:q.row, played:0, correct:0 };
+      stats[key].played++;
+      if (q.correct) stats[key].correct++;
+    }
+  }
+
+  const allStats = Object.values(stats);
+  if (!allStats.length) {
+    el.innerHTML = '<div class="no-data-msg">No question data yet. Play at least one module to see difficulty analysis.</div>';
+    return;
+  }
+
+  // Group by module
+  const byModule = {};
+  allStats.forEach(s => {
+    if (!byModule[s.moduleId]) byModule[s.moduleId] = [];
+    byModule[s.moduleId].push(s);
+  });
+
+  let html = '';
+  for (const [modId, items] of Object.entries(byModule)) {
+    const mod = MODULES.find(m => m.id === modId);
+    const modName = mod ? mod.name : modId;
+
+    // Sort hardest first
+    items.sort((a,b) => (a.correct/a.played) - (b.correct/b.played));
+
+    html += `<div class="module-group"><div class="module-group-title">${esc(modName)}</div>`;
+    items.forEach(s => {
+      const mod   = MODULES.find(m => m.id === s.moduleId);
+      const qText = mod ? (mod.questions[s.col]?.[s.row]?.q || '—') : '—';
+      const cat   = mod ? (mod.categories[s.col] || '') : '';
+      const pct   = s.played > 0 ? Math.round((s.correct / s.played) * 100) : 0;
+      const barColor = pct === 0 ? '#EF4444' : pct < 50 ? '#F97316' : pct < 80 ? '#EAB308' : '#22C55E';
+      const flag  = pct === 0 ? '🔴' : pct < 50 ? '🟠' : pct < 80 ? '🟡' : '🟢';
+      const catColor = CAT_COLORS[s.col] || '#888';
+      html += `
+        <div class="q-row" title="${esc(qText)}">
+          <span class="q-cat" style="background:${catColor}">${esc(cat)}</span>
+          <span class="q-pts">${POINTS[s.row]} pts</span>
+          <span class="q-text">${esc(qText)}</span>
+          <div class="q-bar-wrap"><div class="q-bar" style="width:${pct}%;background:${barColor}"></div></div>
+          <span class="q-pct" style="color:${barColor}">${pct}%</span>
+          <span class="q-flag">${flag}</span>
+        </div>`;
+      if (pct === 0 && s.played > 0) {
+        html += `<div style="font-size:11px;color:#EF4444;padding:2px 0 6px 6px">⚠ Nobody got this right — review in class</div>`;
+      }
+    });
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
 function showResetConfirm() {
   document.getElementById('reset-ui').innerHTML = `
     <div class="inline-confirm">
@@ -398,24 +752,25 @@ function showResetConfirm() {
 function cancelReset() {
   document.getElementById('reset-ui').innerHTML = `<button class="btn-ghost" onclick="showResetConfirm()">Reset semester</button>`;
 }
-function doReset() {
+async function doReset() {
   state.teams   = DEFAULT_TEAMS.map(t=>({...t}));
   state.history = [];
-  save();
   cancelReset();
   renderDashboard();
+  await saveToSheets();
 }
 
 // ─── GAME ─────────────────────────────────────────────────────────────────────
-
 function startGame(modId) {
   const mod = MODULES.find(m=>m.id===modId);
   if (!mod) return;
-  state.activeModule  = mod;
-  state.used          = Array.from({length:5},()=>Array(5).fill(false));
-  state.sessionScores = [0,0,0,0];
-  state.currentCell   = null;
-  state.revealed      = false;
+  state.activeModule     = mod;
+  state.used             = Array.from({length:5},()=>Array(5).fill(false));
+  state.sessionScores    = [0,0,0,0,0];
+  state.questionLog      = [];
+  state.lastAnswerCorrect= false;
+  state.currentCell      = null;
+  state.revealed         = false;
   renderGame();
   showScreen('game');
 }
@@ -423,10 +778,7 @@ function startGame(modId) {
 function renderGame() {
   const mod = state.activeModule;
   document.getElementById('game-title').textContent = mod.name;
-
-  // Scores
-  const sg = document.getElementById('scores-grid');
-  sg.innerHTML = state.teams.map((t,i) => `
+  document.getElementById('scores-grid').innerHTML = state.teams.map((t,i)=>`
     <div class="score-card" style="border:2px solid ${TEAM_COLORS[i]}44">
       <div class="score-team">${esc(t.name)}</div>
       <div class="score-pts" style="color:${TEAM_COLORS[i]}">${state.sessionScores[i]} pts</div>
@@ -435,47 +787,45 @@ function renderGame() {
         <button class="adj-btn" onclick="adjustScore(${i},-100)">−</button>
       </div>
     </div>`).join('');
-
-  // Board
-  const board = document.getElementById('board');
-  let html = mod.categories.map(cat =>
-    `<div class="cat-header">${esc(cat)}</div>`).join('');
-  POINTS.forEach((pts, row) => {
-    mod.categories.forEach((_, col) => {
+  let html = mod.categories.map(c=>`<div class="cat-header">${esc(c)}</div>`).join('');
+  POINTS.forEach((pts,row)=>{
+    mod.categories.forEach((_,col)=>{
       const done = state.used[col][row];
-      html += `<div class="cell ${done?'used':''}"
-        style="background:${done?'#0a1020':ROW_COLORS[row]}"
-        onclick="openCell(${col},${row})">
-        ${done ? '' : pts}
-      </div>`;
+      html += `<div class="cell ${done?'used':''}" style="background:${done?'#0a1020':ROW_COLORS[row]}" onclick="openCell(${col},${row})">${done?'':pts}</div>`;
     });
   });
-  board.innerHTML = html;
-
-  // Reset exit UI
-  document.getElementById('exit-ui').innerHTML = `<button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
+  document.getElementById('board').innerHTML = html;
+  document.getElementById('exit-ui').innerHTML = `<button class="btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
 }
 
 function adjustScore(i, delta) {
-  state.sessionScores[i] = Math.max(0, state.sessionScores[i] + delta);
+  state.sessionScores[i] = Math.max(0, state.sessionScores[i]+delta);
   renderGame();
 }
 
 function openCell(col, row) {
   if (state.used[col][row]) return;
-  state.currentCell = {col, row};
-  state.revealed = false;
+  state.currentCell      = {col, row};
+  state.revealed         = false;
+  state.lastAnswerCorrect= false;
   const mod = state.activeModule;
   const q   = mod.questions[col][row];
-  document.getElementById('m-cat').textContent  = mod.categories[col];
-  document.getElementById('m-pts').textContent  = POINTS[row] + ' pts';
-  document.getElementById('m-pts').style.color  = ROW_COLORS[row];
-  document.getElementById('m-q').textContent    = q.q;
+  document.getElementById('m-cat').textContent = mod.categories[col];
+  document.getElementById('m-pts').textContent = POINTS[row]+' pts';
+  document.getElementById('m-pts').style.color = ROW_COLORS[row];
+  document.getElementById('m-q').textContent   = q.q;
   document.getElementById('m-q').style.borderLeftColor = ROW_COLORS[row];
-  document.getElementById('m-ans-text').textContent = q.a;
-  document.getElementById('m-ans-box').style.display = 'none';
+  renderOptions(q, false);
   renderModalActions();
   document.getElementById('overlay').classList.add('open');
+}
+
+function renderOptions(q, revealed) {
+  document.getElementById('m-options').innerHTML = q.options.map((opt,i)=>{
+    let cls = 'option-btn';
+    if (revealed) cls += i===q.correct?' correct':' wrong';
+    return `<button class="${cls}" ${revealed?'disabled':''}><span class="opt-label">${OPT_LABELS[i]}</span>${esc(opt)}</button>`;
+  }).join('');
 }
 
 function renderModalActions() {
@@ -488,48 +838,59 @@ function renderModalActions() {
       </div>`;
   } else {
     const pts = POINTS[state.currentCell.row];
-    const awardBtns = state.teams.map((t,i) =>
-      `<button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800"
-        onclick="awardPoints(${i})">${esc(t.name)} +${pts} pts</button>`).join('');
     el.innerHTML = `
-      <p class="award-label">Award ${pts} pts to:</p>
-      <div class="award-btns">${awardBtns}</div>
-      <button class="btn-muted" onclick="closeModal()">No points — close</button>`;
+      <div class="award-section">
+        <p class="award-label">Award ${pts} pts to:</p>
+        <div class="award-btns">
+          ${state.teams.map((t,i)=>`
+            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800" onclick="awardPoints(${i})">${esc(t.name)} +${pts}</button>`).join('')}
+        </div>
+        <button class="btn-muted" onclick="closeModal()">No points — close</button>
+      </div>`;
   }
 }
 
 function revealAnswer() {
   state.revealed = true;
-  document.getElementById('m-ans-box').style.display = 'block';
+  renderOptions(state.activeModule.questions[state.currentCell.col][state.currentCell.row], true);
   renderModalActions();
 }
 
 function awardPoints(teamIdx) {
   state.sessionScores[teamIdx] += POINTS[state.currentCell.row];
+  state.lastAnswerCorrect = true;
   markUsed();
 }
 
 function closeModal() {
+  state.lastAnswerCorrect = false;
   markUsed();
 }
 
 function markUsed() {
   if (state.currentCell) {
-    state.used[state.currentCell.col][state.currentCell.row] = true;
+    const {col, row} = state.currentCell;
+    state.used[col][row] = true;
+    // Track question result for analytics
+    state.questionLog.push({
+      moduleId: state.activeModule.id,
+      col, row,
+      correct: state.lastAnswerCorrect
+    });
+    state.lastAnswerCorrect = false;
   }
   document.getElementById('overlay').classList.remove('open');
   state.currentCell = null;
-  const allDone = state.used.every(col => col.every(v => v));
+  const allDone = state.used.every(col=>col.every(v=>v));
   renderGame();
   if (allDone) setTimeout(endGame, 300);
 }
 
 function overlayClick(e) {
-  if (e.target === document.getElementById('overlay')) closeModal();
+  if (e.target===document.getElementById('overlay')) closeModal();
 }
 
-// ─── EXIT WITHOUT SAVING ──────────────────────────────────────────────────────
-
+// ─── EXIT ─────────────────────────────────────────────────────────────────────
 function showExitConfirm() {
   document.getElementById('exit-ui').innerHTML = `
     <div class="inline-confirm">
@@ -539,64 +900,68 @@ function showExitConfirm() {
     </div>`;
 }
 function cancelExit() {
-  document.getElementById('exit-ui').innerHTML = `<button class="btn btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
+  document.getElementById('exit-ui').innerHTML = `<button class="btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
 }
-function exitWithoutSaving() {
-  renderDashboard();
-}
+function exitWithoutSaving() { renderDashboard(); showScreen('dash'); }
 
 // ─── GAME OVER ────────────────────────────────────────────────────────────────
-
 function endGame() {
   const scores = state.sessionScores;
   const maxS   = Math.max(...scores);
-  const winners = state.teams.filter((_,i) => scores[i] === maxS);
-  document.getElementById('go-title').textContent = winners.length===1 ? `${winners[0].name} wins!` : "It's a tie!";
+  const winners = state.teams.filter((_,i)=>scores[i]===maxS);
+  document.getElementById('go-title').textContent = winners.length===1?`${winners[0].name} wins!`:"It's a tie!";
   document.getElementById('go-sub').textContent   = state.activeModule.name;
-
   const sorted = scores.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s);
-  document.getElementById('go-grid').innerHTML = sorted.map(({s,i}) => `
+  document.getElementById('go-grid').innerHTML = sorted.map(({s,i})=>`
     <div class="gameover-team ${s===maxS?'winner':''}">
       <div class="gameover-teamname">${esc(state.teams[i].name)}</div>
       <div class="gameover-teamscore" style="color:${TEAM_COLORS[i]}">+${s} pts</div>
-      ${s===maxS ? '<div class="gameover-winner-label">WINNER</div>' : ''}
+      ${s===maxS?'<div class="gameover-winner-label">WINNER</div>':''}
     </div>`).join('');
-
+  document.getElementById('game-note').value = '';
+  document.getElementById('saving-indicator').textContent = '';
+  document.getElementById('save-btn').disabled = false;
   showScreen('gameover');
 }
 
-function saveAndReturn() {
+async function saveAndReturn() {
   const scores  = state.sessionScores;
   const maxS    = Math.max(...scores);
-  const winIdxs = scores.reduce((acc,s,i) => s===maxS ? [...acc,i] : acc, []);
-  state.teams = state.teams.map((t,i) => ({
+  const winIdxs = scores.reduce((acc,s,i)=>s===maxS?[...acc,i]:acc,[]);
+  const note    = document.getElementById('game-note').value.trim();
+
+  state.teams = state.teams.map((t,i)=>({
     ...t,
-    total: t.total + scores[i],
-    wins:  t.wins  + (winIdxs.includes(i) ? 1 : 0),
-    games: t.games + 1
+    total: t.total+scores[i],
+    wins:  t.wins+(winIdxs.includes(i)?1:0),
+    games: t.games+1
   }));
-  const record = {
-    id:      Date.now(),
-    date:    new Date().toLocaleDateString('en-GB'),
-    module:  state.activeModule.name,
-    scores:  state.teams.map((t,i) => ({name: t.name, score: scores[i]})),
-    winners: winIdxs.map(i => state.teams[i].name)
-  };
-  state.history.unshift(record);
-  save();
+
+  state.history.unshift({
+    id:          Date.now(),
+    date:        new Date().toLocaleDateString('en-GB'),
+    module:      state.activeModule.name,
+    scores:      state.teams.map((t,i)=>({name:t.name, score:scores[i]})),
+    winners:     winIdxs.map(i=>state.teams[i].name),
+    questionLog: state.questionLog,
+    note:        note
+  });
+
+  document.getElementById('save-btn').disabled = true;
+  document.getElementById('saving-indicator').textContent = 'Saving to Google Sheets…';
+  const ok = await saveToSheets();
+  document.getElementById('saving-indicator').textContent = ok ? '✓ Saved!' : '⚠ Save may have failed — check your Sheet.';
+  await new Promise(r=>setTimeout(r,700));
   renderDashboard();
+  showScreen('dash');
 }
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
-
-function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-
-load();
-renderDashboard();
+initApp();
 </script>
 </body>
 </html>
