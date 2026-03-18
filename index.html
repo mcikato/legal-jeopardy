@@ -386,7 +386,10 @@ async function loadFromSheets() {
     return;
   }
   try {
-    const res  = await fetch(SCRIPT_URL);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res  = await fetch(SCRIPT_URL, { signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     if (data.teams && data.teams.length) {
