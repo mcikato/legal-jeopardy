@@ -206,6 +206,7 @@ input,textarea{font-family:inherit}
       <button class="tab" onclick="switchTab('history',this)">📜 History</button>
       <button class="tab" onclick="switchTab('analytics',this)">📈 Analytics</button>
       <button class="tab" onclick="switchTab('notes',this)">📝 Notes</button>
+      <button class="tab" onclick="switchTab('teams',this)">👥 Teams</button>
       <button class="tab" onclick="switchTab('rules',this)">📋 Rules</button>
     </div>
 
@@ -247,6 +248,58 @@ input,textarea{font-family:inherit}
     <div id="tab-notes" style="display:none">
       <div class="section-label">Professor Notes</div>
       <div id="notes-list"></div>
+    </div>
+
+    <!-- TEAMS TAB -->
+    <div id="tab-teams" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        
+          <div style="background:#fff;border-radius:14px;border:2px solid #DDEEFF;overflow:hidden">
+            <div style="background:#2563AB;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:.5px">Team A</div>
+              <div style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">9 members</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:7px">
+              <div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Delfina Guelfi</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Romina Lluberas</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Josefina Fernandez</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Julieta Ruiz</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Pamela Wiens</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Camila Betancor</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maia Machado</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Carmela Regules</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria Sol Rey</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:14px;border:2px solid #FFDDD9;overflow:hidden">
+            <div style="background:#B83220;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:.5px">Team B</div>
+              <div style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">8 members</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:7px">
+              <div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Thomas Chalkling</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Juan Carlos Blanc</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Juan Manuel Martinez</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria Victoria Samy</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Chiara Frenopoulo</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Manuela Alzaga</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria Lucia Belatti</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria del Rosario Goñi</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:14px;border:2px solid #EDE8F8;overflow:hidden">
+            <div style="background:#7048B8;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:.5px">Team C</div>
+              <div style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">8 members</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:7px">
+              <div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria Paz O'Brien</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Francisca Bello</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Azul Zorrilla</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Josefina Vega</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Sofia Ankaralian</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Clara Collares</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Maria Jose Edreira</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Valentina Baldassari</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:14px;border:2px solid #D1FAE5;overflow:hidden">
+            <div style="background:#0A6B3E;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:.5px">Team D</div>
+              <div style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">8 members</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:7px">
+              <div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Natalie Segal</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Melanie Techera</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Ines Segales</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Eugenia Costa</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Fiorella Davyt</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Federico Ganon</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Lars Krupop</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Martin Nielsen</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:14px;border:2px solid #FFF0CC;overflow:hidden">
+            <div style="background:#B45309;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:#fff;font-size:15px;font-weight:900;letter-spacing:.5px">Team E</div>
+              <div style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">7 members</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-wrap:wrap;gap:7px">
+              <div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Juan Bautista Crosa</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Felipe Monagas</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Carlos Correa</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Ezequiel Carbajal</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Biko Brazionis</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Martin Muscio</div><div style="font-size:12px;color:#444;padding:5px 10px;background:#F5F5F5;border-radius:8px;border:1px solid #eee">Francisco Gomara</div>
+            </div>
+          </div>
+      </div>
     </div>
 
     <!-- RULES TAB -->
@@ -592,6 +645,7 @@ function switchTab(tab, btn) {
   document.getElementById('tab-history').style.display   = tab==='history'  ?'block':'none';
   document.getElementById('tab-analytics').style.display = tab==='analytics'?'block':'none';
   document.getElementById('tab-notes').style.display     = tab==='notes'    ?'block':'none';
+  document.getElementById('tab-teams').style.display     = tab==='teams'    ?'block':'none';
   document.getElementById('tab-rules').style.display     = tab==='rules'    ?'block':'none';
   if (tab==='analytics') renderAnalytics();
   if (tab==='notes') renderNotes();
