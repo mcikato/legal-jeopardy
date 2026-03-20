@@ -509,6 +509,8 @@ let state = {
   lastAnswerCorrect: false,
   currentCell: null,
   revealed: false,
+  phase: 'question',     // 'question' | 'wrong' | 'steal' | 'correct'
+  teamAnswered: null,    // index of option chosen by active team
 };
 
 // ─── GOOGLE SHEETS ────────────────────────────────────────────────────────────
@@ -1086,6 +1088,8 @@ function openCell(col, row) {
   state.currentCell      = {col, row};
   state.revealed         = false;
   state.lastAnswerCorrect= false;
+  state.phase            = 'question';
+  state.teamAnswered     = null;
   const mod = state.activeModule;
   const q   = mod.questions[col][row];
   document.getElementById('m-cat').textContent = mod.categories[col];
@@ -1107,38 +1111,144 @@ function renderOptions(q, revealed) {
 }
 
 function renderModalActions() {
-  const el = document.getElementById('m-actions');
-  if (!state.revealed) {
+  const el  = document.getElementById('m-actions');
+  const pts  = state.currentCell ? POINTS[state.currentCell.row] : 0;
+  const half = Math.floor(pts / 2);
+
+  if (state.phase === 'question') {
     el.innerHTML = `
-      <div class="modal-btns">
-        <button class="btn btn-dark" onclick="revealAnswer()">▶ Reveal Answer</button>
-        <button class="btn" onclick="closeModal()">Close (no points)</button>
+      <div>
+        <p class="award-label">Team answered:</p>
+        <div class="award-btns">
+          ${['A','B','C','D'].map((lbl,i) => `
+            <button class="btn" style="font-weight:800;min-width:52px;font-size:16px"
+              onclick="teamAnswered(${i})">${lbl}</button>`).join('')}
+        </div>
+        <button class="btn-muted" style="margin-top:4px" onclick="closeModal()">Close (no points)</button>
       </div>`;
-  } else {
-    const pts = POINTS[state.currentCell.row];
-    const half = Math.floor(pts / 2);
+
+  } else if (state.phase === 'correct') {
     el.innerHTML = `
       <div class="award-section">
-        <p class="award-label">Correct answer — award ${pts} pts to:</p>
+        <p class="award-label">✅ Correct! Award ${pts} pts to:</p>
         <div class="award-btns">
           ${state.teams.map((t,i)=>`
-            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800" onclick="awardPoints(${i},${pts})">${esc(t.name)} +${pts}</button>`).join('')}
+            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800"
+              onclick="awardPoints(${i},${pts})">${esc(t.name)} +${pts}</button>`).join('')}
         </div>
-        <div style="border-top:1px solid #eee;margin:12px 0 10px"></div>
-        <p class="award-label" style="color:#B45309">⚡ Steal — award ${half} pts to:</p>
-        <div class="award-btns">
+        <button class="btn-muted" style="margin-top:4px" onclick="closeModal()">No points — close</button>
+      </div>`;
+
+  } else if (state.phase === 'wrong') {
+    el.innerHTML = `
+      <div>
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#B91C1C;font-weight:700">
+          ❌ Wrong answer — correct answer not revealed yet
+        </div>
+        <p class="award-label">Which team steals?</p>
+        <div class="award-btns" style="margin-bottom:12px">
           ${state.teams.map((t,i)=>`
-            <button class="btn" style="border:2px solid #F59E0B;color:#B45309;font-weight:700" onclick="awardPoints(${i},${half})">${esc(t.name)} +${half}</button>`).join('')}
+            <button class="btn" style="border:2px solid #F59E0B;color:#B45309;font-weight:800"
+              onclick="openSteal(${i})">${esc(t.name)}</button>`).join('')}
         </div>
-        <button class="btn-muted" onclick="closeModal()">No points — close</button>
+        <button class="btn-muted" onclick="noSteal()">No steal — reveal answer</button>
+      </div>`;
+
+  } else if (state.phase === 'steal') {
+    el.innerHTML = `
+      <div>
+        <div style="background:#FFFBEB;border:1px solid #FCD34D;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#92400E;font-weight:700">
+          ⚡ Steal attempt by ${esc(state.teams[state.stealTeam].name)}
+        </div>
+        <p class="award-label">They answered:</p>
+        <div class="award-btns">
+          ${['A','B','C','D'].map((lbl,i) => `
+            <button class="btn" style="font-weight:800;min-width:52px;font-size:16px"
+              onclick="stealAnswered(${i})">${lbl}</button>`).join('')}
+        </div>
+        <button class="btn-muted" style="margin-top:4px" onclick="noSteal()">Cancel — reveal answer</button>
       </div>`;
   }
 }
 
-function revealAnswer() {
-  state.revealed = true;
-  renderOptions(state.activeModule.questions[state.currentCell.col][state.currentCell.row], true);
+// Called when professor clicks which option the team chose
+function teamAnswered(optionIdx) {
+  const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
+  state.teamAnswered = optionIdx;
+  if (optionIdx === q.correct) {
+    // Correct — show answer and award buttons
+    state.phase = 'correct';
+    state.lastAnswerCorrect = true;
+    renderOptions(q, true);
+  } else {
+    // Wrong — mark wrong option red but DON'T reveal correct yet
+    state.phase = 'wrong';
+    renderOptionsWrong(q, optionIdx);
+  }
   renderModalActions();
+}
+
+// Show chosen option as red, others greyed — correct NOT revealed
+function renderOptionsWrong(q, chosenIdx) {
+  document.getElementById('m-options').innerHTML = q.options.map((opt,i) => {
+    let cls = 'option-btn';
+    if (i === chosenIdx) cls += ' wrong';
+    return `<button class="${cls}" disabled><span class="opt-label">${['A','B','C','D'][i]}</span>${esc(opt)}</button>`;
+  }).join('');
+}
+
+// Professor selects which team is stealing
+function openSteal(teamIdx) {
+  state.phase = 'steal';
+  state.stealTeam = teamIdx;
+  renderModalActions();
+}
+
+// Steal team chose an option
+function stealAnswered(optionIdx) {
+  const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
+  const pts = POINTS[state.currentCell.row];
+  const half = Math.floor(pts / 2);
+  // Reveal correct answer now
+  renderOptions(q, true);
+  if (optionIdx === q.correct) {
+    // Steal correct — award half points
+    state.lastAnswerCorrect = true;
+    const el = document.getElementById('m-actions');
+    el.innerHTML = `
+      <div class="award-section">
+        <p class="award-label" style="color:#15803D">✅ Steal correct! Award ${half} pts to ${esc(state.teams[state.stealTeam].name)}?</p>
+        <div class="award-btns">
+          <button class="btn" style="border:2px solid ${TEAM_COLORS[state.stealTeam]};color:${TEAM_COLORS[state.stealTeam]};font-weight:800"
+            onclick="awardPoints(${state.stealTeam},${half})">${esc(state.teams[state.stealTeam].name)} +${half}</button>
+        </div>
+        <button class="btn-muted" style="margin-top:4px" onclick="closeModal()">No points — close</button>
+      </div>`;
+  } else {
+    // Steal wrong — no points, just close
+    const el = document.getElementById('m-actions');
+    el.innerHTML = `
+      <div>
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#B91C1C;font-weight:700">
+          ❌ Steal wrong — no one scores
+        </div>
+        <button class="btn-muted" onclick="closeModal()">Close</button>
+      </div>`;
+  }
+}
+
+// No steal — just reveal the answer
+function noSteal() {
+  const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
+  renderOptions(q, true);
+  const el = document.getElementById('m-actions');
+  el.innerHTML = `
+    <div>
+      <div style="background:#F0F7FF;border:1px solid #B5D4F4;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#185FA5;font-weight:700">
+        Answer revealed — no points awarded
+      </div>
+      <button class="btn-muted" onclick="closeModal()">Close</button>
+    </div>`;
 }
 
 function awardPoints(teamIdx, pts) {
