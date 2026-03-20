@@ -140,6 +140,7 @@ input,textarea{font-family:inherit}
 .option-btn.wrong{border-color:#e5e7eb;background:#F9FAFB;color:#9CA3AF;opacity:.6}
 .option-btn.wrong .opt-label{background:#d1d5db;color:#9CA3AF}
 .modal-btns{display:flex;gap:10px;flex-wrap:wrap}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .award-section{margin-top:4px}
 .award-label{font-size:12px;color:#888;font-weight:700;margin-bottom:10px}
 .award-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -420,6 +421,18 @@ input,textarea{font-family:inherit}
     <div class="modal-cat" id="m-cat"></div>
     <div class="modal-pts" id="m-pts"></div>
     <div class="modal-q" id="m-q"></div>
+
+    <!-- TIMER -->
+    <div id="m-timer" style="margin-bottom:16px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px">Huddle time</span>
+        <span id="m-timer-count" style="font-size:22px;font-weight:900;color:#0D1424;font-variant-numeric:tabular-nums">40</span>
+      </div>
+      <div style="width:100%;height:6px;background:#F0F0F0;border-radius:3px;overflow:hidden">
+        <div id="m-timer-bar" style="height:6px;border-radius:3px;background:#2563AB;width:100%;transition:width 1s linear,background .3s"></div>
+      </div>
+    </div>
+
     <div class="options-grid" id="m-options"></div>
     <div id="m-actions"></div>
   </div>
@@ -1100,6 +1113,7 @@ function openCell(col, row) {
   renderOptions(q, false);
   renderModalActions();
   document.getElementById('overlay').classList.add('open');
+  startTimer();
 }
 
 function renderOptions(q, revealed) {
@@ -1173,6 +1187,7 @@ function renderModalActions() {
 
 // Called when professor clicks which option the team chose
 function teamAnswered(optionIdx) {
+  stopTimer();
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   state.teamAnswered = optionIdx;
   if (optionIdx === q.correct) {
@@ -1259,6 +1274,7 @@ function awardPoints(teamIdx, pts) {
 }
 
 function closeModal() {
+  stopTimer();
   state.lastAnswerCorrect = false;
   markUsed();
 }
@@ -1358,6 +1374,55 @@ async function saveAndReturn() {
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── TIMER ───────────────────────────────────────────────────────────────────
+let timerInterval = null;
+
+function startTimer() {
+  clearInterval(timerInterval);
+  let secs = 40;
+  const countEl = document.getElementById('m-timer-count');
+  const barEl   = document.getElementById('m-timer-bar');
+  const timerEl = document.getElementById('m-timer');
+  if (!countEl) return;
+
+  timerEl.style.display = 'block';
+  countEl.textContent = secs;
+  barEl.style.width = '100%';
+  barEl.style.background = '#2563AB';
+  countEl.style.color = '#0D1424';
+
+  timerInterval = setInterval(() => {
+    secs--;
+    if (!document.getElementById('m-timer-count')) { clearInterval(timerInterval); return; }
+    countEl.textContent = secs;
+    const pct = (secs / 40) * 100;
+    barEl.style.width = pct + '%';
+
+    if (secs <= 10) {
+      barEl.style.background = '#EF4444';
+      countEl.style.color = '#EF4444';
+      countEl.style.animation = 'timer-pulse .6s ease-in-out infinite';
+    } else if (secs <= 20) {
+      barEl.style.background = '#F59E0B';
+      countEl.style.color = '#B45309';
+      countEl.style.animation = '';
+    }
+
+    if (secs <= 0) {
+      clearInterval(timerInterval);
+      countEl.textContent = '0';
+      barEl.style.width = '0%';
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  const timerEl = document.getElementById('m-timer');
+  if (timerEl) timerEl.style.display = 'none';
 }
 
 initApp();
