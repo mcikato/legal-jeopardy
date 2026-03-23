@@ -305,80 +305,138 @@ input,textarea{font-family:inherit}
 
     <!-- RULES TAB -->
     <div id="tab-rules" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
-          <!-- Each turn - full width -->
-          <div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:18px;grid-column:span 2">
-            <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Each turn</div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">
-              <div style="padding:14px 8px;background:#EEF2FF;border-radius:12px">
-                <div style="font-size:26px;margin-bottom:6px">👆</div>
-                <div style="font-size:12px;font-weight:800;color:#2563AB">Pick</div>
-                <div style="font-size:11px;color:#666;margin-top:4px;line-height:1.4">Choose a category and point value</div>
-              </div>
-              <div style="padding:14px 8px;background:#F3F0FF;border-radius:12px">
-                <div style="font-size:26px;margin-bottom:6px">🤫</div>
-                <div style="font-size:12px;font-weight:800;color:#7048B8">Huddle</div>
-                <div style="font-size:11px;color:#666;margin-top:4px;line-height:1.4">Team discusses 30 sec. Everyone must engage.</div>
-              </div>
-              <div style="padding:14px 8px;background:#ECFDF5;border-radius:12px">
-                <div style="font-size:26px;margin-bottom:6px">🎤</div>
-                <div style="font-size:12px;font-weight:800;color:#0F766E">Answer</div>
-                <div style="font-size:11px;color:#666;margin-top:4px;line-height:1.4">Spokesperson says A, B, C or D. Rotate each round.</div>
-              </div>
-              <div style="padding:14px 8px;background:#FFF7ED;border-radius:12px">
-                <div style="font-size:26px;margin-bottom:6px">✅</div>
-                <div style="font-size:12px;font-weight:800;color:#B45309">Reveal</div>
-                <div style="font-size:11px;color:#666;margin-top:4px;line-height:1.4">Professor reveals answer and awards points</div>
+      <!-- TURN FLOW -->
+      <div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:20px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">How each turn works</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin-bottom:14px">
+          <div style="padding:16px 8px;background:#EEF2FF;border-radius:12px;position:relative">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#2563AB;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">1</div>
+            <div style="font-size:26px;margin:8px 0 6px">👆</div>
+            <div style="font-size:12px;font-weight:800;color:#2563AB;margin-bottom:4px">Pick</div>
+            <div style="font-size:11px;color:#555;line-height:1.4">Active team picks a category and point value</div>
+          </div>
+          <div style="padding:16px 8px;background:#F3F0FF;border-radius:12px;position:relative">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7048B8;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">2</div>
+            <div style="font-size:26px;margin:8px 0 6px">🤫</div>
+            <div style="font-size:12px;font-weight:800;color:#7048B8;margin-bottom:4px">Huddle</div>
+            <div style="font-size:11px;color:#555;line-height:1.4">All members discuss quietly — <strong>40 seconds</strong></div>
+          </div>
+          <div style="padding:16px 8px;background:#ECFDF5;border-radius:12px;position:relative">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#0F766E;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">3</div>
+            <div style="font-size:26px;margin:8px 0 6px">🎤</div>
+            <div style="font-size:12px;font-weight:800;color:#0F766E;margin-bottom:4px">Answer</div>
+            <div style="font-size:11px;color:#555;line-height:1.4">Spokesperson says A, B, C or D — <strong>rotate every round</strong></div>
+          </div>
+          <div style="padding:16px 8px;background:#FFF7ED;border-radius:12px;position:relative">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#B45309;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">4</div>
+            <div style="font-size:26px;margin:8px 0 6px">✅</div>
+            <div style="font-size:12px;font-weight:800;color:#B45309;margin-bottom:4px">Result</div>
+            <div style="font-size:11px;color:#555;line-height:1.4">Professor marks answer — correct or wrong</div>
+          </div>
+        </div>
+        <div style="background:#F8F8F8;border-radius:8px;padding:8px 14px;font-size:11px;color:#888;text-align:center">
+          Teams rotate clockwise every turn — you keep picking even after a wrong answer
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+
+        <!-- STEAL RULE -->
+        <div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:14px;padding:18px">
+          <div style="font-size:13px;font-weight:900;color:#92400E;margin-bottom:14px">⚡ The Steal Rule</div>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="background:#FEF3C7;border-radius:6px;padding:4px 8px;font-size:18px;flex-shrink:0">❌</div>
+              <div>
+                <div style="font-size:12px;font-weight:800;color:#92400E">Active team answers wrong</div>
+                <div style="font-size:11px;color:#78350F;margin-top:2px">Answer stays hidden — steal is opened</div>
               </div>
             </div>
-            <div style="margin-top:10px;text-align:center;font-size:11px;color:#aaa">Teams rotate clockwise every turn regardless of result</div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="background:#FEF3C7;border-radius:6px;padding:4px 8px;font-size:18px;flex-shrink:0">🙋</div>
+              <div>
+                <div style="font-size:12px;font-weight:800;color:#92400E">First team to raise hand steals</div>
+                <div style="font-size:11px;color:#78350F;margin-top:2px">Only one steal attempt allowed per question</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="background:#FEF3C7;border-radius:6px;padding:4px 8px;font-size:18px;flex-shrink:0">✅</div>
+              <div>
+                <div style="font-size:12px;font-weight:800;color:#15803D">Steal correct → half the points</div>
+                <div style="font-size:11px;color:#166534;margin-top:2px">Answer is revealed to everyone</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="background:#FEF3C7;border-radius:6px;padding:4px 8px;font-size:18px;flex-shrink:0">🚫</div>
+              <div>
+                <div style="font-size:12px;font-weight:800;color:#B91C1C">Steal wrong → no one scores</div>
+                <div style="font-size:11px;color:#991B1B;margin-top:2px">Answer is revealed — question is closed</div>
+              </div>
+            </div>
           </div>
 
-          <!-- Steal rule -->
-          <div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:14px;padding:18px">
-            <div style="font-size:13px;font-weight:900;color:#92400E;margin-bottom:12px">⚡ Steal rule</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="background:#fff;border-radius:8px;padding:10px 12px;border-left:3px solid #EF4444">
-                <div style="font-size:12px;font-weight:800;color:#B91C1C">Wrong answer</div>
-                <div style="font-size:11px;color:#666;margin-top:2px">First team to raise hand can steal</div>
+          <div style="margin-top:12px;background:#FEF3C7;border-radius:8px;padding:8px 12px;font-size:11px;color:#92400E">
+            💡 Each team has 1 captain who signals steals — avoids chaos
+          </div>
+        </div>
+
+        <!-- SEMESTER + POINTS -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+
+          <div style="background:#fff;border:1px solid #eee;border-radius:14px;padding:16px">
+            <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Semester format</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:22px">👥</span>
+                <div><div style="font-size:12px;font-weight:800;color:#0D1424">5 fixed teams (~7 students each)</div><div style="font-size:11px;color:#888">Same teams the whole semester</div></div>
               </div>
-              <div style="background:#fff;border-radius:8px;padding:10px 12px;border-left:3px solid #22C55E">
-                <div style="font-size:12px;font-weight:800;color:#15803D">Correct steal = half the points</div>
-                <div style="font-size:11px;color:#666;margin-top:2px">Only one steal attempt per question</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:22px">📅</span>
+                <div><div style="font-size:12px;font-weight:800;color:#0D1424">Once per module — ~35 min</div><div style="font-size:11px;color:#888">Points accumulate all semester</div></div>
               </div>
-              <div style="background:#fff;border-radius:8px;padding:10px 12px;border-left:3px solid #7048B8">
-                <div style="font-size:12px;font-weight:800;color:#7048B8">Tip: assign a team captain</div>
-                <div style="font-size:11px;color:#666;margin-top:2px">One person signals steals — avoids chaos</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:22px">🏆</span>
+                <div><div style="font-size:12px;font-weight:800;color:#0D1424">Semester winner</div><div style="font-size:11px;color:#888">Most cumulative points at the end of semester</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:22px">🎤</span>
+                <div><div style="font-size:12px;font-weight:800;color:#0D1424">Rotate spokesperson every round</div><div style="font-size:11px;color:#888">No one can answer twice in a row</div></div>
               </div>
             </div>
           </div>
 
-          <!-- Semester + Points -->
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="background:#fff;border:1px solid #eee;border-radius:14px;padding:16px">
-              <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Semester</div>
-              <div style="display:flex;flex-direction:column;gap:9px">
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">👥</span><div><div style="font-size:12px;font-weight:800;color:#0D1424">5 fixed teams (~7 students each)</div><div style="font-size:11px;color:#888">Same teams all semester</div></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">📅</span><div><div style="font-size:12px;font-weight:800;color:#0D1424">Once per module — ~35 min</div><div style="font-size:11px;color:#888">Points accumulate all semester</div></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">🏆</span><div><div style="font-size:12px;font-weight:800;color:#0D1424">Semester winner</div><div style="font-size:11px;color:#888">Most cumulative points wins at the end</div></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">🎤</span><div><div style="font-size:12px;font-weight:800;color:#0D1424">Rotate spokesperson</div><div style="font-size:11px;color:#888">Different person speaks each round</div></div></div>
+          <div style="background:#fff;border:1px solid #eee;border-radius:14px;padding:16px">
+            <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Point values</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#DDEEFF;border-radius:8px;padding:7px 14px">
+                <span style="font-size:11px;font-weight:700;color:#185FA5">Easy</span>
+                <span style="font-size:20px;font-weight:900;color:#0C447C">100 pts</span>
               </div>
-            </div>
-            <div style="background:#fff;border:1px solid #eee;border-radius:14px;padding:16px">
-              <div style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Points</div>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                <div style="display:flex;justify-content:space-between;align-items:center;background:#DDEEFF;border-radius:8px;padding:7px 12px"><span style="font-size:11px;font-weight:700;color:#185FA5">Easy</span><span style="font-size:18px;font-weight:900;color:#0C447C">100</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;background:#EDE8F8;border-radius:8px;padding:7px 12px"><span></span><span style="font-size:18px;font-weight:900;color:#3C3489">200</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;background:#E1F5EE;border-radius:8px;padding:7px 12px"><span></span><span style="font-size:18px;font-weight:900;color:#085041">300</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;background:#FFF0CC;border-radius:8px;padding:7px 12px"><span></span><span style="font-size:18px;font-weight:900;color:#633806">400</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;background:#FFDDD9;border-radius:8px;padding:7px 12px"><span style="font-size:11px;font-weight:700;color:#993C1D">Hard</span><span style="font-size:18px;font-weight:900;color:#712B13">500</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#EDE8F8;border-radius:8px;padding:7px 14px">
+                <span style="font-size:11px;color:#534AB7"></span>
+                <span style="font-size:20px;font-weight:900;color:#3C3489">200 pts</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#E1F5EE;border-radius:8px;padding:7px 14px">
+                <span style="font-size:11px;color:#0F6E56"></span>
+                <span style="font-size:20px;font-weight:900;color:#085041">300 pts</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#FFF0CC;border-radius:8px;padding:7px 14px">
+                <span style="font-size:11px;color:#854F0B"></span>
+                <span style="font-size:20px;font-weight:900;color:#633806">400 pts</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#FFDDD9;border-radius:8px;padding:7px 14px">
+                <span style="font-size:11px;font-weight:700;color:#993C1D">Hard</span>
+                <span style="font-size:20px;font-weight:900;color:#712B13">500 pts</span>
               </div>
             </div>
           </div>
 
         </div>
       </div>
+
+    </div>
 
     </div>
   </div>
@@ -456,47 +514,147 @@ const MODULES = [
   {
     id:'mod1',
     name:'Module 1 — What is Law? & Sources of Law',
-    categories:['Elements of Law','Sources of Law','Constitutional Law','Rule of Law','Legal Subjects'],
+    categories:['What is Law?','Legal Systems','Sources of Law','Rule of Law','Equity & International'],
     questions:[
-      // ── ELEMENTS OF LAW ──
+      // ── WHAT IS LAW? ──
       [
-        {q:"How many elements must a rule satisfy to be considered a law?",options:["Two — state authority and a written text","Four — authority, generality, obligation, and sanction","Six — authority, generality, bilaterality, obligatory, coercion, and formal validity","Three — authority, coercion, and bilaterality"],correct:2},
-        {q:"A statute reads: 'Employers must pay a minimum wage.' What does the bilateral element mean here?",options:["The law applies to both the public and private sector","It creates a duty for employers AND a corresponding right for employees to receive payment","Both chambers of parliament approved the law","The law was negotiated between workers and employers"],correct:1},
-        {q:"Which of the following is an example of something legally valid but morally wrong?",options:["A speed limit of 50 km/h in a school zone","A law requiring all citizens to carry an ID card","A historical law forcing certain groups to wear identifying symbols","A regulation requiring food safety inspections"],correct:2},
-        {q:"A sports federation bans a player for doping. Which element of law does this rule fail?",options:["Element 2: General & Abstract — the rule targets one person","Element 1: Human Authority — the federation is not a state-recognized law-making body","Element 6: Formal Validity — the ban was not published","Element 4: Obligatory — the player can choose to ignore it"],correct:1},
-        {q:"A minister issues a regulation but skips the required parliamentary approval step. What is its legal status?",options:["Valid — a minister has executive authority to act alone","Provisionally valid until a court reviews it","Not valid — it fails Element 6: Formal Validity. The required legal procedure was not followed","Valid — as long as the content is reasonable and proportionate"],correct:2}
+        {
+          q:"Which of the following is one of the 6 elements a rule must satisfy to be considered a law?",
+          options:["Popularity — most citizens must support it","State-backed coercion — the state can compel compliance","Written form — it must be published in a gazette","Judicial approval — a court must validate it"],
+          correct:1
+        },
+        {
+          q:"A statute says employers must pay minimum wage. What does the bilateral element mean?",
+          options:["It applies equally to everyone","It creates a duty for employers AND a right for employees","It was voted by two chambers","It applies to public and private sectors"],
+          correct:1
+        },
+        {
+          q:"The government puts up a poster: 'We encourage you to recycle.' Which element of law does this fail?",
+          options:["Human authority","Generality","Obligatory — it encourages, does not command","State coercion"],
+          correct:2
+        },
+        {
+          q:"Which of these is an example of something legally valid but morally wrong?",
+          options:["A historical law forcing groups to wear identifying symbols","A 50 km/h speed limit in a school zone","Paying taxes","Wearing a seatbelt"],
+          correct:0
+        },
+        {
+          q:"A sports federation expels a player for doping. Which element of law fails in its rulebook?",
+          options:["Generality — it targets one person","Human authority — it is not a state-recognized law-making body","Formal validity — it was not published","Bilaterality — it creates no rights"],
+          correct:1
+        }
+      ],
+      // ── LEGAL SYSTEMS ──
+      [
+        {
+          q:"In which legal system do judges create law through precedent?",
+          options:["Civil Law","Common Law","Islamic Law","Customary Law"],
+          correct:1
+        },
+        {
+          q:"What is stare decisis?",
+          options:["Courts must follow prior rulings on similar cases","Written laws always override judges","The State is the only source of law","International treaties override the Constitution"],
+          correct:0
+        },
+        {
+          q:"Which of these countries primarily uses a Civil Law system?",
+          options:["Australia","United Kingdom","France","Canada"],
+          correct:2
+        },
+        {
+          q:"A product gets different patent rulings in different countries. Why?",
+          options:["Because some judges are corrupt","Because each country has its own legal system and applies its own rules","Because patents only apply where they are registered","Because Common Law does not recognize patents"],
+          correct:1
+        },
+        {
+          q:"What is the key difference between Common Law and Civil Law as sources of law?",
+          options:["In Common Law judges create law; in Civil Law it is codified in written statutes","In Civil Law judges have more power","Common Law only exists in the US","Civil Law has no constitution"],
+          correct:0
+        }
       ],
       // ── SOURCES OF LAW ──
       [
-        {q:"Which correctly orders the Kelsen Pyramid from highest to lowest?",options:["Statutes → Constitution → Treaties → Regulations → Contracts","Contracts → Court Decisions → Statutes → Treaties → Constitution","Constitution → Treaties → Statutes → Regulations → Court Decisions → Contracts","Court Decisions → Statutes → Constitution → Regulations → Treaties → Contracts"],correct:2},
-        {q:"What is stare decisis?",options:["The rule that statutes always override court decisions","The principle that courts must follow prior rulings on similar cases to ensure consistency","A Latin term meaning the separation of powers","The requirement that all laws be written in plain language"],correct:1},
-        {q:"A judge faces a case with no applicable statute. What source of law does she rely on?",options:["Her personal sense of justice","Regulations issued by the relevant government agency","Common law — past court decisions on similar cases under stare decisis","International treaties ratified by the country"],correct:2},
-        {q:"An environmental agency issues new regulations. A factory challenges them, arguing the agency has no authority. What principle of administrative law is at stake?",options:["Judicial Review — courts must approve all regulations","The Principle of Delegation — agencies can only act within the powers given by parliament","Customary Law — air quality was never regulated by tradition","Equity — the regulation is unfair to the factory"],correct:1},
-        {q:"A community's unwritten practices on land inheritance have been followed for generations. What source of law is this?",options:["Statutory law — it must be written to be valid","Customary law — unwritten practices accepted as binding by a community over time","Administrative law — agencies govern land rights","Equity — fairness principles determine land ownership"],correct:1}
+        {
+          q:"What source of law sits at the top of the Kelsen Pyramid?",
+          options:["International treaties","Statutes","The Constitution","Contracts"],
+          correct:2
+        },
+        {
+          q:"A judge has no applicable statute. What source does she rely on in a Common Law system?",
+          options:["Her personal judgment","Prior court decisions under stare decisis","International treaties","Administrative regulations"],
+          correct:1
+        },
+        {
+          q:"A company's internal code prohibits harassment. An employee violates it and is fired. Is this a legal rule?",
+          options:["Yes — it was created by a recognized authority","Yes — it has sanctions attached","No — it fails state-backed coercion: only the state can legally compel compliance","No — it was not published in an official gazette"],
+          correct:2
+        },
+        {
+          q:"What distinguishes Customary Law from Statutory Law?",
+          options:["Customary law only applies to criminal matters","Customary law is unwritten and emerges from repeated community practice","Customary law always prevails over statutes","Statutory law is created by judges"],
+          correct:1
+        },
+        {
+          q:"An environmental agency issues air quality rules. A company says the agency has no authority. What principle applies?",
+          options:["Stare decisis","Equity","The Delegation Principle — agencies can only act within powers granted by parliament","State sovereignty"],
+          correct:2
+        }
       ],
-      // ── CONSTITUTIONAL LAW ──
+      // ── RULE OF LAW & CONSTITUTIONAL LAW ──
       [
-        {q:"A government minister signs a decree granting himself immunity from prosecution. Which constitutional pillar does this violate?",options:["Separation of Powers — the minister is acting as a judge","Judicial Review — courts did not approve the decree","Rule of Law — no one is above the law, including government officials","Human Rights — the decree violates freedom of expression"],correct:2},
-        {q:"A parliament passes a mass surveillance law without warrants. A citizen challenges it in court. What mechanism applies?",options:["Separation of Powers — parliament exceeded its budget","Customary Law — tradition prohibits surveillance","Judicial Review — courts can strike down laws that violate constitutional rights","Administrative Law — only agencies can regulate surveillance"],correct:2},
-        {q:"Which is the correct order of the three branches of government and their functions?",options:["Legislative = enforces · Executive = makes laws · Judicial = interprets","Legislative = makes laws · Executive = enforces · Judicial = interprets","Legislative = interprets · Executive = makes laws · Judicial = enforces","Legislative = makes laws · Executive = interprets · Judicial = enforces"],correct:1},
-        {q:"Country A has a single written constitution. Country B relies on statutes and tradition with no single document. Which statement is correct?",options:["Country B has no constitution — only written ones are valid","Both can be valid constitutional systems — written and unwritten constitutions are both legitimate","Country A is always more democratic","Only common law countries can have unwritten constitutions"],correct:1},
-        {q:"Which of the following best describes the concept of Separation of Powers?",options:["All power is held by the president to ensure efficient government","Power is divided among Legislative, Executive, and Judicial branches so no single branch dominates","The judiciary has supreme power over the other two branches","Separation of powers means each region of a country governs itself independently"],correct:1}
+        {
+          q:"What are the 4 core principles of the Rule of Law?",
+          options:["Supremacy of law, equality, accountability, legal certainty","Democracy, sovereignty, transparency, justice","Separation of powers, federalism, due process, judicial review","Authority, legitimacy, coercion, proportionality"],
+          correct:0
+        },
+        {
+          q:"A president signs a decree exempting his family from paying taxes. Which Rule of Law principle does this violate?",
+          options:["Legal certainty","Supremacy of law","Equality before the law","Accountability"],
+          correct:2
+        },
+        {
+          q:"What is the function of Judicial Review?",
+          options:["Allow the executive to veto laws","Courts can strike down laws that violate the Constitution","Parliament reviews judicial decisions","Renegotiate international treaties"],
+          correct:1
+        },
+        {
+          q:"What is the difference between Rule of Law and Rule by Law?",
+          options:["Rule of Law: everyone including government is bound by law. Rule by Law: rulers use law to control others while exempting themselves","They are synonyms","Rule of Law only exists in democracies","Rule by Law requires a written constitution"],
+          correct:0
+        },
+        {
+          q:"Country X has written laws but the president changes them overnight and appoints all judges. Does it have Rule of Law?",
+          options:["Yes — having written laws is enough","Yes — as long as the president is democratically elected","No — Rule of Law requires stable laws enforced by an independent judiciary","No — but only because judges are not elected"],
+          correct:2
+        }
       ],
-      // ── RULE OF LAW & INTERNATIONAL LAW ──
+      // ── EQUITY, CUSTOM & INTERNATIONAL LAW ──
       [
-        {q:"Country X has written laws, but the president changes them overnight and appoints all judges. Does Country X have the Rule of Law?",options:["Yes — having written laws is the definition of Rule of Law","Yes — as long as the president is democratically elected","No — the Rule of Law requires stable, predictable laws enforced by an independent judiciary","No — but only because judges are not elected by the people"],correct:2},
-        {q:"Two countries sign a trade treaty. One later passes a domestic law that directly contradicts it. What does international law say?",options:["The domestic law prevails — sovereignty always overrides treaties","The treaty prevails — states have a duty to comply with international agreements they signed","The WTO automatically cancels the domestic law","The UN Security Council must vote on which rule applies"],correct:1},
-        {q:"Which of the following best describes the principle of sovereign equality in international law?",options:["Larger countries have more voting power in international organizations","All states are equal in rights and dignity regardless of size, wealth, or military power","Only democratic states are considered sovereign equals","Sovereign equality means all states must have the same laws"],correct:1},
-        {q:"A company evaluates investing in a country with 0% corporate tax but corrupt courts and unenforceable contracts. What is the correct advice?",options:["Invest — low taxes guarantee high returns regardless of legal risk","Invest — the company can protect itself with strong internal contracts","Do not invest — without Rule of Law, contracts are worthless and property can be seized arbitrarily","Invest — but only if they negotiate a bilateral investment treaty"],correct:2},
-        {q:"What makes international law harder to enforce than domestic law?",options:["International law is based on treaties while domestic law is based only on tradition","International law lacks a central enforcement authority — compliance depends on state cooperation","International law only applies to individuals, not states","International law is always superior to constitutional law in every country"],correct:1}
-      ],
-      // ── LEGAL SUBJECTS ──
-      [
-        {q:"What is the key difference between a natural person and a legal person?",options:["Natural persons can only own property; legal persons can only sign contracts","Natural persons are real human beings; legal persons are entities recognized by law (companies, governments) that can hold rights and obligations","Natural persons exist forever; legal persons end when their owners die","Legal persons have more rights than natural persons under international law"],correct:1},
-        {q:"A corporation fails to pay its debts. Can creditors sue? Can shareholders be held personally liable?",options:["Yes they can sue the corporation. No — shareholders are protected by limited liability and not personally responsible for corporate debts","Yes they can sue. Yes — all shareholders are automatically personally liable","No — only individuals can be sued; corporations have no legal standing","No — creditors must go through an administrative agency"],correct:0},
-        {q:"A company is incorporated in 1990. Its founder dies in 2020. What happens to the company's legal existence?",options:["The company automatically dissolves when its founder dies","The company continues to exist — legal persons have perpetual succession and exist independently of their founders","The company becomes a natural person upon the founder's death","The company must be re-incorporated by the founder's heirs"],correct:1},
-        {q:"Which of the following is NOT a capacity shared by both natural persons and legal persons?",options:["The ability to own property","The ability to enter into contracts","The ability to sue and be sued in court","The right to vote in national elections"],correct:3},
-        {q:"An AI system autonomously signs a contract on behalf of a company. Who is the legal subject bound by that contract?",options:["The AI — it made the decision so it bears legal responsibility","The company — the AI acted as its agent; the legal person (company) bears the rights and obligations","No one — AI-signed contracts are automatically void","The programmer who created the AI is personally liable for all AI decisions"],correct:1}
+        {
+          q:"What is the purpose of Equity as a source of law?",
+          options:["To create new crimes","To fill legal gaps when strict application of the law would produce an unjust result","To replace the Constitution","To resolve disputes between States"],
+          correct:1
+        },
+        {
+          q:"A strict law requires contracts to be in writing. Two parties had a verbal agreement and one relied on it significantly. A court enforces it anyway. What is this?",
+          options:["Stare decisis — a prior case set this precedent","Equity — fairness overrides strict rules when injustice would result","Customary law — verbal agreements are traditional","Administrative law — agencies can enforce verbal contracts"],
+          correct:1
+        },
+        {
+          q:"What is the principle of sovereign equality in International Law?",
+          options:["Larger countries have more voting power","All States are equal in rights and dignity regardless of size or power","Only democracies are sovereign equals","Sovereignty is lost when signing treaties"],
+          correct:1
+        },
+        {
+          q:"Why is International Law harder to enforce than domestic law?",
+          options:["Because it only applies to individuals, not States","Because there is no central enforcement authority — compliance depends on State cooperation","Because domestic law always prevails","Because treaties are not valid sources of law"],
+          correct:1
+        },
+        {
+          q:"A landlord promises reduced rent during a crisis. Tenants rely on it financially. Later the landlord demands full rent. Which equitable doctrine applies?",
+          options:["Specific Performance","Promissory Estoppel — a promise relied upon in good faith cannot simply be revoked","Injunctive Relief","Stare Decisis"],
+          correct:1
+        }
       ]
     ]
   }
