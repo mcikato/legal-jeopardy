@@ -8,53 +8,58 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;user-select:none;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;user-select:none;-webkit-tap-highlight-color:transparent}
 
-/* WAITING */
-.waiting{text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%}
-.waiting-icon{font-size:72px;animation:float 2.5s ease-in-out infinite}
+/* ── PICK TEAM ── */
+.pick-wrap{width:100%;max-width:480px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px}
+.pick-icon{font-size:64px;animation:float 2.5s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.waiting-title{color:#0D1424;font-size:30px;font-weight:900}
-.waiting-sub{color:#999;font-size:17px;line-height:1.5;max-width:320px}
-.teams-row{display:flex;flex-direction:row;gap:10px;width:100%;margin-top:8px;justify-content:center;flex-wrap:wrap}
-.preview-pill{flex:1;min-width:0;padding:18px 8px;border-radius:14px;font-size:16px;font-weight:800;text-align:center;border:3px solid;opacity:.3}
+.pick-title{color:#0D1424;font-size:28px;font-weight:900}
+.pick-sub{color:#999;font-size:16px}
+.pick-grid{display:flex;flex-direction:column;gap:12px;width:100%}
+.pick-btn{width:100%;padding:22px 16px;border-radius:16px;border:none;font-size:22px;font-weight:900;color:#fff;cursor:pointer;transition:transform .08s,box-shadow .1s;box-shadow:0 4px 14px rgba(0,0,0,.15);letter-spacing:.3px}
+.pick-btn:active{transform:scale(.97)}
 
-/* STEAL OPEN */
-.steal-wrap{width:100%;display:flex;flex-direction:column;align-items:center}
-.steal-header{text-align:center;margin-bottom:24px}
-.steal-badge{display:inline-flex;align-items:center;gap:6px;background:#F59E0B;color:#fff;font-size:15px;font-weight:800;padding:10px 24px;border-radius:24px;letter-spacing:.5px;margin-bottom:16px}
-.steal-title{color:#0D1424;font-size:32px;font-weight:900;margin-bottom:6px}
-.steal-sub{color:#999;font-size:17px}
-.timer-row{display:flex;align-items:center;gap:16px;width:100%;margin-bottom:28px}
-.timer-num{font-size:80px;font-weight:900;color:#0D1424;font-variant-numeric:tabular-nums;min-width:80px;text-align:center;line-height:1;transition:color .3s}
+/* ── WAITING (team chosen, no steal open) ── */
+.waiting-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:20px}
+.waiting-label{font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#bbb}
+.big-btn{width:100%;padding:0;border-radius:24px;border:none;font-size:32px;font-weight:900;color:#fff;letter-spacing:.3px;height:200px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(0,0,0,.12);transition:transform .08s,box-shadow .15s,opacity .3s,filter .3s;cursor:not-allowed;filter:grayscale(60%);opacity:.35}
+.big-btn.active{cursor:pointer;filter:none;opacity:1;box-shadow:0 8px 32px rgba(0,0,0,.22);animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.22)}50%{box-shadow:0 8px 48px rgba(0,0,0,.38)}}
+.big-btn.active:active{transform:scale(.95)}
+.big-btn:disabled{cursor:not-allowed}
+.status-msg{font-size:15px;color:#bbb;text-align:center}
+.status-msg.active-msg{color:#F59E0B;font-weight:800;font-size:17px}
+
+/* Timer */
+.timer-row{display:flex;align-items:center;gap:14px;width:100%}
+.timer-num{font-size:72px;font-weight:900;font-variant-numeric:tabular-nums;min-width:72px;text-align:center;line-height:1;color:#0D1424;transition:color .3s}
 .timer-num.urgent{color:#EF4444;animation:pulse .4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.timer-bar-wrap{flex:1;height:14px;background:#F0F0F0;border-radius:7px;overflow:hidden}
-.timer-bar{height:14px;border-radius:7px;background:#F59E0B;width:100%;transition:width .9s linear,background .3s}
+.timer-bar-wrap{flex:1;height:12px;background:#F0F0F0;border-radius:6px;overflow:hidden}
+.timer-bar{height:12px;border-radius:6px;background:#F59E0B;width:100%;transition:width .9s linear,background .3s}
 .timer-bar.urgent{background:#EF4444}
 
-/* 5 buttons in a row */
-.team-row{display:flex;flex-direction:row;gap:10px;width:100%}
-.team-btn{flex:1;min-width:0;padding:0;border-radius:18px;border:none;font-size:18px;font-weight:900;color:#fff;cursor:pointer;transition:transform .08s,box-shadow .1s;letter-spacing:.2px;height:110px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.18);line-height:1.2;text-align:center;word-break:break-word;padding:8px}
-.team-btn:active{transform:scale(.91);box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.team-btn:disabled{opacity:.18;cursor:not-allowed;transform:none;box-shadow:none}
+/* Change team link */
+.change-link{font-size:13px;color:#ccc;text-decoration:underline;cursor:pointer;background:none;border:none;margin-top:4px}
+.change-link:hover{color:#999}
 
-/* BUZZED */
+/* ── BUZZED ── */
 .buzzed{text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px}
 .buzzed-icon{font-size:100px;animation:pop .3s ease-out}
 @keyframes pop{0%{transform:scale(.4)}80%{transform:scale(1.2)}100%{transform:scale(1)}}
-.buzzed-label{color:#999;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.buzzed-label{font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#999}
 .buzzed-team{font-size:44px;font-weight:900}
 .buzzed-sub{color:#bbb;font-size:16px}
 
-/* LOCKED */
+/* ── LOCKED ── */
 .locked{text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
 .locked-icon{font-size:88px}
 .locked-label{color:#bbb;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
-.locked-team{font-size:38px;font-weight:900;color:#F59E0B}
-.locked-sub{color:#ccc;font-size:16px}
+.locked-team{font-size:36px;font-weight:900;color:#F59E0B}
+.locked-sub{color:#ccc;font-size:15px}
 
-/* CLOSED */
+/* ── CLOSED ── */
 .closed{text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
 .closed-icon{font-size:88px}
 .closed-title{color:#0D1424;font-size:26px;font-weight:800}
@@ -77,106 +82,174 @@ const FIREBASE_CONFIG = {
 const TEAM_COLORS = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
 const TEAMS = ['Team A','Team B','Team C','Team D','Team E'];
 
-let db=null,stealOpen=false,timerSecs=5,timerIv=null,myBuzz=null,winnerLocked=null;
+let db = null;
+let myTeam = null;        // chosen team name
+let myColor = null;       // chosen team color
+let stealOpen = false;
+let timerSecs = 5;
+let timerIv = null;
+let winnerLocked = null;
+let buzzed = false;
 
-function render(st){
-  const app=document.getElementById('app');
-  if(st==='waiting'){
-    const pills=TEAMS.map((t,i)=>
-      `<div class="preview-pill" style="border-color:${TEAM_COLORS[i]};color:${TEAM_COLORS[i]}">${t}</div>`
-    ).join('');
-    app.innerHTML=`<div class="waiting">
-      <div class="waiting-icon">⚖️</div>
-      <div class="waiting-title">Legal Jeopardy</div>
-      <div class="waiting-sub">Buttons activate when the active team answers wrong</div>
-      <div class="teams-row">${pills}</div>
+// ── SCREENS ──────────────────────────────────────────────────────────────────
+
+function showPickTeam() {
+  myTeam = null;
+  myColor = null;
+  buzzed = false;
+  const btns = TEAMS.map((t,i) =>
+    `<button class="pick-btn" style="background:${TEAM_COLORS[i]}" onclick="pickTeam(${i})">${t}</button>`
+  ).join('');
+  document.getElementById('app').innerHTML = `
+    <div class="pick-wrap">
+      <div class="pick-icon">⚖️</div>
+      <div class="pick-title">Which team are you on?</div>
+      <div class="pick-sub">Choose your team — you only need to do this once per session</div>
+      <div class="pick-grid">${btns}</div>
     </div>`;
-  } else if(st==='open'){
-    const btns=TEAMS.map((t,i)=>
-      `<button class="team-btn" id="btn-${i}" style="background:${TEAM_COLORS[i]}" onclick="buzz(${i})">${t}</button>`
-    ).join('');
-    app.innerHTML=`<div class="steal-wrap">
-      <div class="steal-header">
-        <div class="steal-badge">⚡ STEAL OPEN</div>
-        <div class="steal-title">Buzz in for your team!</div>
-        <div class="steal-sub">First to press wins</div>
-      </div>
-      <div class="timer-row">
-        <div class="timer-num" id="st-count">${timerSecs}</div>
-        <div class="timer-bar-wrap"><div class="timer-bar" id="st-bar"></div></div>
-      </div>
-      <div class="team-row">${btns}</div>
+}
+
+function pickTeam(idx) {
+  myTeam  = TEAMS[idx];
+  myColor = TEAM_COLORS[idx];
+  buzzed  = false;
+  renderWaiting();
+}
+
+function renderWaiting() {
+  const isActive = stealOpen && !buzzed;
+  document.getElementById('app').innerHTML = `
+    <div class="waiting-wrap">
+      <div class="waiting-label">Your team</div>
+      <button class="big-btn ${isActive ? 'active' : ''}"
+        style="background:${myColor}"
+        ${isActive ? `onclick="buzz()"` : 'disabled'}
+        id="big-btn">
+        ${myTeam}
+      </button>
+      ${isActive ? `
+        <div class="status-msg active-msg">⚡ STEAL OPEN — press now!</div>
+        <div class="timer-row">
+          <div class="timer-num" id="st-count">${timerSecs}</div>
+          <div class="timer-bar-wrap"><div class="timer-bar" id="st-bar"></div></div>
+        </div>` : `
+        <div class="status-msg">Waiting for a steal opportunity…</div>`}
+      <button class="change-link" onclick="showPickTeam()">Change team</button>
     </div>`;
-    startStealTimer();
-  } else if(st==='buzzed'){
-    const color=TEAM_COLORS[TEAMS.indexOf(myBuzz)];
-    app.innerHTML=`<div class="buzzed">
+  if (isActive) startStealTimer();
+}
+
+function showBuzzed() {
+  clearInterval(timerIv);
+  document.getElementById('app').innerHTML = `
+    <div class="buzzed">
       <div class="buzzed-icon">🙋</div>
       <div class="buzzed-label">Buzzed in</div>
-      <div class="buzzed-team" style="color:${color}">${myBuzz}</div>
+      <div class="buzzed-team" style="color:${myColor}">${myTeam}</div>
       <div class="buzzed-sub">Waiting for professor to reveal answer…</div>
     </div>`;
-  } else if(st==='locked'){
-    app.innerHTML=`<div class="locked">
+}
+
+function showLocked() {
+  clearInterval(timerIv);
+  document.getElementById('app').innerHTML = `
+    <div class="locked">
       <div class="locked-icon">🔒</div>
       <div class="locked-label">Stolen by</div>
       <div class="locked-team">${winnerLocked}</div>
       <div class="locked-sub">Too slow this time!</div>
     </div>`;
-  } else if(st==='closed'){
-    app.innerHTML=`<div class="closed">
+}
+
+function showClosed() {
+  clearInterval(timerIv);
+  buzzed = false;
+  if (myTeam) renderWaiting();
+  else document.getElementById('app').innerHTML = `
+    <div class="closed">
       <div class="closed-icon">✅</div>
       <div class="closed-title">Question closed</div>
       <div class="closed-sub">Waiting for next question…</div>
     </div>`;
-  }
 }
 
-function startStealTimer(){
+// ── TIMER ─────────────────────────────────────────────────────────────────────
+function startStealTimer() {
   clearInterval(timerIv);
-  timerSecs=5;
-  timerIv=setInterval(()=>{
+  timerSecs = 5;
+  timerIv = setInterval(() => {
     timerSecs--;
-    const c=document.getElementById('st-count');
-    const b=document.getElementById('st-bar');
-    if(!c){clearInterval(timerIv);return;}
-    c.textContent=timerSecs;
-    b.style.width=(timerSecs/5*100)+'%';
-    if(timerSecs<=2){c.classList.add('urgent');b.classList.add('urgent');}
-    if(timerSecs<=0){clearInterval(timerIv);db.ref('steal').set({open:false,winner:null,timedOut:true});}
-  },1000);
-}
-
-function buzz(teamIdx){
-  if(!stealOpen)return;
-  document.querySelectorAll('.team-btn').forEach(b=>b.disabled=true);
-  myBuzz=TEAMS[teamIdx];
-  clearInterval(timerIv);
-  db.ref('steal/winner').transaction(cur=>cur===null?myBuzz:undefined,(err,committed)=>{
-    if(!committed)winnerLocked=myBuzz;
-    render(committed?'buzzed':'locked');
-  });
-}
-
-function initApp(){
-  firebase.initializeApp(FIREBASE_CONFIG);
-  db=firebase.database();
-  render('waiting');
-  db.ref('steal').on('value',snap=>{
-    const data=snap.val();
-    if(!data){render('waiting');return;}
-    if(data.winner){
+    const c = document.getElementById('st-count');
+    const b = document.getElementById('st-bar');
+    if (!c) { clearInterval(timerIv); return; }
+    c.textContent = timerSecs;
+    b.style.width = (timerSecs / 5 * 100) + '%';
+    if (timerSecs <= 2) { c.classList.add('urgent'); b.classList.add('urgent'); }
+    if (timerSecs <= 0) {
       clearInterval(timerIv);
-      if(data.winner===myBuzz)render('buzzed');
-      else{winnerLocked=data.winner;render('locked');}
-    } else if(data.open){
-      stealOpen=true;myBuzz=null;winnerLocked=null;render('open');
+      db.ref('steal').set({ open: false, winner: null, timedOut: true });
+    }
+  }, 1000);
+}
+
+// ── BUZZ IN ───────────────────────────────────────────────────────────────────
+function buzz() {
+  if (!stealOpen || !myTeam || buzzed) return;
+  buzzed = true;
+  clearInterval(timerIv);
+  // Disable button immediately
+  const btn = document.getElementById('big-btn');
+  if (btn) btn.disabled = true;
+
+  db.ref('steal/winner').transaction(cur => cur === null ? myTeam : undefined, (err, committed) => {
+    if (committed) {
+      showBuzzed();
     } else {
-      stealOpen=false;clearInterval(timerIv);myBuzz=null;
-      render(data.timedOut?'closed':'waiting');
+      // Someone was faster
+      db.ref('steal/winner').once('value', s => {
+        winnerLocked = s.val();
+        showLocked();
+      });
     }
   });
 }
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
+function initApp() {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  showPickTeam();
+
+  db.ref('steal').on('value', snap => {
+    const data = snap.val();
+    if (!data) {
+      stealOpen = false;
+      if (myTeam && !buzzed) renderWaiting();
+      return;
+    }
+
+    if (data.winner) {
+      // Steal claimed
+      stealOpen = false;
+      if (data.winner === myTeam && buzzed) {
+        showBuzzed();
+      } else if (data.winner !== myTeam) {
+        winnerLocked = data.winner;
+        if (buzzed || stealOpen) showLocked();
+      }
+    } else if (data.open) {
+      stealOpen = true;
+      buzzed = false;
+      timerSecs = 5;
+      if (myTeam) renderWaiting();
+    } else {
+      stealOpen = false;
+      clearInterval(timerIv);
+      if (!buzzed) showClosed();
+    }
+  });
+}
+
 initApp();
 </script>
 </body>
