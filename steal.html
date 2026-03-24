@@ -223,8 +223,12 @@ function initApp() {
   db.ref('steal').on('value', snap => {
     const data = snap.val();
     if (!data) {
+      // Node deleted — clean reset
       stealOpen = false;
-      if (myTeam && !buzzed) renderWaiting();
+      buzzed = false;
+      clearInterval(timerIv);
+      if (myTeam) renderWaiting();
+      else showPickTeam();
       return;
     }
 
