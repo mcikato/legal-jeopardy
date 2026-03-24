@@ -222,8 +222,9 @@ function initApp() {
 
   db.ref('steal').on('value', snap => {
     const data = snap.val();
-    if (!data) {
-      // Node deleted — clean reset
+
+    // No data OR steal is closed/timed out → always reset to waiting
+    if (!data || (!data.open && !data.winner)) {
       stealOpen = false;
       buzzed = false;
       clearInterval(timerIv);
@@ -233,23 +234,21 @@ function initApp() {
     }
 
     if (data.winner) {
-      // Steal claimed
+      // Someone buzzed in
+      clearInterval(timerIv);
       stealOpen = false;
-      if (data.winner === myTeam && buzzed) {
+      if (data.winner === myTeam) {
         showBuzzed();
-      } else if (data.winner !== myTeam) {
+      } else {
         winnerLocked = data.winner;
-        if (buzzed || stealOpen) showLocked();
+        showLocked();
       }
     } else if (data.open) {
+      // Steal just opened
       stealOpen = true;
       buzzed = false;
       timerSecs = 5;
       if (myTeam) renderWaiting();
-    } else {
-      stealOpen = false;
-      clearInterval(timerIv);
-      if (!buzzed) showClosed();
     }
   });
 }
