@@ -539,12 +539,14 @@ function listenForStealResult() {
   db.ref('steal/winner').on('value', snap => {
     const winner = snap.val();
     if (!winner) return;
-    // Show winner on professor screen if we're in steal phase
-    const badge = document.getElementById('steal-winner-badge');
-    if (badge) {
-      badge.textContent = '⚡ ' + winner + ' buzzed in first!';
-      badge.style.display = 'block';
-    }
+    if (state.phase !== 'wrong') return; // only act if we're waiting for a steal
+    // Find which team index buzzed in
+    const teamIdx = state.teams.findIndex(t => t.name === winner);
+    if (teamIdx === -1) return;
+    // Auto-advance to steal stage — no need for professor to pick manually
+    state.phase = 'steal';
+    state.stealTeam = teamIdx;
+    renderModalActions();
   });
 }
 
