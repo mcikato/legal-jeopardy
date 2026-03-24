@@ -8,52 +8,50 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0D1424;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;user-select:none}
-
-/* WAITING STATE */
-.waiting{text-align:center}
-.waiting-icon{font-size:64px;margin-bottom:20px;animation:float 2s ease-in-out infinite}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0D1424;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;user-select:none;-webkit-tap-highlight-color:transparent}
+.waiting{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.waiting-icon{font-size:56px;animation:float 2.5s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.waiting-title{color:#7A9BB8;font-size:18px;font-weight:700;letter-spacing:1px;margin-bottom:8px}
-.waiting-sub{color:#334;font-size:13px}
-
-/* STEAL OPEN STATE */
-.steal-open{text-align:center;width:100%;max-width:400px}
-.steal-label{color:#F59E0B;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
-
-/* 5-second timer */
-.steal-timer{font-size:72px;font-weight:900;color:#fff;line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums;transition:color .3s}
-.steal-timer.urgent{color:#EF4444;animation:pulse .4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.timer-bar-wrap{width:100%;height:8px;background:#1E2F50;border-radius:4px;margin-bottom:24px;overflow:hidden}
-.timer-bar{height:8px;border-radius:4px;background:#F59E0B;width:100%;transition:width .9s linear,background .3s}
+.waiting-title{color:#fff;font-size:20px;font-weight:900;letter-spacing:.5px}
+.waiting-sub{color:#4A6278;font-size:13px;line-height:1.5;max-width:260px;text-align:center}
+.teams-preview{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:340px;margin-top:8px}
+.preview-pill{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;text-align:center;border:2px solid}
+.steal-wrap{width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center}
+.steal-header{text-align:center;margin-bottom:20px}
+.steal-badge{display:inline-flex;align-items:center;gap:6px;background:#F59E0B;color:#fff;font-size:12px;font-weight:800;padding:5px 14px;border-radius:20px;letter-spacing:.5px;margin-bottom:12px}
+.steal-title{color:#fff;font-size:22px;font-weight:900;margin-bottom:4px}
+.steal-sub{color:#7A9BB8;font-size:13px}
+.timer-row{display:flex;align-items:center;gap:12px;width:100%;margin-bottom:20px}
+.timer-num{font-size:52px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;min-width:56px;text-align:center;line-height:1;transition:color .3s}
+.timer-num.urgent{color:#EF4444;animation:pulse .4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.timer-bar-wrap{flex:1;height:10px;background:#1E2F50;border-radius:5px;overflow:hidden}
+.timer-bar{height:10px;border-radius:5px;background:#F59E0B;width:100%;transition:width .9s linear,background .3s}
 .timer-bar.urgent{background:#EF4444}
-
-/* Team buttons */
-.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
-.team-btn{padding:22px 12px;border-radius:16px;border:3px solid transparent;font-size:16px;font-weight:900;color:#fff;cursor:pointer;transition:transform .08s,opacity .2s;letter-spacing:.5px;min-height:80px}
-.team-btn:active{transform:scale(.95)}
-.team-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
-
-/* BUZZED STATE */
-.buzzed{text-align:center}
-.buzzed-icon{font-size:72px;margin-bottom:16px}
-.buzzed-team{font-size:28px;font-weight:900;margin-bottom:8px}
-.buzzed-sub{font-size:14px;color:#7A9BB8}
-
-/* LOCKED (someone else buzzed) */
-.locked{text-align:center}
-.locked-icon{font-size:64px;margin-bottom:16px}
-.locked-msg{color:#7A9BB8;font-size:16px;font-weight:700;margin-bottom:4px}
-.locked-team{color:#F59E0B;font-size:20px;font-weight:900}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.team-btn{padding:22px 10px;border-radius:14px;border:3px solid transparent;font-size:16px;font-weight:900;color:#fff;cursor:pointer;transition:transform .08s;letter-spacing:.3px;min-height:76px;display:flex;align-items:center;justify-content:center}
+.team-btn:active{transform:scale(.92)}
+.team-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
+.buzzed{text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.buzzed-icon{font-size:72px;animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.5)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+.buzzed-label{color:#7A9BB8;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.buzzed-team{font-size:30px;font-weight:900}
+.buzzed-sub{color:#4A6278;font-size:13px}
+.locked{text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.locked-icon{font-size:56px}
+.locked-label{color:#4A6278;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.locked-team{font-size:24px;font-weight:900;color:#F59E0B}
+.locked-sub{color:#334;font-size:12px}
+.closed{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.closed-icon{font-size:56px}
+.closed-title{color:#7A9BB8;font-size:18px;font-weight:700}
+.closed-sub{color:#334;font-size:13px}
 </style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script>
-// ─── PASTE THE SAME FIREBASE CONFIG AS IN index.html ─────────────────────────
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCsj2tb4U6U9UeUijBGJOzL_fkrQaIDW6I",
   authDomain: "legal-jeopardy.firebaseapp.com",
@@ -65,155 +63,109 @@ const FIREBASE_CONFIG = {
 };
 
 const TEAM_COLORS = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
-const TEAMS       = ['Team A','Team B','Team C','Team D','Team E'];
+const TEAMS = ['Team A','Team B','Team C','Team D','Team E'];
 
-let db           = null;
-let stealOpen    = false;
-let timerSecs    = 5;
-let timerIv      = null;
-let myBuzz       = null;   // team name this device buzzed for
-let winnnerLocked = null;  // team name that won the steal
+let db = null, stealOpen = false, timerSecs = 5, timerIv = null, myBuzz = null, winnerLocked = null;
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function render(state) {
+function render(st) {
   const app = document.getElementById('app');
-
-  if (state === 'waiting') {
-    app.innerHTML = `
-      <div class="waiting">
-        <div class="waiting-icon">⚖️</div>
-        <div class="waiting-title">Legal Jeopardy</div>
-        <div class="waiting-sub">Waiting for a steal opportunity…</div>
-      </div>`;
-
-  } else if (state === 'open') {
-    app.innerHTML = `
-      <div class="steal-open">
-        <div class="steal-label">⚡ Steal available!</div>
-        <div class="steal-timer" id="st-count">${timerSecs}</div>
+  if (st === 'waiting') {
+    const pills = TEAMS.map((t,i) =>
+      `<div class="preview-pill" style="border-color:${TEAM_COLORS[i]}44;color:${TEAM_COLORS[i]}88;background:${TEAM_COLORS[i]}11">${t}</div>`
+    ).join('');
+    app.innerHTML = `<div class="waiting">
+      <div class="waiting-icon">⚖️</div>
+      <div class="waiting-title">Legal Jeopardy</div>
+      <div class="waiting-sub">Buttons activate when the active team answers wrong</div>
+      <div class="teams-preview">${pills}</div>
+    </div>`;
+  } else if (st === 'open') {
+    const btns = TEAMS.map((t,i) =>
+      `<button class="team-btn" id="btn-${i}" style="background:${TEAM_COLORS[i]};border-color:${TEAM_COLORS[i]}" onclick="buzz(${i})">${t}</button>`
+    ).join('');
+    app.innerHTML = `<div class="steal-wrap">
+      <div class="steal-header">
+        <div class="steal-badge">⚡ STEAL OPEN</div>
+        <div class="steal-title">Buzz in for your team!</div>
+        <div class="steal-sub">First to press wins the steal</div>
+      </div>
+      <div class="timer-row">
+        <div class="timer-num" id="st-count">${timerSecs}</div>
         <div class="timer-bar-wrap"><div class="timer-bar" id="st-bar"></div></div>
-        <div class="team-grid">
-          ${TEAMS.map((t,i) => `
-            <button class="team-btn" id="btn-${i}"
-              style="background:${TEAM_COLORS[i]};border-color:${TEAM_COLORS[i]}"
-              onclick="buzz(${i})">${t}</button>`).join('')}
-        </div>
-      </div>`;
+      </div>
+      <div class="team-grid">${btns}</div>
+    </div>`;
     startStealTimer();
-
-  } else if (state === 'buzzed') {
+  } else if (st === 'buzzed') {
     const color = TEAM_COLORS[TEAMS.indexOf(myBuzz)];
-    app.innerHTML = `
-      <div class="buzzed">
-        <div class="buzzed-icon">🙋</div>
-        <div class="buzzed-team" style="color:${color}">${myBuzz}</div>
-        <div class="buzzed-sub">Buzzed in! Waiting for professor…</div>
-      </div>`;
-
-  } else if (state === 'locked') {
-    app.innerHTML = `
-      <div class="locked">
-        <div class="locked-icon">🔒</div>
-        <div class="locked-msg">Stolen by</div>
-        <div class="locked-team">${winnnerLocked}</div>
-      </div>`;
-
-  } else if (state === 'closed') {
-    app.innerHTML = `
-      <div class="waiting">
-        <div class="waiting-icon">✅</div>
-        <div class="waiting-title">Steal closed</div>
-        <div class="waiting-sub">Waiting for next question…</div>
-      </div>`;
+    app.innerHTML = `<div class="buzzed">
+      <div class="buzzed-icon">🙋</div>
+      <div class="buzzed-label">Buzzed in</div>
+      <div class="buzzed-team" style="color:${color}">${myBuzz}</div>
+      <div class="buzzed-sub">Waiting for professor to reveal answer…</div>
+    </div>`;
+  } else if (st === 'locked') {
+    app.innerHTML = `<div class="locked">
+      <div class="locked-icon">🔒</div>
+      <div class="locked-label">Stolen by</div>
+      <div class="locked-team">${winnerLocked}</div>
+      <div class="locked-sub">Too slow this time!</div>
+    </div>`;
+  } else if (st === 'closed') {
+    app.innerHTML = `<div class="closed">
+      <div class="closed-icon">✅</div>
+      <div class="closed-title">Question closed</div>
+      <div class="closed-sub">Waiting for next question…</div>
+    </div>`;
   }
 }
 
-// ── TIMER ────────────────────────────────────────────────────────────────────
 function startStealTimer() {
   clearInterval(timerIv);
   timerSecs = 5;
   timerIv = setInterval(() => {
     timerSecs--;
-    const countEl = document.getElementById('st-count');
-    const barEl   = document.getElementById('st-bar');
-    if (!countEl) { clearInterval(timerIv); return; }
-    countEl.textContent = timerSecs;
-    const pct = (timerSecs / 5) * 100;
-    barEl.style.width = pct + '%';
-    if (timerSecs <= 2) {
-      countEl.classList.add('urgent');
-      barEl.classList.add('urgent');
-    }
-    if (timerSecs <= 0) {
-      clearInterval(timerIv);
-      // Time up — close steal
-      db.ref('steal').set({ open: false, winner: null, timedOut: true });
-    }
+    const c = document.getElementById('st-count');
+    const b = document.getElementById('st-bar');
+    if (!c) { clearInterval(timerIv); return; }
+    c.textContent = timerSecs;
+    b.style.width = (timerSecs / 5 * 100) + '%';
+    if (timerSecs <= 2) { c.classList.add('urgent'); b.classList.add('urgent'); }
+    if (timerSecs <= 0) { clearInterval(timerIv); db.ref('steal').set({ open: false, winner: null, timedOut: true }); }
   }, 1000);
 }
 
-// ── BUZZ IN ──────────────────────────────────────────────────────────────────
 function buzz(teamIdx) {
   if (!stealOpen) return;
-  const teamName = TEAMS[teamIdx];
-  myBuzz = teamName;
+  document.querySelectorAll('.team-btn').forEach(b => b.disabled = true);
+  myBuzz = TEAMS[teamIdx];
   clearInterval(timerIv);
-
-  // Try to claim the steal — only first write wins
-  const ref = db.ref('steal/winner');
-  ref.transaction(current => {
-    if (current === null) return teamName;  // claim it
-    return;  // someone already claimed it — abort
-  }, (err, committed) => {
-    if (committed) {
-      render('buzzed');
-    } else {
-      // Someone else was faster
-      render('locked');
-    }
+  db.ref('steal/winner').transaction(cur => cur === null ? myBuzz : undefined, (err, committed) => {
+    render(committed ? 'buzzed' : 'locked');
+    if (!committed) winnerLocked = myBuzz;
   });
 }
 
-// ── FIREBASE LISTENER ────────────────────────────────────────────────────────
 function initApp() {
   firebase.initializeApp(FIREBASE_CONFIG);
   db = firebase.database();
-
   render('waiting');
-
   db.ref('steal').on('value', snap => {
     const data = snap.val();
     if (!data) { render('waiting'); return; }
-
-    if (data.winner && data.winner !== myBuzz) {
-      // Someone else won
-      winnnerLocked = data.winner;
+    if (data.winner) {
       clearInterval(timerIv);
-      render('locked');
-    } else if (data.winner && data.winner === myBuzz) {
-      // We won
-      render('buzzed');
+      if (data.winner === myBuzz) render('buzzed');
+      else { winnerLocked = data.winner; render('locked'); }
     } else if (data.open) {
-      // Steal just opened
-      stealOpen  = true;
-      myBuzz     = null;
-      winnnerLocked = null;
+      stealOpen = true; myBuzz = null; winnerLocked = null;
       render('open');
     } else {
-      // Steal closed
-      stealOpen = false;
-      clearInterval(timerIv);
-      if (myBuzz) {
-        // We buzzed but game moved on
-        render('closed');
-        myBuzz = null;
-      } else {
-        render('waiting');
-      }
+      stealOpen = false; clearInterval(timerIv);
+      myBuzz = null; render(data.timedOut ? 'closed' : 'waiting');
     }
   });
 }
-
 initApp();
 </script>
 </body>
