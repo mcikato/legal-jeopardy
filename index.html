@@ -118,8 +118,8 @@ input,textarea{font-family:inherit}
 .score-adj{display:flex;gap:3px;margin-top:4px;justify-content:center}
 .adj-btn{font-size:10px;background:transparent;border:1px solid #334;color:#aaa;border-radius:4px;padding:1px 6px}
 .board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
-.cat-header{background:#1E2F50;border-radius:8px;padding:8px 4px;text-align:center;font-size:9px;font-weight:800;color:#CADCFC;min-height:50px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;letter-spacing:.3px}
-.cell{border-radius:8px;min-height:52px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;cursor:pointer;transition:transform .1s;user-select:none}
+.cat-header{background:#1E2F50;border-radius:8px;padding:8px 4px;text-align:center;font-size:11px;font-weight:800;color:#CADCFC;min-height:50px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;letter-spacing:.3px}
+.cell{border-radius:8px;min-height:62px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;cursor:pointer;transition:transform .1s;user-select:none}
 .cell:hover{transform:scale(1.05)}
 .cell.used{opacity:.2;cursor:default;pointer-events:none}
 
@@ -459,6 +459,7 @@ input,textarea{font-family:inherit}
       </div>
     </div>
     <div class="scores-grid" id="scores-grid"></div>
+    <div id="order-strip"></div>
     <div class="board" id="board"></div>
   </div>
 </div>
@@ -1318,7 +1319,7 @@ function renderGame() {
   document.getElementById('scores-grid').innerHTML = state.teams.map((t,i)=>{
     const isActive = state.orderRolled && i === active;
     return `
-    <div class="score-card" style="border:2px solid ${isActive ? TEAM_COLORS[i] : TEAM_COLORS[i]+'44'};${isActive?'background:#1E2F50;':'' }">
+    <div class="score-card" style="border:2px solid ${isActive ? TEAM_COLORS[i] : TEAM_COLORS[i]+'44'};${isActive?'background:#1E2F50;':''}">
       ${isActive ? '<div style="font-size:9px;font-weight:800;color:#F59E0B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">▶ Picks now</div>' : ''}
       <div class="score-team">${esc(t.name)}</div>
       <div class="score-pts" style="color:${TEAM_COLORS[i]}">${state.sessionScores[i]} pts</div>
@@ -1329,27 +1330,30 @@ function renderGame() {
     </div>`;
   }).join('');
 
-  // Turn order strip (shown after rolling)
-  let orderHtml = '';
-  if (!state.orderRolled) {
-    orderHtml = `<div style="text-align:center;margin-bottom:8px">
-      <button class="btn-blue" style="font-size:14px;padding:10px 28px;border-radius:10px" onclick="rollOrder()">🎲 Roll turn order</button>
-    </div>`;
-  } else {
-    const pills = state.turnOrder.map((ti, pos) => {
-      const isCur = pos === state.currentTurn;
-      return `<div style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;background:${isCur?TEAM_COLORS[ti]:'#1a2540'};transition:background .3s">
-        <span style="font-size:10px;font-weight:800;color:${isCur?'rgba(255,255,255,.7)':'#446'}">${pos+1}</span>
-        <span style="font-size:11px;font-weight:${isCur?'900':'600'};color:${isCur?'#fff':'#7A9BB8'}">${esc(state.teams[ti].name)}</span>
+  // Turn order strip — rendered in its own div, OUTSIDE the board grid
+  const orderEl = document.getElementById('order-strip');
+  if (orderEl) {
+    if (!state.orderRolled) {
+      orderEl.innerHTML = `<div style="text-align:center;margin-bottom:8px">
+        <button class="btn-blue" style="font-size:15px;padding:11px 32px;border-radius:10px" onclick="rollOrder()">🎲 Roll turn order</button>
       </div>`;
-    }).join('');
-    orderHtml = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:800;color:#446;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0">Order:</span>
-      ${pills}
-      <button class="btn-ghost" style="font-size:10px;padding:4px 10px;margin-left:auto" onclick="rollOrder()">🎲 Re-roll</button>
-    </div>`;
+    } else {
+      const pills = state.turnOrder.map((ti, pos) => {
+        const isCur = pos === state.currentTurn;
+        return `<div style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:${isCur?TEAM_COLORS[ti]:'#1a2540'};transition:background .3s">
+          <span style="font-size:11px;font-weight:800;color:${isCur?'rgba(255,255,255,.6)':'#446'}">${pos+1}</span>
+          <span style="font-size:12px;font-weight:${isCur?'900':'600'};color:${isCur?'#fff':'#7A9BB8'}">${esc(state.teams[ti].name)}</span>
+        </div>`;
+      }).join('');
+      orderEl.innerHTML = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:800;color:#446;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0">Order:</span>
+        ${pills}
+        <button class="btn-ghost" style="font-size:10px;padding:4px 10px;margin-left:auto" onclick="rollOrder()">🎲 Re-roll</button>
+      </div>`;
+    }
   }
 
+  // Board — clean grid, no extra elements inside
   let html = mod.categories.map(c=>`<div class="cat-header">${esc(c)}</div>`).join('');
   POINTS.forEach((pts,row)=>{
     mod.categories.forEach((_,col)=>{
@@ -1357,7 +1361,7 @@ function renderGame() {
       html += `<div class="cell ${done?'used':''}" style="background:${done?'#0a1020':ROW_COLORS[row]}" onclick="openCell(${col},${row})">${done?'':pts}</div>`;
     });
   });
-  document.getElementById('board').innerHTML = orderHtml + html;
+  document.getElementById('board').innerHTML = html;
   document.getElementById('exit-ui').innerHTML = `<button class="btn-ghost" onclick="showExitConfirm()">← Exit</button>`;
 }
 
@@ -1566,11 +1570,8 @@ function markUsed() {
   }
   // Reset Firebase steal so students see clean state for next question
   firebaseSetSteal(null);
-  // Only advance turn if this was a normal question (not a steal)
-  // A steal is when stealTeam is set and phase was steal
-  if (state.phase !== 'steal') {
-    advanceTurn();
-  }
+  // Always advance to next team after every question
+  advanceTurn();
   state.phase = 'question';
   document.getElementById('overlay').classList.remove('open');
   state.currentCell = null;
