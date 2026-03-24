@@ -1566,8 +1566,12 @@ function markUsed() {
   }
   // Reset Firebase steal so students see clean state for next question
   firebaseSetSteal(null);
-  // Advance to next team
-  advanceTurn();
+  // Only advance turn if this was a normal question (not a steal)
+  // A steal is when stealTeam is set and phase was steal
+  if (state.phase !== 'steal') {
+    advanceTurn();
+  }
+  state.phase = 'question';
   document.getElementById('overlay').classList.remove('open');
   state.currentCell = null;
   const allDone = state.used.every(col=>col.every(v=>v));
