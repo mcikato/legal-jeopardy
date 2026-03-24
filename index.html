@@ -1493,7 +1493,6 @@ function markUsed() {
   if (state.currentCell) {
     const {col, row} = state.currentCell;
     state.used[col][row] = true;
-    // Track question result for analytics
     state.questionLog.push({
       moduleId: state.activeModule.id,
       col, row,
@@ -1501,6 +1500,8 @@ function markUsed() {
     });
     state.lastAnswerCorrect = false;
   }
+  // Reset Firebase steal so students see clean state for next question
+  firebaseSetSteal({ open: false, winner: null });
   document.getElementById('overlay').classList.remove('open');
   state.currentCell = null;
   const allDone = state.used.every(col=>col.every(v=>v));
