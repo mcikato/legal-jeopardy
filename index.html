@@ -527,10 +527,14 @@ function initFirebase() {
   } catch(e) { console.warn('Firebase not configured:', e); }
 }
 
-// Write steal state to Firebase (called by professor app)
-function firebaseSetSteal(state) {
+// Write steal state to Firebase — pass null to delete the node entirely
+function firebaseSetSteal(data) {
   if (!db) return;
-  db.ref('steal').set(state);
+  if (data === null) {
+    db.ref('steal').remove();
+  } else {
+    db.ref('steal').set(data);
+  }
 }
 
 // Listen for first team to buzz in (on professor screen)
@@ -1401,7 +1405,7 @@ function teamAnswered(optionIdx) {
     state.phase = 'correct';
     state.lastAnswerCorrect = true;
     renderOptions(q, true);
-    firebaseSetSteal({ open: false, winner: null });
+    firebaseSetSteal(null);
   } else {
     state.phase = 'wrong';
     renderOptionsWrong(q, optionIdx);
@@ -1429,7 +1433,7 @@ function openSteal(teamIdx) {
 
 // Steal team chose an option
 function stealAnswered(optionIdx) {
-  firebaseSetSteal({ open: false, winner: null });
+  firebaseSetSteal(null);
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   const pts = POINTS[state.currentCell.row];
   const half = Math.floor(pts / 2);
@@ -1463,7 +1467,7 @@ function stealAnswered(optionIdx) {
 
 // No steal — just reveal the answer
 function noSteal() {
-  firebaseSetSteal({ open: false, winner: null });
+  firebaseSetSteal(null);
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   renderOptions(q, true);
   const el = document.getElementById('m-actions');
@@ -1501,7 +1505,7 @@ function markUsed() {
     state.lastAnswerCorrect = false;
   }
   // Reset Firebase steal so students see clean state for next question
-  firebaseSetSteal({ open: false, winner: null });
+  firebaseSetSteal(null);
   document.getElementById('overlay').classList.remove('open');
   state.currentCell = null;
   const allDone = state.used.every(col=>col.every(v=>v));
