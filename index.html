@@ -174,6 +174,9 @@ input,textarea{font-family:inherit}
 .btn-full{width:100%;padding:13px 0;font-size:15px;font-weight:700;border-radius:12px}
 .play-btn{background:#0D1424;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800}
 </style>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -501,6 +504,49 @@ input,textarea{font-family:inherit}
 // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
 // ─────────────────────────────────────────────────────────────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEJqk623ME4q52fKZUulwi8cB1b08dMhw8Dildo15zrx2LNCDeJ8c9HDuSnEe2lNbS/exec';
+
+// ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
+// PASTE YOUR FIREBASE CONFIG HERE after creating your project
+// See setup instructions below
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCsj2tb4U6U9UeUijBGJOzL_fkrQaIDW6I",
+  authDomain: "legal-jeopardy.firebaseapp.com",
+  databaseURL: "https://legal-jeopardy-default-rtdb.firebaseio.com",
+  projectId: "legal-jeopardy",
+  storageBucket: "legal-jeopardy.firebasestorage.app",
+  messagingSenderId: "664040596488",
+  appId: "1:664040596488:web:625c53ae7a1764e9ac1dbd"
+};
+
+let db = null;
+function initFirebase() {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    listenForStealResult();
+  } catch(e) { console.warn('Firebase not configured:', e); }
+}
+
+// Write steal state to Firebase (called by professor app)
+function firebaseSetSteal(state) {
+  if (!db) return;
+  db.ref('steal').set(state);
+}
+
+// Listen for first team to buzz in (on professor screen)
+function listenForStealResult() {
+  if (!db) return;
+  db.ref('steal/winner').on('value', snap => {
+    const winner = snap.val();
+    if (!winner) return;
+    // Show winner on professor screen if we're in steal phase
+    const badge = document.getElementById('steal-winner-badge');
+    if (badge) {
+      badge.textContent = '⚡ ' + winner + ' buzzed in first!';
+      badge.style.display = 'block';
+    }
+  });
+}
 
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const TEAM_COLORS  = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
@@ -1314,10 +1360,11 @@ function renderModalActions() {
   } else if (state.phase === 'wrong') {
     el.innerHTML = `
       <div>
-        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#B91C1C;font-weight:700">
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#B91C1C;font-weight:700">
           ❌ Wrong answer — correct answer not revealed yet
         </div>
-        <p class="award-label">Which team steals?</p>
+        <div id="steal-winner-badge" style="display:none;background:#FFFBEB;border:2px solid #F59E0B;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px;font-weight:800;color:#92400E;text-align:center"></div>
+        <p class="award-label">Which team steals? <span style="font-size:10px;color:#aaa;font-weight:400">(or select from phones)</span></p>
         <div class="award-btns" style="margin-bottom:12px">
           ${state.teams.map((t,i)=>`
             <button class="btn" style="border:2px solid #F59E0B;color:#B45309;font-weight:800"
@@ -1349,14 +1396,15 @@ function teamAnswered(optionIdx) {
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   state.teamAnswered = optionIdx;
   if (optionIdx === q.correct) {
-    // Correct — show answer and award buttons
     state.phase = 'correct';
     state.lastAnswerCorrect = true;
     renderOptions(q, true);
+    firebaseSetSteal({ open: false, winner: null });
   } else {
-    // Wrong — mark wrong option red but DON'T reveal correct yet
     state.phase = 'wrong';
     renderOptionsWrong(q, optionIdx);
+    // Open steal on Firebase — students' phones activate instantly
+    firebaseSetSteal({ open: true, winner: null, openedAt: Date.now() });
   }
   renderModalActions();
 }
@@ -1379,6 +1427,7 @@ function openSteal(teamIdx) {
 
 // Steal team chose an option
 function stealAnswered(optionIdx) {
+  firebaseSetSteal({ open: false, winner: null });
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   const pts = POINTS[state.currentCell.row];
   const half = Math.floor(pts / 2);
@@ -1412,6 +1461,7 @@ function stealAnswered(optionIdx) {
 
 // No steal — just reveal the answer
 function noSteal() {
+  firebaseSetSteal({ open: false, winner: null });
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   renderOptions(q, true);
   const el = document.getElementById('m-actions');
@@ -1583,6 +1633,7 @@ function stopTimer() {
   if (timerEl) timerEl.style.display = 'none';
 }
 
+initFirebase();
 initApp();
 </script>
 </body>
