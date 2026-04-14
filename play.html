@@ -541,11 +541,12 @@ function buzzSteal() {
 function submitStealAnswer(optionIdx) {
   if (!db) return;
   clearInterval(stealTimerIv);
-  // Single atomic update to avoid race conditions
+  console.log('[STEAL SUBMIT] team='+myTeam+' option='+optionIdx);
   db.ref('game').update({
     stealAnswer: optionIdx,
     phase: 'steal_answered'
-  });
+  }).then(() => console.log('[STEAL SUBMIT] SUCCESS'))
+    .catch(e => console.log('[STEAL SUBMIT] ERROR', e));
 }
 
 // ── TIMERS ────────────────────────────────────────────────────────────────────
