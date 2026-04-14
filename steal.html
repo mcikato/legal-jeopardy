@@ -86,7 +86,7 @@ let db = null;
 let myTeam = null;        // chosen team name
 let myColor = null;       // chosen team color
 let stealOpen = false;
-let timerSecs = 5;
+let timerSecs = 10;
 let timerIv = null;
 let winnerLocked = null;
 let buzzed = false;
@@ -176,15 +176,15 @@ function showClosed() {
 // ── TIMER ─────────────────────────────────────────────────────────────────────
 function startStealTimer() {
   clearInterval(timerIv);
-  timerSecs = 5;
+  timerSecs = 10;
   timerIv = setInterval(() => {
     timerSecs--;
     const c = document.getElementById('st-count');
     const b = document.getElementById('st-bar');
     if (!c) { clearInterval(timerIv); return; }
     c.textContent = timerSecs;
-    b.style.width = (timerSecs / 5 * 100) + '%';
-    if (timerSecs <= 2) { c.classList.add('urgent'); b.classList.add('urgent'); }
+    b.style.width = (timerSecs / 10 * 100) + '%';
+    if (timerSecs <= 3) { c.classList.add('urgent'); b.classList.add('urgent'); }
     if (timerSecs <= 0) {
       clearInterval(timerIv);
       db.ref('steal').set({ open: false, winner: null, timedOut: true });
@@ -247,7 +247,7 @@ function initApp() {
       // Steal just opened
       stealOpen = true;
       buzzed = false;
-      timerSecs = 5;
+      timerSecs = 10;
       if (myTeam) renderWaiting();
     }
   });
