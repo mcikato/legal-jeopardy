@@ -543,6 +543,7 @@ function listenForStudentAnswers() {
   db.ref('game').on('value', snap => {
     const data = snap.val();
     if (!data) return;
+    console.log('[GL] phase='+data.phase+' stPhase='+state.phase+' handled='+state.stealAnswerHandled+' cell='+!!state.currentCell);
     if (!state.currentCell) return;
     if (data.phase === 'answered_correct' && state.phase === 'question') {
       const q = state.activeModule.questions[data.col][data.row];
