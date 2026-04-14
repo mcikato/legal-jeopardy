@@ -601,29 +601,31 @@ function listenForStudentAnswers() {
     const data = snap.val();
     if (!data) return;
 
-    // Student answered
-    if (data.phase === 'answered' && data.teamAnswer !== null && state.phase === 'question') {
+    // Student answered correctly
+    if (data.phase === 'answered_correct' && data.teamAnswer !== null && state.phase === 'question') {
       const q = state.activeModule.questions[data.col][data.row];
       stopTimer();
       state.teamAnswered = data.teamAnswer;
-
-      if (data.teamAnswer === q.correct) {
-        state.phase = 'correct';
-        state.lastAnswerCorrect = true;
-        renderOptions(q, true);
-        firebaseSetSteal(null);
-        if (getAutoAward()) {
-          // Auto-award: find team index and award
-          const teamIdx = state.teams.findIndex(t => t.name === data.activeTeam);
-          if (teamIdx >= 0) awardPoints(teamIdx, POINTS[data.col !== undefined ? state.currentCell?.row : 0] || POINTS[state.currentCell?.row]);
-        }
+      state.phase = 'correct';
+      state.lastAnswerCorrect = true;
+      renderOptions(q, true);
+      firebaseSetSteal(null);
+      if (getAutoAward()) {
+        const teamIdx = state.teams.findIndex(t => t.name === data.activeTeam);
+        if (teamIdx >= 0) awardPoints(teamIdx, POINTS[state.currentCell.row]);
       } else {
-        state.phase = 'wrong';
-        renderOptionsWrong(q, data.teamAnswer);
-        // Open steal for students
-        firebaseOpenSteal();
-        firebaseSetSteal({ open: true, winner: null, openedAt: Date.now() });
+        renderModalActions();
       }
+    }
+
+    // Student answered wrong — steal already open in Firebase from play.html
+    if (data.phase === 'steal_open' && state.phase === 'question') {
+      const q = state.activeModule.questions[data.col][data.row];
+      stopTimer();
+      state.teamAnswered = data.teamAnswer;
+      state.phase = 'wrong';
+      renderOptionsWrong(q, data.teamAnswer);
+      firebaseSetSteal({ open: true, winner: null, openedAt: Date.now() });
       renderModalActions();
     }
 
