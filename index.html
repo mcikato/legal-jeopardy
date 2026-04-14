@@ -543,7 +543,6 @@ function listenForStudentAnswers() {
   db.ref('game').on('value', snap => {
     const data = snap.val();
     if (!data) return;
-    console.log('[GAME LISTENER] phase='+data?.phase+' statePhase='+state.phase+' currentCell='+JSON.stringify(state.currentCell));
     if (!state.currentCell) return;
     if (data.phase === 'answered_correct' && state.phase === 'question') {
       const q = state.activeModule.questions[data.col][data.row];
@@ -563,7 +562,8 @@ function listenForStudentAnswers() {
       const ti = state.teams.findIndex(t=>t.name===data.stealTeam);
       if (ti>=0) { state.phase='steal'; state.stealTeam=ti; renderModalActions(); }
     }
-    if (data.phase === 'steal_answered' && state.currentCell) {
+    if (data.phase === 'steal_answered' && state.currentCell && !state.stealAnswerHandled) {
+      state.stealAnswerHandled = true; // prevent double-processing
       const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
       const si = state.teams.findIndex(t=>t.name===data.stealTeam);
       if (si>=0) state.stealTeam=si;
@@ -833,7 +833,8 @@ let state = {
   teamAnswered: null,    // index of option chosen by active team
   turnOrder: [],         // shuffled array of team indices [2,0,4,1,3]
   currentTurn: 0,        // index into turnOrder
-  orderRolled: false,    // whether order has been rolled this game
+  orderRolled: false,    // whether order has been rolled this
+  stealAnswerHandled: false, game
 };
 
 // ─── GOOGLE SHEETS ────────────────────────────────────────────────────────────
