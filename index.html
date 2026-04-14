@@ -562,7 +562,7 @@ function listenForStudentAnswers() {
     }
     if (data.stealTeam && state.phase === 'wrong') {
       const ti = state.teams.findIndex(t=>t.name===data.stealTeam);
-      if (ti>=0) { state.phase='steal'; state.stealTeam=ti; renderModalActions(); }
+      if (ti>=0) { state.phase='steal'; state.stealTeam=ti; clearInterval(stealWindowInterval); renderModalActions(); }
     }
     if (data.phase === 'steal_answered' && state.currentCell && !state.stealAnswerHandled) {
       state.stealAnswerHandled = true; // prevent double-processing
@@ -1545,15 +1545,19 @@ function renderModalActions() {
           <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Wrong answer</div>
           <div style="font-size:18px;font-weight:900;color:#fff">❌ Correct answer not revealed yet</div>
         </div>
-        <div id="steal-winner-badge" style="display:none;background:#FFFBEB;border:2px solid #F59E0B;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px;font-weight:800;color:#92400E;text-align:center"></div>
-        <p class="award-label">Which team steals? <span style="font-size:10px;color:#aaa;font-weight:400">(or select from phones)</span></p>
-        <div class="award-btns" style="margin-bottom:12px">
-          ${state.teams.map((t,i)=>`
-            <button class="btn" style="border:2px solid #F59E0B;color:#B45309;font-weight:800"
-              onclick="openSteal(${i})">${esc(t.name)}</button>`).join('')}
+        <div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
+          <div style="font-size:12px;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Steal window open</div>
+          <div style="display:flex;align-items:center;gap:12px;justify-content:center">
+            <span id="steal-window-count" style="font-size:44px;font-weight:900;color:#B45309;font-variant-numeric:tabular-nums;min-width:48px">10</span>
+            <div style="flex:1;height:8px;background:#FDE68A;border-radius:4px;overflow:hidden">
+              <div id="steal-window-bar" style="height:8px;border-radius:4px;background:#F59E0B;width:100%;transition:width .9s linear"></div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#B45309;margin-top:8px;font-weight:600">Waiting for a team to buzz in…</div>
         </div>
         <button class="btn-muted" onclick="noSteal()">No steal — reveal answer</button>
       </div>`;
+    startStealWindowCountdown();
 
   } else if (state.phase === 'steal') {
     el.innerHTML = `
@@ -1792,6 +1796,29 @@ function esc(s) {
 // ─── TIMER ───────────────────────────────────────────────────────────────────
 let timerInterval = null;
 let stealCountdownInterval = null;
+let stealWindowInterval = null;
+
+function startStealWindowCountdown() {
+  clearInterval(stealWindowInterval);
+  let secs = 10;
+  stealWindowInterval = setInterval(() => {
+    secs--;
+    const c = document.getElementById('steal-window-count');
+    const b = document.getElementById('steal-window-bar');
+    if (!c) { clearInterval(stealWindowInterval); return; }
+    c.textContent = secs;
+    b.style.width = (secs / 10 * 100) + '%';
+    if (secs <= 3) {
+      c.style.color = '#EF4444';
+      b.style.background = '#EF4444';
+    }
+    if (secs <= 0) {
+      clearInterval(stealWindowInterval);
+      // Auto-reveal if no one buzzed
+      if (state.phase === 'wrong') noSteal();
+    }
+  }, 1000);
+}
 
 function startTimer() {
   clearInterval(timerInterval);
