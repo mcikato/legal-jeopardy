@@ -566,7 +566,8 @@ function firebaseOpenQuestion(col, row) {
   if (!db) return;
   const mod = state.activeModule;
   const activeTeam = state.orderRolled ? state.teams[state.turnOrder[state.currentTurn]].name : '';
-  db.ref('game').set({
+  // Use update instead of set so studentsEnabled is preserved
+  db.ref('game').update({
     phase: 'open',
     moduleId: mod.id,
     col, row,
