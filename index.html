@@ -640,7 +640,15 @@ function listenForStudentAnswers() {
     }
 
     // Student steal answered
-    if (data.phase === 'steal_answered' && data.stealAnswer !== null && state.phase === 'steal') {
+    if (data.phase === 'steal_answered' && data.stealAnswer !== null &&
+        (state.phase === 'steal' || state.phase === 'wrong') &&
+        state.currentCell) {
+      // Ensure stealTeam is set (might have been missed if buzz came fast)
+      if (state.stealTeam === undefined || state.stealTeam === null) {
+        const tIdx = state.teams.findIndex(t => t.name === data.stealTeam);
+        if (tIdx >= 0) state.stealTeam = tIdx;
+      }
+      state.phase = 'steal'; // force correct phase
       const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
       clearInterval(stealCountdownInterval);
       firebaseSetSteal(null);
@@ -1649,11 +1657,11 @@ function renderModalActions() {
     const activeColor = activeIdx >= 0 ? TEAM_COLORS[activeIdx] : '#888';
     el.innerHTML = `
       <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;background:${activeColor}18;border:2px solid ${activeColor};border-radius:10px;padding:10px 14px">
-          <span style="font-size:20px">🎤</span>
+        <div style="background:${activeColor};border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:24px">🎤</span>
           <div>
-            <div style="font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px">Answering now</div>
-            <div style="font-size:16px;font-weight:900;color:${activeColor}">${esc(activeName)}</div>
+            <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.5px">Answering now</div>
+            <div style="font-size:20px;font-weight:900;color:#fff">${esc(activeName)}</div>
           </div>
         </div>
         <p class="award-label">They chose: (or wait for play.html)</p>
@@ -1679,7 +1687,7 @@ function renderModalActions() {
         <p class="award-label">Award points to:</p>
         <div class="award-btns">
           ${state.teams.map((t,i)=>`
-            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800${i===activeIdx2?';background:'+TEAM_COLORS[i]+'22':''}"
+            <button class="btn" style="border:2px solid ${TEAM_COLORS[i]};color:${TEAM_COLORS[i]};font-weight:800;${i===activeIdx2?'background:'+TEAM_COLORS[i]+';color:#fff;':''}"
               onclick="awardPoints(${i},${pts})">${esc(t.name)} +${pts}</button>`).join('')}
         </div>
         <button class="btn-muted" style="margin-top:4px" onclick="closeModal()">No points — close</button>
