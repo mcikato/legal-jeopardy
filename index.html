@@ -1798,6 +1798,27 @@ let timerInterval = null;
 let stealCountdownInterval = null;
 let stealWindowInterval = null;
 
+function startStealCountdown() {
+  clearInterval(stealCountdownInterval);
+  let secs = 5;
+  stealCountdownInterval = setInterval(() => {
+    secs--;
+    const c = document.getElementById('steal-countdown');
+    const b = document.getElementById('steal-countdown-bar');
+    if (!c) { clearInterval(stealCountdownInterval); return; }
+    c.textContent = secs;
+    if (b) b.style.width = (secs / 5 * 100) + '%';
+    if (secs <= 2) {
+      c.style.color = '#FCA5A5';
+      if (b) b.style.background = '#FCA5A5';
+    }
+    if (secs <= 0) {
+      clearInterval(stealCountdownInterval);
+      if (state.phase === 'steal') noSteal();
+    }
+  }, 1000);
+}
+
 function startStealWindowCountdown() {
   clearInterval(stealWindowInterval);
   let secs = 10;
