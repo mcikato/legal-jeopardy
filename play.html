@@ -72,6 +72,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .timer-bar{height:8px;border-radius:4px;background:#2563AB;width:100%;transition:width .9s linear,background .3s}
 .timer-bar.urgent{background:#EF4444}
 
+/* LOCKED screen */
+.locked-wrap{width:100%;max-width:400px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.locked-icon{font-size:72px}
+.locked-title{color:#0D1424;font-size:22px;font-weight:800}
+.locked-sub{color:#999;font-size:14px;line-height:1.5;max-width:280px}
+
 /* Result screens */
 .result-wrap{width:100%;max-width:400px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
 .result-icon{font-size:80px;animation:pop .3s ease-out}
@@ -273,6 +279,15 @@ function render(screen, data) {
       <div class="pick-title">Which team are you on?</div>
       <div class="pick-sub">Choose once per session</div>
       <div class="pick-grid">${btns}</div>
+    </div>`;
+
+  } else if (screen === 'locked') {
+    app.innerHTML = `<div class="locked-wrap">
+      <div class="locked-icon">🔒</div>
+      <div class="locked-title">Game not active</div>
+      <div class="locked-sub">The professor hasn't started the game yet. Stay on this page — it will unlock automatically.</div>
+      ${myTeam ? `<div class="team-badge" style="background:${myColor};margin-top:8px">${myTeam}</div>` : ''}
+      <button class="change-link" onclick="changeteam()">Change team</button>
     </div>`;
 
   } else if (screen === 'waiting') {
@@ -532,7 +547,17 @@ function initApp() {
     const data = snap.val();
     if (!myTeam) return;
 
-    if (!data || data.phase === 'idle' || data.phase === 'closed') {
+    // Students locked out until professor enables
+    if (!data || !data.studentsEnabled) {
+      hasAnswered = false;
+      hasBuzzed = false;
+      clearInterval(timerIv);
+      clearInterval(stealTimerIv);
+      render('locked');
+      return;
+    }
+
+    if (data.phase === 'idle' || data.phase === 'closed') {
       hasAnswered = false;
       hasBuzzed = false;
       clearInterval(timerIv);
@@ -543,14 +568,14 @@ function initApp() {
 
     currentGameData = data;
 
-    // Reset flags on new question
-    if (data.phase === 'open' && !currentGameData._seen) {
-      hasAnswered = false;
-      hasBuzzed = false;
-    }
-
     if (data.phase === 'open' || data.phase === 'answered' ||
         data.phase === 'steal_open' || data.phase === 'steal_answered') {
+      // Reset flags on new question open
+      if (data.phase === 'open' && data.openedAt !== (currentGameData._lastOpenedAt)) {
+        hasAnswered = false;
+        hasBuzzed = false;
+        currentGameData._lastOpenedAt = data.openedAt;
+      }
       renderQuestion(data);
     }
   });
