@@ -448,6 +448,11 @@ function renderQuestion(data) {
     ).join('');
   }
 
+  // Debug info
+  const debugHtml = `<div style="font-size:10px;color:#ccc;margin-top:6px;text-align:center">
+    phase:${phase} | active:${data.activeTeam} | me:${myTeam} | buzzed:${hasBuzzed}
+  </div>`;
+
   document.getElementById('app').innerHTML = `<div class="q-wrap">
     <div class="q-header">
       <span class="q-cat">${esc(cat)}</span>
@@ -458,7 +463,7 @@ function renderQuestion(data) {
     <div class="options-grid">${optsHtml}</div>
     ${stealHtml}
     ${statusHtml}
-    <div style="font-size:11px;color:#ddd;text-align:center;margin-top:8px">${esc(myTeam)}</div>
+    ${debugHtml}
   </div>`;
 
   // Start timers after rendering
