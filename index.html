@@ -554,6 +554,7 @@ function listenForStudentAnswers() {
     }
     if (data.phase === 'steal_open' && state.phase === 'question') {
       const q = state.activeModule.questions[data.col][data.row];
+      state.stealAnswerHandled = false;  // reset for this question's steal
       stopTimer(); state.phase='wrong'; state.teamAnswered=data.teamAnswer;
       renderOptionsWrong(q,data.teamAnswer);
       firebaseSetSteal({open:true,winner:null,openedAt:Date.now()});
@@ -1687,10 +1688,9 @@ function markUsed() {
     });
     state.lastAnswerCorrect = false;
   }
-  // Reset Firebase steal so students see clean state for next question
   firebaseSetSteal(null);
   firebaseCloseQuestion();
-  // Always advance to next team after every question
+  state.stealAnswerHandled = false;  // reset for next question
   advanceTurn();
   state.phase = 'question';
   document.getElementById('overlay').classList.remove('open');
