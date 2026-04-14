@@ -1594,17 +1594,22 @@ function renderModalActions() {
   } else if (state.phase === 'steal') {
     el.innerHTML = `
       <div>
-        <div style="background:#FFFBEB;border:1px solid #FCD34D;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#92400E;font-weight:700">
-          ⚡ Steal attempt by ${esc(state.teams[state.stealTeam].name)}
+        <div style="background:#FFFBEB;border:1px solid #FCD34D;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#92400E;font-weight:700;display:flex;align-items:center;justify-content:space-between">
+          <span>⚡ Steal attempt by ${esc(state.teams[state.stealTeam].name)}</span>
+          <span id="steal-countdown" style="font-size:22px;font-weight:900;color:#B45309;font-variant-numeric:tabular-nums">5</span>
+        </div>
+        <div style="width:100%;height:6px;background:#F0F0F0;border-radius:3px;margin-bottom:14px;overflow:hidden">
+          <div id="steal-countdown-bar" style="height:6px;border-radius:3px;background:#F59E0B;width:100%;transition:width .9s linear"></div>
         </div>
         <p class="award-label">They answered:</p>
-        <div class="award-btns">
+        <div class="award-btns" id="steal-answer-btns">
           ${['A','B','C','D'].map((lbl,i) => `
             <button class="btn" style="font-weight:800;min-width:52px;font-size:16px"
               onclick="stealAnswered(${i})">${lbl}</button>`).join('')}
         </div>
         <button class="btn-muted" style="margin-top:4px" onclick="noSteal()">Cancel — reveal answer</button>
       </div>`;
+    startStealCountdown();
   }
 }
 
@@ -1645,6 +1650,7 @@ function openSteal(teamIdx) {
 
 // Steal team chose an option
 function stealAnswered(optionIdx) {
+  clearInterval(stealCountdownInterval);
   firebaseSetSteal(null);
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   const pts = POINTS[state.currentCell.row];
@@ -1679,6 +1685,7 @@ function stealAnswered(optionIdx) {
 
 // No steal — just reveal the answer
 function noSteal() {
+  clearInterval(stealCountdownInterval);
   firebaseSetSteal(null);
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
   renderOptions(q, true);
@@ -1701,6 +1708,7 @@ function awardPoints(teamIdx, pts) {
 
 function closeModal() {
   stopTimer();
+  clearInterval(stealCountdownInterval);
   state.lastAnswerCorrect = false;
   markUsed();
 }
@@ -1808,6 +1816,37 @@ function esc(s) {
 
 // ─── TIMER ───────────────────────────────────────────────────────────────────
 let timerInterval = null;
+let stealCountdownInterval = null;
+
+function startStealCountdown() {
+  clearInterval(stealCountdownInterval);
+  let secs = 5;
+  stealCountdownInterval = setInterval(() => {
+    secs--;
+    const countEl = document.getElementById('steal-countdown');
+    const barEl   = document.getElementById('steal-countdown-bar');
+    if (!countEl) { clearInterval(stealCountdownInterval); return; }
+    countEl.textContent = secs;
+    barEl.style.width = (secs / 5 * 100) + '%';
+    if (secs <= 2) {
+      countEl.style.color = '#EF4444';
+      barEl.style.background = '#EF4444';
+    }
+    if (secs <= 0) {
+      clearInterval(stealCountdownInterval);
+      // Time's up — disable buttons and close with no points
+      const btns = document.getElementById('steal-answer-btns');
+      if (btns) btns.innerHTML = '<div style="color:#EF4444;font-weight:800;font-size:13px;padding:8px 0">Time up &mdash; no points</div>';
+      const cancelBtn = document.querySelector('#m-actions .btn-muted');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      // Auto-close after short pause
+      setTimeout(() => {
+        firebaseSetSteal(null);
+        noSteal();
+      }, 1200);
+    }
+  }, 1000);
+}
 
 function startTimer() {
   clearInterval(timerInterval);
