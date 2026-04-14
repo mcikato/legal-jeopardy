@@ -711,6 +711,154 @@ const MODULES = [
       ]
     ]
   }
+  ,
+  {
+    id:'mod2',
+    name:'Module 2 — Comparative Law & US Legal System',
+    categories:['Civil vs Common Law','Uruguayan System','US Federalism','Precedent & Cases','Juries & Trials'],
+    questions:[
+      // ── CIVIL LAW VS COMMON LAW ──
+      [
+        {
+          q:"In Civil Law countries, a contract dispute is resolved by a judge who investigates and questions both parties. What is this process called?",
+          options:["Adversarial","Inquisitorial","Precedential","Arbitral"],
+          correct:1
+        },
+        {
+          q:"A US company drafts a force majeure clause listing 'pandemic, war, flood, and fire.' A Civil Law lawyer says the list is unnecessary. Why?",
+          options:["Force majeure clauses are illegal in Civil Law","In Civil Law, force majeure is already defined by the code — no need to list events","Common Law contracts don't need force majeure","Civil Law doesn't recognize force majeure"],
+          correct:1
+        },
+        {
+          q:"A company knowingly sells a dangerous product. A customer sues for $50,000 in medical costs. Under which system could the court award $5 million?",
+          options:["Civil Law — courts can multiply damages freely","Common Law — courts can award punitive damages to punish willful misconduct","Both systems allow punitive damages equally","Neither — damages are always capped at actual losses"],
+          correct:1
+        },
+        {
+          q:"A UK regulator fines a bank for 'failing to act with integrity' even though no specific rule was technically broken. Which concept does this reflect?",
+          options:["Civil Law codification — the bank violated a written statute","Principles-based regulation — compliance means meeting broad standards, not just written rules","Stare decisis — a prior case set this precedent","Punitive damages — the fine punishes the bank's conduct"],
+          correct:1
+        },
+        {
+          q:"A German and a US company sign a contract. The US company wants jury trial and broad discovery; the German company wants a judge-led process. What should they include to control this?",
+          options:["A force majeure clause","A punitive damages cap","A jurisdiction and arbitration clause specifying which legal system governs","A good faith provision under the BGB"],
+          correct:2
+        }
+      ],
+      // ── URUGUAYAN SYSTEM ──
+      [
+        {
+          q:"What is the highest source of law in Uruguay's legal hierarchy?",
+          options:["Laws passed by parliament","Presidential decrees","The Constitution","Judicial decisions"],
+          correct:2
+        },
+        {
+          q:"In Uruguay, which court handles small claims disputes up to approximately USD 12,500?",
+          options:["Supreme Court","Court of Appeals","First Instance Court","Peace Court (Juzgado de Paz)"],
+          correct:3
+        },
+        {
+          q:"A company loses a government contract it believes was awarded unfairly. Which Uruguayan body can review the government's decision?",
+          options:["The Supreme Court","A Peace Court","The Tribunal of Administrative Litigation","A Court of Appeals"],
+          correct:2
+        },
+        {
+          q:"For a case to reach Uruguay's Supreme Court via cassation appeal, which two conditions must generally be met?",
+          options:["The case must involve a criminal matter and the defendant must be imprisoned","The first and second instance rulings must differ, and the case must exceed approximately USD 180,000","Both parties must be foreign nationals and the case must involve a treaty","The judge must have made a factual error and the State must be involved"],
+          correct:1
+        },
+        {
+          q:"Uruguay follows a Civil Law tradition. What does this mean for judicial decisions in the hierarchy of norms?",
+          options:["Judicial decisions are the primary source of law, like in Common Law","Judicial decisions override legislative laws in all cases","Judicial decisions are at the base — below the Constitution, laws, and decrees","Judicial decisions have no legal value whatsoever"],
+          correct:2
+        }
+      ],
+      // ── US FEDERALISM ──
+      [
+        {
+          q:"Under the US Supremacy Clause, what happens when a state law conflicts with a federal law?",
+          options:["The state law prevails — states have reserved powers","The federal law prevails — it is the supreme law of the land","A court decides case by case which one applies","Both laws apply simultaneously"],
+          correct:1
+        },
+        {
+          q:"Two restaurants in Austin, Texas dispute a $12,000 catering contract. Both are registered in Texas. Which court hears this?",
+          options:["Federal Court — all contract disputes go federal","State Court — same state, no federal question, amount below $75,000","The US Supreme Court","Either court — plaintiff chooses"],
+          correct:1
+        },
+        {
+          q:"A marketing agency in New York sues a supplier in California for $200,000 over an undelivered service. Which court can hear this?",
+          options:["Only State Court — it is a contract dispute","Only Federal Court — it involves interstate commerce","Either — different states and over $75,000 creates diversity jurisdiction","Only the Supreme Court — large amounts require the highest court"],
+          correct:2
+        },
+        {
+          q:"A company violates the Clean Air Act by exceeding federal emission limits. Which court handles this?",
+          options:["State Court — environmental issues are state matters","Federal Court — federal laws like the Clean Air Act are enforced in federal courts","The Supreme Court directly","The Tax Court"],
+          correct:1
+        },
+        {
+          q:"The US Supreme Court receives thousands of petitions but only hears about 80 cases per year. What is the process by which it chooses which cases to accept?",
+          options:["Voir dire","Habeas corpus","Certiorari","Stare decisis"],
+          correct:2
+        }
+      ],
+      // ── PRECEDENT & CASES ──
+      [
+        {
+          q:"A district court in California must follow rulings from the Ninth Circuit Court of Appeals. What type of precedent is this?",
+          options:["Binding precedent — a lower court must follow a higher court in the same jurisdiction","Persuasive precedent — it can choose to follow or ignore it","Obiter dicta — it is a side comment, not a ruling","Stare decisis only applies to the Supreme Court"],
+          correct:0
+        },
+        {
+          q:"A court in New York looks at a California ruling on a similar issue for guidance but is not required to follow it. What is this called?",
+          options:["Binding precedent","Persuasive precedent","Judicial review","Cassation"],
+          correct:1
+        },
+        {
+          q:"A judge rules on a contract case. Her core ruling on the specific legal question before her is binding as precedent. What is this called?",
+          options:["Obiter dicta","The holding (ratio decidendi)","Stare decisis","Persuasive precedent"],
+          correct:1
+        },
+        {
+          q:"A court ruled that fraudulent emails constitute wire fraud. A new case involves fraudulent text messages — no prior ruling exists. What should the judge do?",
+          options:["Dismiss the case — no precedent exists","Apply criminal law only — statutes always override precedent","Reason by analogy from the email ruling — same legal principle, different technology","Wait for the legislature to pass a new law"],
+          correct:2
+        },
+        {
+          q:"A Supreme Court ruling states: 'We hold that warrantless GPS tracking violates the Fourth Amendment. We note, without deciding, that the same may apply to cell phone data.' Which part creates binding precedent?",
+          options:["Only the holding — warrantless GPS tracking violates the Fourth Amendment","Both parts — everything the Supreme Court says is binding","Neither — Supreme Court rulings are only persuasive","Only the second part — the court addressed future technology"],
+          correct:0
+        }
+      ],
+      // ── JURIES & TRIALS ──
+      [
+        {
+          q:"In a US criminal trial, what standard of proof must the prosecution meet?",
+          options:["Preponderance of the evidence","Clear and convincing evidence","Beyond a reasonable doubt","Majority vote of the jury"],
+          correct:2
+        },
+        {
+          q:"During a US trial, attorneys and the judge question potential jurors to identify biases and select an impartial panel. What is this process called?",
+          options:["Discovery","Arraignment","Voir dire","Deliberation"],
+          correct:2
+        },
+        {
+          q:"11 jurors vote guilty and 1 votes not guilty in a criminal trial. What happens?",
+          options:["A mistrial is declared — the defendant is not convicted. The prosecution may choose to retry the case","The majority wins — the defendant is convicted","The judge casts the deciding vote","The defendant is automatically and permanently acquitted"],
+          correct:0
+        },
+        {
+          q:"What is the correct order of the main stages of a US trial?",
+          options:["Opening statements → Jury selection → Evidence → Closing → Verdict","Jury selection → Opening statements → Evidence → Closing arguments → Jury instructions → Verdict","Evidence → Opening statements → Closing arguments → Jury selection → Verdict","Arraignment → Discovery → Verdict → Opening statements"],
+          correct:1
+        },
+        {
+          q:"A defendant in a criminal trial presents no witnesses and stays silent. The jury convicts based only on prosecution evidence. Was the defendant required to prove innocence?",
+          options:["Yes — both sides must present evidence in an adversarial system","Yes — silence can be used against the defendant","No — the burden of proof rests entirely on the prosecution; the defendant is presumed innocent","No — but only if the defendant formally invokes the Fifth Amendment"],
+          correct:2
+        }
+      ]
+    ]
+  }
   // ADD NEW MODULES HERE AS THE SEMESTER PROGRESSES
 ];
 
