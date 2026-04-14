@@ -560,7 +560,6 @@ function submitAnswer(optionIdx) {
   const q   = mod ? mod.questions[currentGameData.col][currentGameData.row] : null;
   const isCorrect = q && optionIdx === q.correct;
 
-  // Write everything atomically in one update
   const update = {
     teamAnswer: optionIdx,
     phase: isCorrect ? 'answered_correct' : 'steal_open',
@@ -569,7 +568,12 @@ function submitAnswer(optionIdx) {
     stealOpenedAt: isCorrect ? null : Date.now()
   };
 
-  db.ref('game').update(update);
+  console.log('[SUBMIT] team='+myTeam+' optionIdx='+optionIdx+' isCorrect='+isCorrect+' writing phase='+update.phase);
+  db.ref('game').update(update).then(() => {
+    console.log('[SUBMIT] Firebase write SUCCESS');
+  }).catch(e => {
+    console.log('[SUBMIT] Firebase write ERROR:', e);
+  });
 }
 
 function buzzSteal() {
@@ -677,6 +681,7 @@ function initApp() {
 
     currentGameData = data;
 
+    console.log('[LISTENER] received phase='+data.phase+' for team='+myTeam);
     if (data.phase === 'open' || data.phase === 'answered_correct' ||
         data.phase === 'steal_open' || data.phase === 'steal_answered') {
       renderQuestion(data);
