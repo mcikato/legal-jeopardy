@@ -523,7 +523,7 @@ function renderQuestion(data) {
 
   // Start timers after rendering
   if (phase === 'open' && isActive && !hasAnswered) startQuestionTimer(data.openedAt);
-  if (phase === 'steal_open' && myTeam === data.stealTeam) startStealTimer(data.stealOpenedAt);
+  if (phase === 'steal_open' && myTeam === data.stealTeam) startStealTimer();
 }
 
 function renderResult(data) {
@@ -626,11 +626,10 @@ function startQuestionTimer(openedAt) {
   timerIv = setInterval(tick, 1000);
 }
 
-function startStealTimer(openedAt) {
+function startStealTimer() {
   clearInterval(stealTimerIv);
   const total = 5;
-  const elapsed = openedAt ? Math.floor((Date.now() - openedAt) / 1000) : 0;
-  let secs = Math.max(0, total - elapsed);
+  let secs = total; // Always 5 full seconds from when the team buzzes in
 
   function tick() {
     const c = document.getElementById('steal-timer-num');
