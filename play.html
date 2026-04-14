@@ -364,11 +364,11 @@ function renderQuestion(data) {
   let optsHtml = q.options.map((opt,i) => {
     let cls = 'opt-btn';
     let disabled = '';
-    if (phase === 'answered' || phase === 'steal_open' || phase === 'steal_answered' || phase === 'closed') {
+    if (phase === 'answered_correct' || phase === 'steal_open' || phase === 'steal_answered' || phase === 'closed') {
       disabled = 'disabled';
       if (i === data.teamAnswer && data.teamAnswer !== null) {
-        cls += data.teamAnswer === q.correct ? ' correct' : ' wrong';
-      } else if (i === q.correct && (phase === 'steal_answered' || phase === 'closed')) {
+        cls += (phase === 'answered_correct' || data.teamAnswer === q.correct) ? ' correct' : ' wrong';
+      } else if (i === q.correct && (phase === 'steal_answered' || phase === 'closed' || phase === 'answered_correct')) {
         cls += ' correct';
       } else {
         cls += ' other-wrong';
@@ -392,12 +392,8 @@ function renderQuestion(data) {
     } else {
       statusHtml = `<div class="status-bar waiting-answer">⏳ ${esc(data.activeTeam)} is answering…</div>`;
     }
-  } else if (phase === 'answered') {
-    if (data.teamAnswer === q.correct) {
-      statusHtml = `<div class="status-bar correct">✅ Correct! +${pts} pts</div>`;
-    } else {
-      statusHtml = `<div class="status-bar wrong">❌ Wrong answer</div>`;
-    }
+  } else if (phase === 'answered_correct') {
+    statusHtml = `<div class="status-bar correct">✅ Correct! +${pts} pts to ${esc(data.activeTeam)}</div>`;
   } else if (phase === 'steal_open') {
     if (myTeam !== data.activeTeam && !hasBuzzed) {
       statusHtml = `<div class="status-bar steal">⚡ STEAL OPEN — buzz in!</div>`;
@@ -509,10 +505,21 @@ function submitAnswer(optionIdx) {
   if (hasAnswered || !db) return;
   hasAnswered = true;
   clearInterval(timerIv);
-  db.ref('game/teamAnswer').transaction(cur => cur === null ? optionIdx : undefined);
-  db.ref('game/phase').set('answered');
-  // Immediately show selected
-  renderQuestion({...currentGameData, phase: 'answered', teamAnswer: optionIdx});
+
+  const mod = MODULES.find(m => m.id === currentGameData.moduleId);
+  const q   = mod ? mod.questions[currentGameData.col][currentGameData.row] : null;
+  const isCorrect = q && optionIdx === q.correct;
+
+  // Write everything atomically in one update
+  const update = {
+    teamAnswer: optionIdx,
+    phase: isCorrect ? 'answered_correct' : 'steal_open',
+    stealTeam: null,
+    stealAnswer: null,
+    stealOpenedAt: isCorrect ? null : Date.now()
+  };
+
+  db.ref('game').update(update);
 }
 
 function buzzSteal() {
@@ -620,7 +627,7 @@ function initApp() {
 
     currentGameData = data;
 
-    if (data.phase === 'open' || data.phase === 'answered' ||
+    if (data.phase === 'open' || data.phase === 'answered_correct' ||
         data.phase === 'steal_open' || data.phase === 'steal_answered') {
       renderQuestion(data);
     }
