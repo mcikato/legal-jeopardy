@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Legal Jeopardy — Play</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;user-select:none;-webkit-tap-highlight-color:transparent}
+
+/* PICK TEAM */
+.pick-wrap{width:100%;max-width:480px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px}
+.pick-icon{font-size:60px;animation:float 2.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.pick-title{color:#0D1424;font-size:26px;font-weight:900}
+.pick-sub{color:#999;font-size:15px}
+.pick-grid{display:flex;flex-direction:column;gap:10px;width:100%}
+.pick-btn{width:100%;padding:20px;border-radius:14px;border:none;font-size:20px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.pick-btn:active{transform:scale(.97)}
+
+/* WAITING */
+.waiting-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.team-badge{padding:12px 28px;border-radius:40px;font-size:18px;font-weight:900;color:#fff;margin-bottom:4px}
+.waiting-icon{font-size:52px;animation:float 2.5s ease-in-out infinite}
+.waiting-title{color:#0D1424;font-size:20px;font-weight:800}
+.waiting-sub{color:#999;font-size:14px;line-height:1.5;max-width:280px}
+.change-link{font-size:12px;color:#ccc;text-decoration:underline;background:none;border:none;cursor:pointer;margin-top:4px}
+
+/* QUESTION */
+.q-wrap{width:100%;max-width:520px;display:flex;flex-direction:column;gap:0}
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.q-cat{font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.q-pts{font-size:22px;font-weight:900}
+.q-text{font-size:17px;color:#0D1424;line-height:1.6;margin-bottom:18px;padding:14px;background:#F8F9FF;border-radius:12px;border-left:4px solid #2563AB}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.opt-btn{padding:14px 10px;border-radius:12px;border:2px solid #E5E7EB;background:#F9FAFB;font-size:13px;font-weight:600;color:#374151;text-align:left;display:flex;align-items:flex-start;gap:8px;line-height:1.4;cursor:pointer;transition:border-color .1s,background .1s}
+.opt-btn:active{background:#F0F0F0}
+.opt-btn:disabled{cursor:default;opacity:.5}
+.opt-btn.selected{border-color:#2563AB;background:#EEF2FF;color:#1E40AF}
+.opt-btn.correct{border-color:#16A34A;background:#F0FDF4;color:#15803D}
+.opt-btn.wrong{border-color:#EF4444;background:#FEF2F2;color:#B91C1C}
+.opt-btn.other-wrong{border-color:#e5e7eb;opacity:.4}
+.opt-label{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:5px;background:#E5E7EB;color:#6B7280;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.opt-btn.correct .opt-label{background:#16A34A;color:#fff}
+.opt-btn.wrong .opt-label{background:#EF4444;color:#fff}
+.opt-btn.selected .opt-label{background:#2563AB;color:#fff}
+
+/* Status bar under options */
+.status-bar{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:700;text-align:center;margin-bottom:8px}
+.status-bar.waiting-answer{background:#F0F7FF;color:#185FA5}
+.status-bar.correct{background:#F0FDF4;color:#15803D}
+.status-bar.wrong{background:#FEF2F2;color:#B91C1C}
+.status-bar.steal{background:#FFFBEB;color:#92400E}
+.status-bar.no-points{background:#F5F5F5;color:#888}
+
+/* Steal button */
+.steal-btn{width:100%;padding:22px;border-radius:16px;border:none;font-size:22px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.18);margin-bottom:10px;animation:glow 1s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.18)}50%{box-shadow:0 4px 32px rgba(0,0,0,.3)}}
+.steal-btn:active{transform:scale(.95)}
+.steal-btn:disabled{opacity:.25;cursor:not-allowed;animation:none}
+
+/* Timer bar */
+.timer-wrap{width:100%;margin-bottom:12px}
+.timer-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.timer-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.timer-num{font-size:18px;font-weight:900;color:#0D1424;font-variant-numeric:tabular-nums;transition:color .3s}
+.timer-num.urgent{color:#EF4444;animation:pulse .4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.timer-bar-wrap{height:8px;background:#F0F0F0;border-radius:4px;overflow:hidden}
+.timer-bar{height:8px;border-radius:4px;background:#2563AB;width:100%;transition:width .9s linear,background .3s}
+.timer-bar.urgent{background:#EF4444}
+
+/* Result screens */
+.result-wrap{width:100%;max-width:400px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.result-icon{font-size:80px;animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.4)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
+.result-title{font-size:28px;font-weight:900}
+.result-pts{font-size:18px;font-weight:700;color:#888}
+.result-sub{font-size:14px;color:#bbb}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCsj2tb4U6U9UeUijBGJOzL_fkrQaIDW6I",
+  authDomain: "legal-jeopardy.firebaseapp.com",
+  databaseURL: "https://legal-jeopardy-default-rtdb.firebaseio.com",
+  projectId: "legal-jeopardy",
+  storageBucket: "legal-jeopardy.firebasestorage.app",
+  messagingSenderId: "664040596488",
+  appId: "1:664040596488:web:625c53ae7a1764e9ac1dbd"
+};
+
+const TEAM_COLORS = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
+const TEAMS = ['Team A','Team B','Team C','Team D','Team E'];
+const OPT_LABELS = ['A','B','C','D'];
+const ROW_COLORS = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
+const POINTS = [100,200,300,400,500];
+
+// All module questions — must match index.html
+const MODULES = [
+  {
+    id:'mod1',
+    name:'Module 1 — What is Law? & Sources of Law',
+    categories:['What is Law?','Legal Systems','Sources of Law','Rule of Law','Equity & International'],
+    questions:[
+      // ── WHAT IS LAW? ──
+      [
+        {
+          q:"Which of the following is one of the 6 elements a rule must satisfy to be considered a law?",
+          options:["Popularity — most citizens must support it","State-backed coercion — the state can compel compliance","Written form — it must be published in a gazette","Judicial approval — a court must validate it"],
+          correct:1
+        },
+        {
+          q:"A statute says employers must pay minimum wage. What does the bilateral element mean?",
+          options:["It applies equally to everyone","It creates a duty for employers AND a right for employees","It was voted by two chambers","It applies to public and private sectors"],
+          correct:1
+        },
+        {
+          q:"The government puts up a poster: 'We encourage you to recycle.' Which element of law does this fail?",
+          options:["Human authority","Generality","Obligatory — it encourages, does not command","State coercion"],
+          correct:2
+        },
+        {
+          q:"Which of these is an example of something legally valid but morally wrong?",
+          options:["A historical law forcing groups to wear identifying symbols","A 50 km/h speed limit in a school zone","Paying taxes","Wearing a seatbelt"],
+          correct:0
+        },
+        {
+          q:"A sports federation expels a player for doping. Which element of law fails in its rulebook?",
+          options:["Generality — it targets one person","Human authority — it is not a state-recognized law-making body","Formal validity — it was not published","Bilaterality — it creates no rights"],
+          correct:1
+        }
+      ],
+      // ── LEGAL SYSTEMS ──
+      [
+        {
+          q:"In which legal system do judges create law through precedent?",
+          options:["Civil Law","Common Law","Islamic Law","Customary Law"],
+          correct:1
+        },
+        {
+          q:"What is stare decisis?",
+          options:["Courts must follow prior rulings on similar cases","Written laws always override judges","The State is the only source of law","International treaties override the Constitution"],
+          correct:0
+        },
+        {
+          q:"Which of these countries primarily uses a Civil Law system?",
+          options:["Australia","United Kingdom","France","Canada"],
+          correct:2
+        },
+        {
+          q:"A product gets different patent rulings in different countries. Why?",
+          options:["Because some judges are corrupt","Because each country has its own legal system and applies its own rules","Because patents only apply where they are registered","Because Common Law does not recognize patents"],
+          correct:1
+        },
+        {
+          q:"What is the key difference between Common Law and Civil Law as sources of law?",
+          options:["In Common Law judges create law; in Civil Law it is codified in written statutes","In Civil Law judges have more power","Common Law only exists in the US","Civil Law has no constitution"],
+          correct:0
+        }
+      ],
+      // ── SOURCES OF LAW ──
+      [
+        {
+          q:"What source of law sits at the top of the Kelsen Pyramid?",
+          options:["International treaties","Statutes","The Constitution","Contracts"],
+          correct:2
+        },
+        {
+          q:"A judge has no applicable statute. What source does she rely on in a Common Law system?",
+          options:["Her personal judgment","Prior court decisions under stare decisis","International treaties","Administrative regulations"],
+          correct:1
+        },
+        {
+          q:"A company's internal code prohibits harassment. An employee violates it and is fired. Is this a legal rule?",
+          options:["Yes — it was created by a recognized authority","Yes — it has sanctions attached","No — it fails state-backed coercion: only the state can legally compel compliance","No — it was not published in an official gazette"],
+          correct:2
+        },
+        {
+          q:"What distinguishes Customary Law from Statutory Law?",
+          options:["Customary law only applies to criminal matters","Customary law is unwritten and emerges from repeated community practice","Customary law always prevails over statutes","Statutory law is created by judges"],
+          correct:1
+        },
+        {
+          q:"An environmental agency issues air quality rules. A company says the agency has no authority. What principle applies?",
+          options:["Stare decisis","Equity","The Delegation Principle — agencies can only act within powers granted by parliament","State sovereignty"],
+          correct:2
+        }
+      ],
+      // ── RULE OF LAW & CONSTITUTIONAL LAW ──
+      [
+        {
+          q:"What are the 4 core principles of the Rule of Law?",
+          options:["Supremacy of law, equality, accountability, legal certainty","Democracy, sovereignty, transparency, justice","Separation of powers, federalism, due process, judicial review","Authority, legitimacy, coercion, proportionality"],
+          correct:0
+        },
+        {
+          q:"A president signs a decree exempting his family from paying taxes. Which Rule of Law principle does this violate?",
+          options:["Legal certainty","Supremacy of law","Equality before the law","Accountability"],
+          correct:2
+        },
+        {
+          q:"What is the function of Judicial Review?",
+          options:["Allow the executive to veto laws","Courts can strike down laws that violate the Constitution","Parliament reviews judicial decisions","Renegotiate international treaties"],
+          correct:1
+        },
+        {
+          q:"What is the difference between Rule of Law and Rule by Law?",
+          options:["Rule of Law: everyone including government is bound by law. Rule by Law: rulers use law to control others while exempting themselves","They are synonyms","Rule of Law only exists in democracies","Rule by Law requires a written constitution"],
+          correct:0
+        },
+        {
+          q:"Country X has written laws but the president changes them overnight and appoints all judges. Does it have Rule of Law?",
+          options:["Yes — having written laws is enough","Yes — as long as the president is democratically elected","No — Rule of Law requires stable laws enforced by an independent judiciary","No — but only because judges are not elected"],
+          correct:2
+        }
+      ],
+      // ── EQUITY, CUSTOM & INTERNATIONAL LAW ──
+      [
+        {
+          q:"What is the purpose of Equity as a source of law?",
+          options:["To create new crimes","To fill legal gaps when strict application of the law would produce an unjust result","To replace the Constitution","To resolve disputes between States"],
+          correct:1
+        },
+        {
+          q:"A strict law requires contracts to be in writing. Two parties had a verbal agreement and one relied on it significantly. A court enforces it anyway. What is this?",
+          options:["Stare decisis — a prior case set this precedent","Equity — fairness overrides strict rules when injustice would result","Customary law — verbal agreements are traditional","Administrative law — agencies can enforce verbal contracts"],
+          correct:1
+        },
+        {
+          q:"What is the principle of sovereign equality in International Law?",
+          options:["Larger countries have more voting power","All States are equal in rights and dignity regardless of size or power","Only democracies are sovereign equals","Sovereignty is lost when signing treaties"],
+          correct:1
+        },
+        {
+          q:"Why is International Law harder to enforce than domestic law?",
+          options:["Because it only applies to individuals, not States","Because there is no central enforcement authority — compliance depends on State cooperation","Because domestic law always prevails","Because treaties are not valid sources of law"],
+          correct:1
+        },
+        {
+          q:"A landlord promises reduced rent during a crisis. Tenants rely on it financially. Later the landlord demands full rent. Which equitable doctrine applies?",
+          options:["Specific Performance","Promissory Estoppel — a promise relied upon in good faith cannot simply be revoked","Injunctive Relief","Stare Decisis"],
+          correct:1
+        }
+      ]
+    ]
+  }
+  // ADD NEW MODULES HERE AS THE SEMESTER PROGRESSES
+];
+
+let db = null;
+let myTeam = null;
+let myColor = null;
+let timerIv = null;
+let stealTimerIv = null;
+let hasAnswered = false;
+let hasBuzzed = false;
+let currentGameData = null;
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render(screen, data) {
+  const app = document.getElementById('app');
+  if (screen === 'pick') {
+    const btns = TEAMS.map((t,i) =>
+      `<button class="pick-btn" style="background:${TEAM_COLORS[i]}" onclick="pickTeam(${i})">${t}</button>`
+    ).join('');
+    app.innerHTML = `<div class="pick-wrap">
+      <div class="pick-icon">⚖️</div>
+      <div class="pick-title">Which team are you on?</div>
+      <div class="pick-sub">Choose once per session</div>
+      <div class="pick-grid">${btns}</div>
+    </div>`;
+
+  } else if (screen === 'waiting') {
+    app.innerHTML = `<div class="waiting-wrap">
+      <div class="team-badge" style="background:${myColor}">${myTeam}</div>
+      <div class="waiting-icon">⚖️</div>
+      <div class="waiting-title">Legal Jeopardy</div>
+      <div class="waiting-sub">Waiting for the professor to open a question…</div>
+      <button class="change-link" onclick="changeteam()">Change team</button>
+    </div>`;
+
+  } else if (screen === 'question') {
+    renderQuestion(data);
+
+  } else if (screen === 'result') {
+    renderResult(data);
+  }
+}
+
+function renderQuestion(data) {
+  const mod = MODULES.find(m => m.id === data.moduleId);
+  if (!mod) { render('waiting'); return; }
+  const q = mod.questions[data.col][data.row];
+  const pts = POINTS[data.row];
+  const cat = mod.categories[data.col];
+  const color = ROW_COLORS[data.row];
+  const isActive = myTeam === data.activeTeam;
+  const phase = data.phase;
+
+  // Build options
+  let optsHtml = q.options.map((opt,i) => {
+    let cls = 'opt-btn';
+    let disabled = '';
+    if (phase === 'answered' || phase === 'steal_open' || phase === 'steal_answered' || phase === 'closed') {
+      disabled = 'disabled';
+      if (i === data.teamAnswer && data.teamAnswer !== null) {
+        cls += data.teamAnswer === q.correct ? ' correct' : ' wrong';
+      } else if (i === q.correct && (phase === 'steal_answered' || phase === 'closed')) {
+        cls += ' correct';
+      } else {
+        cls += ' other-wrong';
+      }
+    } else if (!isActive || hasAnswered) {
+      disabled = 'disabled';
+    }
+    const onclick = (!disabled && isActive && !hasAnswered) ? `onclick="submitAnswer(${i})"` : '';
+    return `<button class="${cls}" ${disabled} ${onclick}>
+      <span class="opt-label">${OPT_LABELS[i]}</span>${esc(opt)}
+    </button>`;
+  }).join('');
+
+  // Status bar
+  let statusHtml = '';
+  if (phase === 'open') {
+    if (isActive) {
+      statusHtml = hasAnswered
+        ? `<div class="status-bar waiting-answer">⏳ Waiting for result…</div>`
+        : `<div class="status-bar waiting-answer">👆 Your turn — pick an answer!</div>`;
+    } else {
+      statusHtml = `<div class="status-bar waiting-answer">⏳ ${esc(data.activeTeam)} is answering…</div>`;
+    }
+  } else if (phase === 'answered') {
+    if (data.teamAnswer === q.correct) {
+      statusHtml = `<div class="status-bar correct">✅ Correct! +${pts} pts</div>`;
+    } else {
+      statusHtml = `<div class="status-bar wrong">❌ Wrong answer</div>`;
+    }
+  } else if (phase === 'steal_open') {
+    if (myTeam !== data.activeTeam && !hasBuzzed) {
+      statusHtml = `<div class="status-bar steal">⚡ STEAL OPEN — buzz in!</div>`;
+    } else if (myTeam === data.activeTeam) {
+      statusHtml = `<div class="status-bar wrong">❌ Wrong — steal is open</div>`;
+    } else {
+      statusHtml = `<div class="status-bar steal">⚡ Steal open…</div>`;
+    }
+  } else if (phase === 'steal_answered') {
+    if (data.stealAnswer === q.correct) {
+      statusHtml = `<div class="status-bar correct">✅ Steal correct! +${Math.floor(pts/2)} pts to ${esc(data.stealTeam)}</div>`;
+    } else {
+      statusHtml = `<div class="status-bar no-points">🚫 Steal wrong — no points</div>`;
+    }
+  } else if (phase === 'closed') {
+    statusHtml = `<div class="status-bar no-points">Question closed</div>`;
+  }
+
+  // Timer
+  let timerHtml = '';
+  if (phase === 'open' && isActive && !hasAnswered) {
+    timerHtml = `<div class="timer-wrap">
+      <div class="timer-top">
+        <span class="timer-label">Huddle time</span>
+        <span class="timer-num" id="q-timer-num">50</span>
+      </div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="q-timer-bar"></div></div>
+    </div>`;
+  }
+
+  // Steal button
+  let stealHtml = '';
+  if (phase === 'steal_open' && myTeam !== data.activeTeam && !hasBuzzed) {
+    stealHtml = `<button class="steal-btn" style="background:${myColor}" id="steal-buzz-btn" onclick="buzzSteal()">
+      ⚡ ${myTeam} — Steal!
+    </button>`;
+  } else if (phase === 'steal_open' && myTeam === data.stealTeam) {
+    // This team buzzed — show answer options
+    stealHtml = `<div class="status-bar steal" style="margin-bottom:10px">⚡ You buzzed! Choose your answer:</div>
+    <div class="timer-wrap">
+      <div class="timer-top">
+        <span class="timer-label">Steal time</span>
+        <span class="timer-num" id="steal-timer-num">5</span>
+      </div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="steal-timer-bar" style="background:#F59E0B"></div></div>
+    </div>`;
+    // Re-enable options for stealing team
+    optsHtml = q.options.map((opt,i) =>
+      `<button class="opt-btn" onclick="submitStealAnswer(${i})">
+        <span class="opt-label">${OPT_LABELS[i]}</span>${esc(opt)}
+      </button>`
+    ).join('');
+  }
+
+  document.getElementById('app').innerHTML = `<div class="q-wrap">
+    <div class="q-header">
+      <span class="q-cat">${esc(cat)}</span>
+      <span class="q-pts" style="color:${color}">${pts} pts</span>
+    </div>
+    ${timerHtml}
+    <div class="q-text">${esc(q.q)}</div>
+    <div class="options-grid">${optsHtml}</div>
+    ${stealHtml}
+    ${statusHtml}
+    <div style="font-size:11px;color:#ddd;text-align:center;margin-top:8px">${esc(myTeam)}</div>
+  </div>`;
+
+  // Start timers after rendering
+  if (phase === 'open' && isActive && !hasAnswered) startQuestionTimer(data.openedAt);
+  if (phase === 'steal_open' && myTeam === data.stealTeam) startStealTimer(data.stealOpenedAt);
+}
+
+function renderResult(data) {
+  const mod = MODULES.find(m => m.id === data.moduleId);
+  const q = mod ? mod.questions[data.col][data.row] : null;
+  const pts = POINTS[data.row];
+  const isWinner = data.phase === 'answered' && data.teamAnswer === q?.correct && myTeam === data.activeTeam;
+  const isStealWinner = data.phase === 'steal_answered' && data.stealAnswer === q?.correct && myTeam === data.stealTeam;
+
+  let icon, title, ptsText, sub;
+  if (isWinner) { icon='🎉'; title='Correct!'; ptsText=`+${pts} pts`; sub=''; }
+  else if (isStealWinner) { icon='⚡'; title='Steal!'; ptsText=`+${Math.floor(pts/2)} pts`; sub=''; }
+  else { icon='😅'; title='Not this time'; ptsText=''; sub='Next question coming up…'; }
+
+  document.getElementById('app').innerHTML = `<div class="result-wrap">
+    <div class="result-icon">${icon}</div>
+    <div class="result-title" style="color:${myColor}">${title}</div>
+    ${ptsText ? `<div class="result-pts">${ptsText} for ${esc(myTeam)}</div>` : ''}
+    <div class="result-sub">${sub || 'Waiting for next question…'}</div>
+    <div style="font-size:11px;color:#ddd;margin-top:8px">${esc(myTeam)}</div>
+  </div>`;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function pickTeam(idx) {
+  myTeam = TEAMS[idx];
+  myColor = TEAM_COLORS[idx];
+  hasAnswered = false;
+  hasBuzzed = false;
+  render('waiting');
+}
+
+function changeteam() {
+  myTeam = null; myColor = null;
+  render('pick');
+}
+
+function submitAnswer(optionIdx) {
+  if (hasAnswered || !db) return;
+  hasAnswered = true;
+  clearInterval(timerIv);
+  db.ref('game/teamAnswer').transaction(cur => cur === null ? optionIdx : undefined);
+  db.ref('game/phase').set('answered');
+  // Immediately show selected
+  renderQuestion({...currentGameData, phase: 'answered', teamAnswer: optionIdx});
+}
+
+function buzzSteal() {
+  if (hasBuzzed || !db) return;
+  hasBuzzed = true;
+  const btn = document.getElementById('steal-buzz-btn');
+  if (btn) btn.disabled = true;
+  db.ref('game/stealTeam').transaction(cur => cur === null ? myTeam : undefined, (err, committed) => {
+    if (committed) {
+      db.ref('game/stealOpenedAt').set(Date.now());
+    }
+  });
+}
+
+function submitStealAnswer(optionIdx) {
+  if (!db) return;
+  clearInterval(stealTimerIv);
+  db.ref('game/stealAnswer').set(optionIdx);
+  db.ref('game/phase').set('steal_answered');
+}
+
+// ── TIMERS ────────────────────────────────────────────────────────────────────
+function startQuestionTimer(openedAt) {
+  clearInterval(timerIv);
+  const total = 50;
+  const elapsed = openedAt ? Math.floor((Date.now() - openedAt) / 1000) : 0;
+  let secs = Math.max(0, total - elapsed);
+
+  function tick() {
+    const c = document.getElementById('q-timer-num');
+    const b = document.getElementById('q-timer-bar');
+    if (!c) { clearInterval(timerIv); return; }
+    c.textContent = secs;
+    b.style.width = (secs / total * 100) + '%';
+    if (secs <= 10) { c.classList.add('urgent'); b.classList.add('urgent'); }
+    if (secs <= 0) { clearInterval(timerIv); }
+    secs--;
+  }
+  tick();
+  timerIv = setInterval(tick, 1000);
+}
+
+function startStealTimer(openedAt) {
+  clearInterval(stealTimerIv);
+  const total = 5;
+  const elapsed = openedAt ? Math.floor((Date.now() - openedAt) / 1000) : 0;
+  let secs = Math.max(0, total - elapsed);
+
+  function tick() {
+    const c = document.getElementById('steal-timer-num');
+    const b = document.getElementById('steal-timer-bar');
+    if (!c) { clearInterval(stealTimerIv); return; }
+    c.textContent = secs;
+    b.style.width = (secs / total * 100) + '%';
+    if (secs <= 2) { c.classList.add('urgent'); b.style.background = '#EF4444'; }
+    if (secs <= 0) {
+      clearInterval(stealTimerIv);
+      // Time up — no points
+      db.ref('game/phase').set('steal_answered');
+      db.ref('game/stealAnswer').set(-1); // -1 = timed out
+    }
+    secs--;
+  }
+  tick();
+  stealTimerIv = setInterval(tick, 1000);
+}
+
+// ── FIREBASE LISTENER ─────────────────────────────────────────────────────────
+function initApp() {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  render('pick');
+
+  db.ref('game').on('value', snap => {
+    const data = snap.val();
+    if (!myTeam) return;
+
+    if (!data || data.phase === 'idle' || data.phase === 'closed') {
+      hasAnswered = false;
+      hasBuzzed = false;
+      clearInterval(timerIv);
+      clearInterval(stealTimerIv);
+      render('waiting');
+      return;
+    }
+
+    currentGameData = data;
+
+    // Reset flags on new question
+    if (data.phase === 'open' && !currentGameData._seen) {
+      hasAnswered = false;
+      hasBuzzed = false;
+    }
+
+    if (data.phase === 'open' || data.phase === 'answered' ||
+        data.phase === 'steal_open' || data.phase === 'steal_answered') {
+      renderQuestion(data);
+    }
+  });
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+initApp();
+</script>
+</body>
+</html>
