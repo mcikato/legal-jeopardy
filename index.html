@@ -645,7 +645,8 @@ function listenForStudentAnswers() {
       clearInterval(stealCountdownInterval);
       firebaseSetSteal(null);
       renderOptions(q, true);
-      if (data.stealAnswer === q.correct && data.stealAnswer >= 0) {
+      const stealTimedOut = data.stealAnswer === -1;
+      if (!stealTimedOut && data.stealAnswer === q.correct) {
         state.lastAnswerCorrect = true;
         const pts = POINTS[state.currentCell.row];
         const half = Math.floor(pts / 2);
@@ -664,14 +665,22 @@ function listenForStudentAnswers() {
             </div>`;
         }
       } else {
+        // Wrong steal — deduct penalty (but not if timed out)
+        const STEAL_PENALTY = 20;
+        let penaltyMsg = '';
+        if (!stealTimedOut) {
+          state.sessionScores[state.stealTeam] = Math.max(0, state.sessionScores[state.stealTeam] - STEAL_PENALTY);
+          penaltyMsg = ` — -${STEAL_PENALTY} pts for ${esc(state.teams[state.stealTeam].name)}`;
+        }
         const el = document.getElementById('m-actions');
         el.innerHTML = `
           <div>
             <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#B91C1C;font-weight:700">
-              ❌ Steal wrong — no one scores
+              ❌ ${stealTimedOut ? 'Time up — no points' : 'Steal wrong' + penaltyMsg}
             </div>
             <button class="btn-muted" onclick="closeModal()">Close</button>
           </div>`;
+        renderGame();
       }
     }
   });
@@ -703,6 +712,48 @@ const OPT_LABELS   = ['A','B','C','D'];
 
 // ─── MODULES ─────────────────────────────────────────────────────────────────
 const MODULES = [
+  {
+    id:'demo',
+    name:'🎓 Demo Round — Practice',
+    categories:['Geography','Science','Sports','Movies','Food'],
+    questions:[
+      [
+        {q:"What is the capital of France?",options:["Berlin","Madrid","Paris","Rome"],correct:2},
+        {q:"Which country has the most natural lakes in the world?",options:["Russia","USA","Canada","Brazil"],correct:2},
+        {q:"What is the largest ocean on Earth?",options:["Atlantic","Indian","Arctic","Pacific"],correct:3},
+        {q:"Which continent is Egypt located in?",options:["Asia","Europe","Africa","South America"],correct:2},
+        {q:"What is the capital of Japan?",options:["Beijing","Seoul","Bangkok","Tokyo"],correct:3}
+      ],
+      [
+        {q:"How many bones does an adult human body have?",options:["106","206","306","406"],correct:1},
+        {q:"What gas do plants absorb from the atmosphere?",options:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],correct:2},
+        {q:"What is the chemical symbol for gold?",options:["Go","Gd","Ag","Au"],correct:3},
+        {q:"How many planets are in our solar system?",options:["7","8","9","10"],correct:1},
+        {q:"What is the speed of light (approximately)?",options:["300 km/s","3,000 km/s","300,000 km/s","3,000,000 km/s"],correct:2}
+      ],
+      [
+        {q:"How many players are on a basketball team on the court?",options:["4","5","6","7"],correct:1},
+        {q:"In which sport would you perform a slam dunk?",options:["Volleyball","Tennis","Basketball","Baseball"],correct:2},
+        {q:"How many minutes is a standard soccer match?",options:["60","75","90","120"],correct:2},
+        {q:"Which country won the first FIFA World Cup in 1930?",options:["Brazil","Argentina","Uruguay","Italy"],correct:2},
+        {q:"In tennis, what is the term for a score of 40-40?",options:["Tie","Draw","Deuce","Love"],correct:2}
+      ],
+      [
+        {q:"Which movie features the character Jack Sparrow?",options:["Gladiator","Pirates of the Caribbean","Troy","The Last Samurai"],correct:1},
+        {q:"What is the highest-grossing film of all time?",options:["Titanic","Avatar","Avengers: Endgame","Top Gun: Maverick"],correct:1},
+        {q:"Who directed the movie Jurassic Park?",options:["James Cameron","Christopher Nolan","Steven Spielberg","Tim Burton"],correct:2},
+        {q:"In which movie does the line 'May the Force be with you' appear?",options:["Star Trek","Star Wars","Interstellar","The Matrix"],correct:1},
+        {q:"Which animated movie features a character named Simba?",options:["Bambi","Dumbo","The Lion King","Tarzan"],correct:2}
+      ],
+      [
+        {q:"Which country is famous for inventing pizza?",options:["Spain","France","Greece","Italy"],correct:3},
+        {q:"What is the main ingredient in guacamole?",options:["Tomato","Avocado","Onion","Pepper"],correct:1},
+        {q:"Sushi is a traditional dish from which country?",options:["China","Korea","Japan","Vietnam"],correct:2},
+        {q:"What is the most consumed beverage in the world after water?",options:["Coffee","Beer","Tea","Orange juice"],correct:2},
+        {q:"Which fruit is known as the 'king of fruits' in Southeast Asia?",options:["Mango","Papaya","Durian","Jackfruit"],correct:2}
+      ]
+    ]
+  },
   {
     id:'mod1',
     name:'Module 1 — What is Law? & Sources of Law',
@@ -1108,14 +1159,20 @@ async function saveEditName(i) {
 
 function renderModules() {
   document.getElementById('modules-list').innerHTML =
-    MODULES.map(m=>`
-      <div class="module-row">
+    MODULES.map(m => {
+      const isDemo = m.id === 'demo';
+      return `
+      <div class="module-row" style="${isDemo ? 'border:2px dashed #F59E0B;background:#FFFBEB;border-radius:12px;padding:12px 16px;' : ''}">
         <div>
           <div class="module-name">${esc(m.name)}</div>
           <div class="module-cats">${m.categories.join(' · ')}</div>
+          ${isDemo ? '<div style="font-size:11px;color:#B45309;margin-top:3px;font-weight:700">Practice only — scores not saved</div>' : ''}
         </div>
-        <button class="play-btn" onclick="startGame('${m.id}')">▶ Play</button>
-      </div>`).join('')
+        <button class="play-btn" onclick="startGame('${m.id}')" ${isDemo ? 'style="background:#F59E0B"' : ''}>
+          ${isDemo ? '🎓 Demo' : '▶ Play'}
+        </button>
+      </div>`;
+    }).join('')
     +`<div class="module-placeholder">+ More modules will be added as the semester progresses</div>`;
 }
 
@@ -1789,6 +1846,16 @@ function exitWithoutSaving() {
 
 // ─── GAME OVER ────────────────────────────────────────────────────────────────
 function endGame() {
+  // Demo mode — skip score saving, go straight back to dashboard
+  if (state.activeModule && state.activeModule.id === 'demo') {
+    if (db) db.ref('game').update({ studentsEnabled: false, phase: 'closed' });
+    studentsEnabled = false;
+    const btn = document.getElementById('btn-enable-students');
+    if (btn) { btn.textContent = '👥 Enable students'; btn.style.background = '#0F6E56'; }
+    renderDashboard();
+    showScreen('dash');
+    return;
+  }
   const scores = state.sessionScores;
   const maxS   = Math.max(...scores);
   const winners = state.teams.filter((_,i)=>scores[i]===maxS);
