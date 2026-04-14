@@ -468,11 +468,14 @@ function renderQuestion(data) {
 
   // Steal button
   let stealHtml = '';
-  if (phase === 'steal_open' && myTeam !== data.activeTeam && !hasBuzzed) {
+  console.log('[STEAL DEBUG] phase='+phase+' myTeam='+myTeam+' activeTeam='+data.activeTeam+' stealTeam='+data.stealTeam+' hasBuzzed='+hasBuzzed);
+  const canSteal = phase === 'steal_open' && myTeam !== data.activeTeam && !data.stealTeam && !hasBuzzed;
+  const hasWonSteal = phase === 'steal_open' && myTeam === data.stealTeam;
+  if (canSteal) {
     stealHtml = `<button class="steal-btn" style="background:${myColor}" id="steal-buzz-btn" onclick="buzzSteal()">
       ⚡ ${myTeam} — Steal!
     </button>`;
-  } else if (phase === 'steal_open' && myTeam === data.stealTeam) {
+  } else if (hasWonSteal) {
     // This team buzzed — show answer options
     stealHtml = `<div class="status-bar steal" style="margin-bottom:10px">⚡ You buzzed! Choose your answer:</div>
     <div class="timer-wrap">
