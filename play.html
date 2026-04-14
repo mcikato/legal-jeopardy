@@ -601,8 +601,11 @@ function buzzSteal() {
 function submitStealAnswer(optionIdx) {
   if (!db) return;
   clearInterval(stealTimerIv);
-  db.ref('game/stealAnswer').set(optionIdx);
-  db.ref('game/phase').set('steal_answered');
+  // Single atomic update to avoid race conditions
+  db.ref('game').update({
+    stealAnswer: optionIdx,
+    phase: 'steal_answered'
+  });
 }
 
 // ── TIMERS ────────────────────────────────────────────────────────────────────
