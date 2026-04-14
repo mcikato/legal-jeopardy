@@ -643,9 +643,8 @@ function startStealTimer() {
     if (secs <= 2) { c.classList.add('urgent'); b.style.background = '#EF4444'; }
     if (secs <= 0) {
       clearInterval(stealTimerIv);
-      // Time up — no points
-      db.ref('game/phase').set('steal_answered');
-      db.ref('game/stealAnswer').set(-1); // -1 = timed out
+      // Time up — atomic update
+      db.ref('game').update({ phase: 'steal_answered', stealAnswer: -1 });
     }
     secs--;
   }
