@@ -1560,19 +1560,25 @@ function renderModalActions() {
     startStealWindowCountdown();
 
   } else if (state.phase === 'steal') {
+    const sc = (state.stealTeam>=0) ? TEAM_COLORS[state.stealTeam] : '#F59E0B';
+    const sn = (state.stealTeam>=0) ? state.teams[state.stealTeam].name : '?';
     el.innerHTML = `
       <div>
-        <div style="background:${(state.stealTeam>=0)?TEAM_COLORS[state.stealTeam]:'#F59E0B'};border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:26px">⚡</span>
-            <div>
-              <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Steal attempt</div>
-              <div style="font-size:22px;font-weight:900;color:#fff">${esc((state.stealTeam>=0)?state.teams[state.stealTeam].name:'?')}</div>
-            </div>
+        <div style="background:${sc};border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:26px">⚡</span>
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Steal attempt</div>
+            <div style="font-size:22px;font-weight:900;color:#fff">${esc(sn)}</div>
           </div>
-          <span id="steal-countdown" style="font-size:36px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums">5</span>
         </div>
-        <p class="award-label">They answered:</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;background:#F8F8F8;border-radius:10px;padding:10px 14px">
+          <span style="font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px">Answering in</span>
+          <span id="steal-countdown" style="font-size:36px;font-weight:900;color:#0D1424;font-variant-numeric:tabular-nums;line-height:1">5</span>
+          <div style="flex:1;height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden">
+            <div id="steal-countdown-bar" style="height:8px;border-radius:4px;background:${sc};width:100%;transition:width .9s linear"></div>
+          </div>
+        </div>
+        <p class="award-label">They answered (or wait for play.html):</p>
         <div class="award-btns">
           ${['A','B','C','D'].map((lbl,i) => `
             <button class="btn" style="font-weight:800;min-width:52px;font-size:16px"
@@ -1580,6 +1586,7 @@ function renderModalActions() {
         </div>
         <button class="btn-muted" style="margin-top:4px" onclick="noSteal()">Cancel — reveal answer</button>
       </div>`;
+    startStealCountdown();
   }
 }
 
