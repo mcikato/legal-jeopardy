@@ -573,7 +573,13 @@ function listenForStudentAnswers() {
         const pts=POINTS[state.currentCell.row], half=Math.floor(pts/2);
         const sc=TEAM_COLORS[state.stealTeam], sn=state.teams[state.stealTeam].name;
         if (getAutoAward()) { awardPoints(state.stealTeam,half); }
-        else el.innerHTML=`<div><div style="background:${sc};border-radius:12px;padding:14px;text-align:center;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Steal correct!</div><div style="font-size:20px;font-weight:900;color:#fff">⚡ ${esc(sn)} +${half} pts</div></div><div class="award-btns"><button class="btn" style="background:${sc};color:#fff;border:none;font-weight:800" onclick="awardPoints(${state.stealTeam},${half})">${esc(sn)} +${half}</button></div><button class="btn-muted" style="margin-top:4px" onclick="closeModal()">No points — close</button></div>`;
+        else {
+          // Pre-apply points so scoreboard updates immediately
+          state.sessionScores[state.stealTeam] = (state.sessionScores[state.stealTeam]||0) + half;
+          state.lastAnswerCorrect = true;
+          renderGame();
+          el.innerHTML=`<div><div style="background:#16A34A;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Steal correct!</div><div style="font-size:20px;font-weight:900;color:#fff">⚡ ${esc(sn)} +${half} pts</div></div><button class="btn-muted" onclick="closeModal()">Close</button></div>`;
+        }
       } else {
         const PENALTY=20; let pm='';
         if (!timedOut && state.stealTeam>=0) { state.sessionScores[state.stealTeam]=Math.max(0,state.sessionScores[state.stealTeam]-PENALTY); pm=`<div style="font-size:14px;color:#fff;font-weight:800">-${PENALTY} pts for ${esc(state.teams[state.stealTeam].name)}</div>`; renderGame(); }
@@ -1517,7 +1523,7 @@ function renderModalActions() {
   } else if (state.phase === 'correct') {
     el.innerHTML = `
       <div class="award-section">
-        ${activeTeamIdx()>=0?`<div style="background:${TEAM_COLORS[activeTeamIdx()]};border-radius:12px;padding:14px;text-align:center;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Correct answer!</div><div style="font-size:22px;font-weight:900;color:#fff">✅ ${esc(state.teams[activeTeamIdx()].name)} +${pts} pts</div></div>`:''}
+        ${activeTeamIdx()>=0?`<div style="background:#16A34A;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Correct answer!</div><div style="font-size:22px;font-weight:900;color:#fff">✅ ${esc(state.teams[activeTeamIdx()].name)} +${pts} pts</div></div>`:''}
         <p class="award-label">Award points to:</p>
         <div class="award-btns">
           ${state.teams.map((t,i)=>`
@@ -1629,8 +1635,9 @@ function stealAnswered(optionIdx) {
     const el = document.getElementById('m-actions');
     el.innerHTML = `
       <div>
-        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#B91C1C;font-weight:700">
-          ❌ Steal wrong — no one scores
+        <div style="background:#EF4444;border-radius:12px;padding:14px;text-align:center;margin-bottom:14px">
+          <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Steal wrong</div>
+          <div style="font-size:18px;font-weight:900;color:#fff">No points scored</div>
         </div>
         <button class="btn-muted" onclick="closeModal()">Close</button>
       </div>`;
