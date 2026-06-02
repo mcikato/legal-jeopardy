@@ -456,7 +456,7 @@ input,textarea{font-family:inherit}
       <div class="game-actions">
         <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:#7A9BB8;cursor:pointer"><input type="checkbox" id="toggle-auto-award" style="width:14px;height:14px;cursor:pointer"> Auto-award</label>
         <button class="btn-blue" id="btn-enable-students" onclick="toggleStudents()" style="background:#0F6E56">👥 Enable students</button>
-        <button class="btn-blue" onclick="endGame()">End game</button>
+        <button class="btn-blue" onclick="confirmEndGame()">End game</button>
         <div id="exit-ui"><button class="btn-ghost" onclick="showExitConfirm()">← Exit</button></div>
       </div>
     </div>
@@ -1777,6 +1777,17 @@ function exitWithoutSaving() {
 }
 
 // ─── GAME OVER ────────────────────────────────────────────────────────────────
+function confirmEndGame() {
+  // Demo never saves, so just end it directly
+  if (state.activeModule && state.activeModule.id === 'demo') { endGame(); return; }
+  const answered = state.used.flat().filter(v => v).length;
+  const msg = `End this game and SAVE the results?\n\n` +
+    `Module: ${state.activeModule.name}\n` +
+    `Questions answered: ${answered} of 25\n\n` +
+    `This will record a game for every team and update the standings. This cannot be undone from the app.`;
+  if (confirm(msg)) endGame();
+}
+
 function endGame() {
   if (state.activeModule && state.activeModule.id === 'demo') {
     if (db) db.ref('game').update({ studentsEnabled: false, phase: 'closed' });
