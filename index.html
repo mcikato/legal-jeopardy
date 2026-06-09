@@ -323,7 +323,7 @@ input,textarea{font-family:inherit}
             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7048B8;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">2</div>
             <div style="font-size:26px;margin:8px 0 6px">🤫</div>
             <div style="font-size:12px;font-weight:800;color:#7048B8;margin-bottom:4px">Huddle</div>
-            <div style="font-size:11px;color:#555;line-height:1.4">All members discuss quietly — <strong>50 seconds</strong></div>
+            <div style="font-size:11px;color:#555;line-height:1.4">All members discuss quietly — <strong>40 seconds</strong></div>
           </div>
           <div style="padding:16px 8px;background:#ECFDF5;border-radius:12px;position:relative">
             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#0F766E;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">3</div>
@@ -549,7 +549,7 @@ function listenForStudentAnswers() {
       const q = state.activeModule.questions[data.col][data.row];
       stopTimer(); state.phase='correct'; state.lastAnswerCorrect=true;
       renderOptions(q,true); firebaseSetSteal(null);
-      if (getAutoAward()) { const ti=state.teams.findIndex(t=>t.name===data.activeTeam); if(ti>=0) awardPoints(ti,POINTS[state.currentCell.row]); }
+      if (getAutoAward()) { const ti=state.teams.findIndex(t=>t.name===data.activeTeam); if(ti>=0) awardPoints(ti,getPoints()[state.currentCell.row]); }
       else renderModalActions();
     }
     if (data.phase === 'steal_open' && state.phase === 'question') {
@@ -574,7 +574,7 @@ function listenForStudentAnswers() {
       const el = document.getElementById('m-actions');
       if (!timedOut && data.stealAnswer===q.correct) {
         state.lastAnswerCorrect=true;
-        const pts=POINTS[state.currentCell.row], half=Math.floor(pts/2);
+        const pts=getPoints()[state.currentCell.row], half=Math.floor(pts/2);
         const sc=TEAM_COLORS[state.stealTeam], sn=state.teams[state.stealTeam].name;
         if (getAutoAward()) { awardPoints(state.stealTeam,half); }
         else {
@@ -631,8 +631,10 @@ function listenForStealResult() {
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const TEAM_COLORS  = ['#2563AB','#B83220','#7048B8','#0A6B3E','#B45309'];
 const CAT_COLORS   = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
-const ROW_COLORS   = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220'];
-const POINTS       = [100,200,300,400,500];
+const ROW_COLORS   = ['#2563AB','#7048B8','#0F766E','#B45309','#B83220','#1E3A5F'];
+const POINTS       = [100,200,300,400,500,600];
+function getRowCount() { return state.activeModule ? state.activeModule.questions[0].length : 5; }
+function getPoints() { return Array.from({length:getRowCount()}, (_,i)=>(i+1)*100); }
 const OPT_LABELS   = ['A','B','C','D'];
 
 // ─── MODULES ─────────────────────────────────────────────────────────────────
@@ -849,6 +851,54 @@ const MODULES = [
         {q:"China's 2015 Advertising Law bans absolute and superlative claims. Which slogan would be REJECTED?",options:["\"Imported premium Arabica coffee\"","\"Winner, 2024 National Design Award\"","\"The most advanced smartphone ever made\"","\"Made with organic ingredients\""],correct:2},
         {q:"In China, what do you actually acquire when you 'buy' residential real estate?",options:["Full ownership of the land and building forever","A 70-year land-use right plus ownership of the building — the State owns the land","Nothing — all property is rented from the State","Ownership of the land but not the building"],correct:1},
         {q:"A foreign company wants full ownership and control of its China operation, keeping all profits and stronger IP protection. Which entry structure fits best?",options:["Representative Office","Joint Venture","WFOE (Wholly Foreign-Owned Enterprise)","A franchise agreement"],correct:2}
+      ]
+    ]
+  }
+  ,
+  {
+    id:'mod4',
+    name:'Module 4 — International Private Law (Hard)',
+    categories:['The Two Questions','Choosing the Law','Torts & Family','Which Court?','Uruguay 19.920'],
+    questions:[
+      [
+        {q:"International private law decides two questions before a case is judged. What are they?",options:["Guilt and sentence","Which court (jurisdiction) and which law (applicable law)","Plaintiff and defendant","Damages and appeal"],correct:1},
+        {q:"A contract is heard by a court in Paris but decided under English law. Is this possible?",options:["No — the court must apply its own law","Yes — choice of law and choice of court are separate decisions","No — only EU law could apply in Paris","Only if both parties are French"],correct:1},
+        {q:"Which connecting factor governs ONLY procedure — deadlines, evidence, freezing assets — never the substance?",options:["Lex loci contractus","Lex domicilii","Lex fori","Lex loci solutionis"],correct:2},
+        {q:"A French company's contract picks French law. The Argentine supplier sues in Uruguay and asks to freeze a Uruguayan bank account. The French firm objects, citing French procedural rules. What governs the freeze?",options:["French procedure — French law was chosen","Uruguayan procedure — lex fori always governs how the case runs","Argentine procedure — the plaintiff's home","A mix decided by the judge"],correct:1},
+        {q:"Choosing the applicable law and choosing the forum are separate. What is the practical danger of getting the FORUM wrong even if the law is right?",options:["The contract becomes void","You may win on paper in a court whose judgment can't be enforced where the assets are","The chosen law is automatically ignored","The case must restart in another language"],correct:1},
+        {q:"A party autonomy clause picks English law for a solar-farm contract in Argentina, but Argentina has mandatory local safety and environmental rules. How far does the chosen English law reach?",options:["It overrides everything, including local safety rules","It governs the contract, but cannot override local public policy and mandatory rules","It is void because the farm is in Argentina","Only the forum clause survives; the law clause fails"],correct:1}
+      ],
+      [
+        {q:"Under 'party autonomy', whose law applies to a contract?",options:["The law of the court hearing it","The law the parties chose","The law of the richer party","The law of the place of signing, always"],correct:1},
+        {q:"Two firms meet at an expo in Buenos Aires and sign a contract there with NO choice-of-law clause. Later one argues the signer wasn't authorized. Which law decides if the contract was validly FORMED?",options:["The buyer's home law","Argentine law — lex loci contractus, the place it was made","The seller's home law","The law of the expo organizer's country"],correct:1},
+        {q:"EcoPlast (Chile) manufactures goods for a German buyer; the deal is signed online with no chosen law. The buyer rejects them on quality. Which law decides whether the goods were properly produced?",options:["German law — the buyer's location","Chilean law — lex loci solutionis, the place of performance","The law of the server hosting the signature","International commercial custom only"],correct:1},
+        {q:"FashionNow (New York) hires a Bolivian maker; negotiated, signed and manufactured in Bolivia, but all goods shipped to and sold in California. Under the US 'most significant relationship' test, which law may apply — and WHY does it differ from the Latin American result?",options:["Bolivia, because everything was performed there","California, because the US test adds POLICY weight — protecting US consumers and the destination market — on top of the factual links","New York, because the buyer is based there","Bolivia, because the US always defers to the place of performance"],correct:1},
+        {q:"'Closest connection / center of gravity' (EU & Latin America) and 'most significant relationship' (US) look similar. What is the KEY difference that can flip the outcome on identical facts?",options:["The US test ignores where performance happened","The US test adds governmental policy interests to the factual analysis; the closest-connection test stays purely factual","The EU test always picks the seller's law","There is no real difference; the names just vary"],correct:1},
+        {q:"A Swedish supplier ships steel to Chile; signed by email, no chosen law, but production AND quality inspection (the heart of the dispute) happened in Sweden. A Chilean court applies the closest-connection test. What is the likely result, and why?",options:["Chilean law — the court and buyer are in Chile","Swedish law — the production and inspection at the core of the dispute give Sweden the closest connection","No law applies until the parties choose one","Chilean law — the goods arrived in Chile"],correct:1}
+      ],
+      [
+        {q:"'Lex loci delicti' governs torts. Which law does it point to?",options:["The victim's home country","The place where the harm occurred","The defendant company's country","Whichever court is fastest"],correct:1},
+        {q:"A Canadian tourist is injured on a poorly maintained bridge during a hike in Peru, booked via an international platform. She sues the Peruvian operator back home in Canada. Whose law governs liability?",options:["Canadian law — she sued at home","Peruvian law — lex loci delicti, where the harm happened","The platform's home country law","Canadian law — the contract was online"],correct:1},
+        {q:"'Lex domicilii' governs succession and family status. What defines a person's domicile?",options:["Their nationality on their passport","Their permanent home — residence plus intent to stay","Where they were born","Where most of their assets are"],correct:1},
+        {q:"Jean-Paul, a French citizen, lived in Uruguay 20 years (home, residency, taxes, voting) and dies intestate with assets in Uruguay, France and Spain. Which law governs his succession — and what is the key exception?",options:["French law by nationality, with no exceptions","Uruguayan law by domicile — but foreign REAL ESTATE may still follow that country's own local-property rule","Spanish law, where his investment account sits","Each asset follows the law of the heir who claims it"],correct:1},
+        {q:"In Uruguay, when no law is chosen, which connecting factor governs DIVORCE — and how does it differ from the rule governing the MARRIAGE itself?",options:["Both follow the place of celebration","Divorce follows the law of the marital domicile; the marriage's validity follows the law of the place of celebration","Both follow the spouses' nationality","Divorce follows nationality; marriage follows domicile"],correct:1},
+        {q:"A couple marries in Las Vegas, lives in Montevideo, owns an apartment in Miami, and now divorces. Applying Uruguayan connecting factors, match each issue to its law: validity of the marriage / the divorce / the Miami apartment.",options:["All three: Uruguayan law, as the marital domicile","Marriage validity → Nevada (place of celebration); divorce → Uruguay (marital domicile); Miami apartment → Florida (place where property is located)","All three: US law, since two contacts are American","Marriage and divorce → Nevada; apartment → Uruguay"],correct:1}
+      ],
+      [
+        {q:"What does 'forum shopping' mean?",options:["Buying a courthouse","Choosing the jurisdiction whose rules are most favorable to your side","Hiring the cheapest lawyer","Settling out of court"],correct:1},
+        {q:"In the Bhopal litigation, the US court refused the case and sent it to India. Which doctrine did it use?",options:["Comity","Minimum contacts","Forum non conveniens","Lex rei sitae"],correct:2},
+        {q:"A German court awards you damages, but the defendant's assets are all in Uruguay. What must happen for your judgment to be worth anything?",options:["Nothing — an EU judgment is automatically global","A Uruguayan court must recognize and enforce it, subject to due process and public policy","You must re-sue from scratch in Uruguay","The German court seizes the Uruguayan assets directly"],correct:1},
+        {q:"On jurisdiction, how does the COMMON LAW approach fundamentally differ from the CIVIL LAW approach?",options:["Common law uses codified rules with no discretion; civil law is flexible","Common law is flexible and discretionary (a court CAN decline via forum non conveniens); civil law is codified and a court must accept jurisdiction if conditions are met","Both are identical in practice","Civil law allows forum shopping; common law forbids it"],correct:1},
+        {q:"A US court asserts jurisdiction over a foreign defendant. Which test must be satisfied, and what is its rationale?",options:["Lex fori — the court applies its own law","Minimum contacts — enough connection to the forum that being sued there is fair","Comity — respect for the foreign state","In rem — the dispute is about property"],correct:1},
+        {q:"Your Uruguayan firm's patent is copied by a rival selling in the US, Germany, China and the UK, and you can sue in only ONE first. Germany offers fast cheap injunctions; the US offers huge but slow damages. What is the decisive factor in choosing, beyond speed and damages?",options:["The country with the most famous courts","Enforcement — the best forum is one where you can WIN and then enforce against the rival's real assets","Whichever country shares Uruguay's language","The forum with the lowest filing fee"],correct:1}
+      ],
+      [
+        {q:"What is the name of the Uruguayan statute governing international private law?",options:["The Civil Code","Law 19.920","The Constitution of 1967","The Hague Convention"],correct:1},
+        {q:"What principle is the STARTING POINT of Uruguay's Law 19.920?",options:["Strict nationality rules","Party autonomy — parties may choose the applicable law and the forum","Mandatory application of Uruguayan law always","The law of the plaintiff's domicile"],correct:1},
+        {q:"Under Law 19.920, a valid choice-of-law clause must meet which condition?",options:["It must be approved by a Uruguayan notary","It must be written, or clearly obvious from the contract","It must pick a Latin American country's law","Both parties must be Uruguayan residents"],correct:1},
+        {q:"Under Law 19.920, some matters are RESERVED and cannot be freely chosen by the parties. Which set is correctly reserved to a fixed law?",options:["International sales of generic goods","Local real estate, labor contracts and insurance contracts","Choice of arbitration seat","Currency of payment"],correct:1},
+        {q:"Law 19.920 reserves consumer contracts to a fixed law and labor/real estate to Uruguayan law. What is the underlying LOGIC of these carve-outs?",options:["To maximize tax revenue","To protect the weaker party (consumers, workers) and matters of strong local interest (local real estate)","To discourage foreign investment","To match the EU's Brussels I rules exactly"],correct:1},
+        {q:"Under Law 19.920, if a contract is international and the parties did NOT choose a law, which connecting factor applies by default — and how does this sit beside the statute's autonomy-first philosophy?",options:["Uruguayan law always, overriding autonomy","The law of the place of performance, with specific criteria for goods, fungibles and services — a default that fills the gap only when the parties' primary right to choose went unused","The plaintiff's domicile, ignoring performance","The law of the place of celebration"],correct:1}
       ]
     ]
   }
@@ -1417,7 +1467,7 @@ function startGame(modId) {
   const mod = MODULES.find(m=>m.id===modId);
   if (!mod) return;
   state.activeModule     = mod;
-  state.used             = Array.from({length:5},()=>Array(5).fill(false));
+  state.used             = Array.from({length:5},()=>Array(mod.questions[0].length).fill(false));
   state.sessionScores    = [0,0,0,0,0];
   state.questionLog      = [];
   state.lastAnswerCorrect= false;
@@ -1500,7 +1550,7 @@ function renderGame() {
 
   // Board — clean grid, no extra elements inside
   let html = mod.categories.map(c=>`<div class="cat-header">${esc(c)}</div>`).join('');
-  POINTS.forEach((pts,row)=>{
+  getPoints().forEach((pts,row)=>{
     mod.categories.forEach((_,col)=>{
       const done = state.used[col][row];
       html += `<div class="cell ${done?'used':''}" style="background:${done?'#0a1020':ROW_COLORS[row]}" onclick="openCell(${col},${row})">${done?'':pts}</div>`;
@@ -1525,7 +1575,7 @@ function openCell(col, row) {
   const mod = state.activeModule;
   const q   = mod.questions[col][row];
   document.getElementById('m-cat').textContent = mod.categories[col];
-  document.getElementById('m-pts').textContent = POINTS[row]+' pts';
+  document.getElementById('m-pts').textContent = getPoints()[row]+' pts';
   document.getElementById('m-pts').style.color = ROW_COLORS[row];
   document.getElementById('m-q').textContent   = q.q;
   document.getElementById('m-q').style.borderLeftColor = ROW_COLORS[row];
@@ -1546,7 +1596,7 @@ function renderOptions(q, revealed) {
 
 function renderModalActions() {
   const el  = document.getElementById('m-actions');
-  const pts  = state.currentCell ? POINTS[state.currentCell.row] : 0;
+  const pts  = state.currentCell ? getPoints()[state.currentCell.row] : 0;
   const half = Math.floor(pts / 2);
 
   if (state.phase === 'question') {
@@ -1672,7 +1722,7 @@ function openSteal(teamIdx) {
 function stealAnswered(optionIdx) {
   firebaseSetSteal(null);
   const q = state.activeModule.questions[state.currentCell.col][state.currentCell.row];
-  const pts = POINTS[state.currentCell.row];
+  const pts = getPoints()[state.currentCell.row];
   const half = Math.floor(pts / 2);
   // Reveal correct answer now
   renderOptions(q, true);
@@ -1719,7 +1769,7 @@ function noSteal() {
 }
 
 function awardPoints(teamIdx, pts) {
-  if (pts === undefined) pts = POINTS[state.currentCell.row];
+  if (pts === undefined) pts = getPoints()[state.currentCell.row];
   state.sessionScores[teamIdx] += pts;
   state.lastAnswerCorrect = true;
   markUsed();
@@ -1781,9 +1831,10 @@ function confirmEndGame() {
   // Demo never saves, so just end it directly
   if (state.activeModule && state.activeModule.id === 'demo') { endGame(); return; }
   const answered = state.used.flat().filter(v => v).length;
+  const totalQ = state.activeModule.categories.length * state.activeModule.questions[0].length;
   const msg = `End this game and SAVE the results?\n\n` +
     `Module: ${state.activeModule.name}\n` +
-    `Questions answered: ${answered} of 25\n\n` +
+    `Questions answered: ${answered} of ${totalQ}\n\n` +
     `This will record a game for every team and update the standings. This cannot be undone from the app.`;
   if (confirm(msg)) endGame();
 }
@@ -1904,7 +1955,7 @@ function startStealWindowCountdown() {
 
 function startTimer() {
   clearInterval(timerInterval);
-  let secs = 50;
+  let secs = 40;
   const countEl = document.getElementById('m-timer-count');
   const barEl   = document.getElementById('m-timer-bar');
   const timerEl = document.getElementById('m-timer');
@@ -1920,7 +1971,7 @@ function startTimer() {
     secs--;
     if (!document.getElementById('m-timer-count')) { clearInterval(timerInterval); return; }
     countEl.textContent = secs;
-    const pct = (secs / 50) * 100;
+    const pct = (secs / 40) * 100;
     barEl.style.width = pct + '%';
 
     if (secs <= 10) {
