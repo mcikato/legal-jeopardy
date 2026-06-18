@@ -691,7 +691,7 @@ function submitStealAnswer(optionIdx) {
 // ── TIMERS ────────────────────────────────────────────────────────────────────
 function startQuestionTimer(openedAt) {
   clearInterval(timerIv);
-  const total = 50;
+  const total = 40;
   const elapsed = openedAt ? Math.floor((Date.now() - openedAt) / 1000) : 0;
   let secs = Math.max(0, total - elapsed);
 
