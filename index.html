@@ -323,7 +323,7 @@ input,textarea{font-family:inherit}
             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7048B8;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">2</div>
             <div style="font-size:26px;margin:8px 0 6px">🤫</div>
             <div style="font-size:12px;font-weight:800;color:#7048B8;margin-bottom:4px">Huddle</div>
-            <div style="font-size:11px;color:#555;line-height:1.4">All members discuss quietly — <strong>50 seconds</strong></div>
+            <div style="font-size:11px;color:#555;line-height:1.4">All members discuss quietly — <strong>40 seconds</strong></div>
           </div>
           <div style="padding:16px 8px;background:#ECFDF5;border-radius:12px;position:relative">
             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#0F766E;color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center">3</div>
@@ -2003,7 +2003,7 @@ function startStealWindowCountdown() {
 
 function startTimer() {
   clearInterval(timerInterval);
-  let secs = 50;
+  let secs = 40;
   const countEl = document.getElementById('m-timer-count');
   const barEl   = document.getElementById('m-timer-bar');
   const timerEl = document.getElementById('m-timer');
@@ -2019,7 +2019,7 @@ function startTimer() {
     secs--;
     if (!document.getElementById('m-timer-count')) { clearInterval(timerInterval); return; }
     countEl.textContent = secs;
-    const pct = (secs / 50) * 100;
+    const pct = (secs / 40) * 100;
     barEl.style.width = pct + '%';
 
     if (secs <= 10) {
